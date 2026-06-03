@@ -1,4 +1,4 @@
-package com.arashi.edu.main;
+package com.arashi.edu.arashynbe;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

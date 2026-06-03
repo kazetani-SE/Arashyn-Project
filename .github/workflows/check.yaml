@@ -4,11 +4,15 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'Arashyn-BE/**'
 
 jobs:
-
   lint:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Arashyn-BE
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK
@@ -16,11 +20,19 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      - name: Cache Maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
       - name: Lint
         run: mvn pmd:check
 
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Arashyn-BE
     steps:
       - uses: actions/checkout@v4
       - name: Set up JDK
@@ -28,5 +40,10 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+      - name: Cache Maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
       - name: Test
         run: mvn test

@@ -21,6 +21,7 @@ public class OpenAPIProperties {
   @NotBlank
   private String version;
 
-  @NotBlank
   private String contactName;
+
+  private String contactEmail;
 }

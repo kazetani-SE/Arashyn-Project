@@ -1,6 +1,8 @@
 package com.arashi.edu.arashynbe.features.auth.client;
 
+import com.arashi.edu.arashynbe.features.auth.dto.request.LoginRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.request.RegisterRequest;
+import com.arashi.edu.arashynbe.features.auth.dto.response.SupabaseLoginResponse;
 import com.arashi.edu.arashynbe.features.auth.dto.response.SupabaseRegisterResponse;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
@@ -36,4 +38,29 @@ public class SupabaseAuthClientImpl implements SupabaseAuthClient {
       throw ex;
     }
   }
+
+  @Override
+  public SupabaseLoginResponse login(LoginRequest request) {
+
+    try {
+      return supabaseRestClient
+              .post()
+              .uri("/auth/v1/token?grant_type=password")
+              .body(request)
+              .retrieve()
+              .body(SupabaseLoginResponse.class);
+
+    } catch (HttpClientErrorException.BadRequest ex) {
+
+      String body = ex.getResponseBodyAsString();
+
+      if (body.contains("invalid_credentials")) {
+        throw new ApiException(ErrorCode.INVALID_CREDENTIALS);
+      }
+
+      throw ex;
+    }
+
+  }
+
 }

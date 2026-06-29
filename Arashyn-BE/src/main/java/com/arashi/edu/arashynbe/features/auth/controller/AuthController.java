@@ -1,6 +1,8 @@
 package com.arashi.edu.arashynbe.features.auth.controller;
 
+import com.arashi.edu.arashynbe.features.auth.dto.request.LoginRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.request.RegisterRequest;
+import com.arashi.edu.arashynbe.features.auth.dto.response.LoginResponse;
 import com.arashi.edu.arashynbe.features.auth.dto.response.RegisterResponse;
 import com.arashi.edu.arashynbe.features.auth.service.AuthService;
 import jakarta.validation.Valid;
@@ -24,6 +26,15 @@ public class AuthController {
   ) {
     return ResponseEntity.ok(
             authService.register(request)
+    );
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<LoginResponse> login(
+          @Valid @RequestBody LoginRequest request
+  ) {
+    return ResponseEntity.ok(
+            authService.login(request)
     );
   }
 }

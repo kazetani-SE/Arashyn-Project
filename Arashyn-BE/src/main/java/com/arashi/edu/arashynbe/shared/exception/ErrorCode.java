@@ -66,6 +66,25 @@ public enum ErrorCode {
           "Failed to create grammar."
   ),
 
+  // --------- Meaning ------------
+  GRAMMAR_NOT_FOUND(
+          HttpStatus.NOT_FOUND,
+          "GRAMMAR_NOT_FOUND",
+          "Grammar not found."
+  ),
+
+  MEANING_NOT_FOUND(
+          HttpStatus.NOT_FOUND,
+          "MEANING_NOT_FOUND",
+          "Meaning not found."
+  ),
+
+  INVALID_GROUP_KEY(
+          HttpStatus.BAD_REQUEST,
+          "INVALID_GROUP_KEY",
+          "Invalid component group."
+  ),
+
   // --------- Component ---------
   FORM_ALREADY_EXISTS(
           HttpStatus.CONFLICT,

@@ -1,6 +1,5 @@
 package com.arashi.edu.arashynbe.features.playground.grammar.controller;
 
-import com.arashi.edu.arashynbe.features.auth.dto.request.RegisterRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
 import jakarta.validation.Valid;

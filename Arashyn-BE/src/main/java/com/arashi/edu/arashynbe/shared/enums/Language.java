@@ -19,7 +19,7 @@ public enum Language {
   }
 
   public static Language fromCode(String code) {
-    for (Language lang : Language.values()) {
+    for (Language lang : values()) {
       if (lang.getCode().equalsIgnoreCase(code)) {
         return lang;
       }

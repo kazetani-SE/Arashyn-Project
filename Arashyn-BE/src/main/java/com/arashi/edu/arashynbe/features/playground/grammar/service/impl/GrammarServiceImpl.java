@@ -3,6 +3,7 @@ package com.arashi.edu.arashynbe.features.playground.grammar.service.impl;
 import com.arashi.edu.arashynbe.config.security.CurrentUser;
 import com.arashi.edu.arashynbe.entity.Account;
 import com.arashi.edu.arashynbe.entity.Grammar;
+import com.arashi.edu.arashynbe.features.playground.component.serivce.ComponentService;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
 import com.arashi.edu.arashynbe.repository.AccountRepo;
@@ -21,6 +22,7 @@ public class GrammarServiceImpl implements GrammarService {
 
   private final AccountRepo accountRepo;
   private final GrammarRepo grammarRepo;
+  private final ComponentService componentService;
 
   @Override
   public String createNewGrammar(GrammarCreateRequest request) {
@@ -36,8 +38,13 @@ public class GrammarServiceImpl implements GrammarService {
             .isPublic(request.isPublic())
             .build();
 
-    Grammar saved = grammarRepo.save(grammar);
+    Grammar savedGrammar = grammarRepo.save(grammar);
 
-    return saved.getId().toString();
+    componentService.createComponents(
+            savedGrammar,
+            request.components()
+    );
+
+    return savedGrammar.getId().toString();
   }
 }

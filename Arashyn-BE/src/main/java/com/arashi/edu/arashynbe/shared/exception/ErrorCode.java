@@ -64,6 +64,25 @@ public enum ErrorCode {
           HttpStatus.BAD_REQUEST,
           "GRAMMAR_CREATE_FAILED",
           "Failed to create grammar."
+  ),
+
+  // --------- Component ---------
+  FORM_ALREADY_EXISTS(
+          HttpStatus.CONFLICT,
+        "FORM_ALREADY_EXISTS",
+                "Form already exists."
+  ),
+
+  FORM_NOT_FOUND(
+          HttpStatus.NOT_FOUND,
+        "FORM_NOT_FOUND",
+                "Form not found."
+  ),
+
+  INVALID_COMPONENT_REFERENCE(
+          HttpStatus.BAD_REQUEST,
+        "INVALID_COMPONENT_REFERENCE",
+                "Exactly one of keyword or formId must be provided."
   );
 
   private final HttpStatus status;

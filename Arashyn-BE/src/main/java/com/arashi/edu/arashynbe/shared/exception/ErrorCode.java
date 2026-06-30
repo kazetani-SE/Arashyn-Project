@@ -57,6 +57,13 @@ public enum ErrorCode {
           HttpStatus.INTERNAL_SERVER_ERROR,
           "INTERNAL_SERVER_ERROR",
           "Unexpected server error."
+  ),
+
+  // ---------- Grammar ----------
+  GRAMMAR_CREATE_FAILED(
+          HttpStatus.BAD_REQUEST,
+          "GRAMMAR_CREATE_FAILED",
+          "Failed to create grammar."
   );
 
   private final HttpStatus status;

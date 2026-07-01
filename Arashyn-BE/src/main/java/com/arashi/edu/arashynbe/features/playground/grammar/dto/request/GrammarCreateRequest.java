@@ -19,6 +19,18 @@ public record GrammarCreateRequest(
         boolean isPublic,
 
         @NotEmpty
-        List<@Valid ComponentCreateRequest> components
+        List<@Valid Group> groups
 ) {
+
+        public record Group(
+                @NotNull
+                @Positive
+                Integer groupKey,
+
+                @NotEmpty
+                List<@Valid ComponentCreateRequest> components,
+
+                List<String> meanings
+        ){}
+
 }

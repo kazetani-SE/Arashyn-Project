@@ -9,6 +9,7 @@ public interface ComponentService {
 
   void createComponents(
           Grammar grammar,
+          Integer groupKey,
           List<ComponentCreateRequest> requests
   );
 }

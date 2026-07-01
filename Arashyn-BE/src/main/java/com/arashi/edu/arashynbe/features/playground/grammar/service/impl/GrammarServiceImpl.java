@@ -7,6 +7,7 @@ import com.arashi.edu.arashynbe.features.playground.component.serivce.ComponentS
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
 import com.arashi.edu.arashynbe.features.playground.meaning.service.MeaningService;
+import com.arashi.edu.arashynbe.features.playground.note.service.NoteService;
 import com.arashi.edu.arashynbe.repository.AccountRepo;
 import com.arashi.edu.arashynbe.repository.GrammarRepo;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
@@ -23,6 +24,7 @@ public class GrammarServiceImpl implements GrammarService {
   private final GrammarRepo grammarRepo;
   private final ComponentService componentService;
   private final MeaningService meaningService;
+  private final NoteService noteService;
 
   @Override
   @Transactional
@@ -57,6 +59,11 @@ public class GrammarServiceImpl implements GrammarService {
               group.meanings()
       );
     }
+
+    noteService.createMany(
+            savedGrammar,
+            request.notes()
+    );
 
     return savedGrammar.getId().toString();
   }

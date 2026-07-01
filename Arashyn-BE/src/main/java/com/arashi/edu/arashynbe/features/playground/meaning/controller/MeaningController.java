@@ -4,6 +4,7 @@ import com.arashi.edu.arashynbe.features.playground.meaning.dto.request.MeaningC
 import com.arashi.edu.arashynbe.features.playground.meaning.service.MeaningService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -16,7 +17,7 @@ public class MeaningController {
   private final MeaningService meaningService;
 
   @PostMapping
-  public UUID create(
+  public ResponseEntity<Void> create(
 
           @PathVariable
           UUID grammarId,
@@ -27,11 +28,11 @@ public class MeaningController {
 
   ) {
 
-    return meaningService.create(
+    meaningService.create(
             grammarId,
             request
     );
 
+    return ResponseEntity.noContent().build();
   }
-
 }

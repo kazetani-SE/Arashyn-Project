@@ -13,6 +13,9 @@ import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ComponentServiceImpl implements ComponentService {
@@ -23,8 +26,11 @@ public class ComponentServiceImpl implements ComponentService {
   @Override
   public void createComponents(
           Grammar grammar,
-          java.util.List<ComponentCreateRequest> requests
+          Integer groupKey,
+          List<ComponentCreateRequest> requests
   ) {
+
+    List<Component> components = new ArrayList<>();
 
     for (ComponentCreateRequest request : requests) {
 
@@ -35,7 +41,7 @@ public class ComponentServiceImpl implements ComponentService {
       boolean hasForm =
               request.formId() != null;
 
-      // XOR
+      // Exactly one must exist
       if (hasKeyword == hasForm) {
         throw new ApiException(ErrorCode.INVALID_COMPONENT_REFERENCE);
       }
@@ -54,11 +60,12 @@ public class ComponentServiceImpl implements ComponentService {
               .order(request.order())
               .keyword(hasKeyword ? request.keyWord().trim() : null)
               .optional(request.optional())
-              .groupKey(request.groupKey().shortValue())
+              .groupKey(groupKey.shortValue())
               .build();
 
-      componentRepo.save(component);
+      components.add(component);
     }
 
+    componentRepo.saveAll(components);
   }
 }

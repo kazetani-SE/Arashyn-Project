@@ -10,10 +10,6 @@ public record ComponentCreateRequest(
         @Positive
         Integer order,
 
-        @NotNull
-        @Positive
-        Integer groupKey,
-
         UUID formId,
 
         String keyWord,

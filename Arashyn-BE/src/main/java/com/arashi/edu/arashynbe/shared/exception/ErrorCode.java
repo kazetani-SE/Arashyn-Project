@@ -85,6 +85,19 @@ public enum ErrorCode {
           "Invalid component group."
   ),
 
+  // --------- Filter -----------
+  FILTER_ALREADY_EXISTS(
+          HttpStatus.CONFLICT,
+          "FILTER_ALREADY_EXISTS",
+          "Filter already exists."
+  ),
+
+  FILTER_NOT_FOUND(
+          HttpStatus.NOT_FOUND,
+          "FILTER_NOT_FOUND",
+          "Filter not found."
+  ),
+
   // --------- Component ---------
   FORM_ALREADY_EXISTS(
           HttpStatus.CONFLICT,

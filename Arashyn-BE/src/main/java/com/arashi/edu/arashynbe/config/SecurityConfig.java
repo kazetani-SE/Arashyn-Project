@@ -19,6 +19,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final String ADMIN = "ADMIN";
+  private final String CONTRIBUTOR = "CONTRIBUTOR";
 
   @Bean
   SecurityFilterChain securityFilterChain(HttpSecurity http)
@@ -49,10 +51,13 @@ public class SecurityConfig {
                     ).permitAll()
 
                     .requestMatchers("/admin/**")
-                    .hasRole("ADMIN")
+                    .hasRole(ADMIN)
 
                     .requestMatchers("/contributor/**")
-                    .hasAnyRole("CONTRIBUTOR","ADMIN")
+                    .hasAnyRole(CONTRIBUTOR,ADMIN)
+
+                    .requestMatchers("/system-filters/**")
+                    .hasAnyRole(CONTRIBUTOR,ADMIN)
 
                     .anyRequest()
                     .authenticated())

@@ -1,14 +1,15 @@
 package com.arashi.edu.arashynbe.features.playground.grammar.controller;
 
+import com.arashi.edu.arashynbe.features.playground.filter.dto.request.AssignFilterRequest;
+import com.arashi.edu.arashynbe.features.playground.filter.service.SystemFilterService;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/grammar-protected")
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class GrammarProtectedController {
 
   private final GrammarService grammarService;
+  private final SystemFilterService systemFilterService;
 
   @PostMapping("/create")
   public ResponseEntity<String> create(
@@ -26,5 +28,23 @@ public class GrammarProtectedController {
     );
   }
 
+  @PostMapping("/{grammarId}/filters")
+  public ResponseEntity<Void> assignFilters(
 
+          @PathVariable
+          UUID grammarId,
+
+          @Valid
+          @RequestBody
+          AssignFilterRequest request
+
+  ) {
+
+    systemFilterService.assignFilters(
+            grammarId,
+            request
+    );
+
+    return ResponseEntity.noContent().build();
+  }
 }

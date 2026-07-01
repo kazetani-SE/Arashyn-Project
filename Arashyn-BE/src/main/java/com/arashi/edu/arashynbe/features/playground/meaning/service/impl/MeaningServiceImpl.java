@@ -15,6 +15,8 @@ import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -38,8 +40,6 @@ public class MeaningServiceImpl implements MeaningService {
             .orElseThrow(() ->
                     new ApiException(ErrorCode.GRAMMAR_NOT_FOUND));
 
-    // Public grammar: everyone can contribute meanings.
-    // Private grammar: only owner can contribute.
     if (!grammar.getIsPublic()
             && !grammar.getOwner().getId().equals(userId)) {
       throw new ApiException(ErrorCode.FORBIDDEN);
@@ -64,5 +64,40 @@ public class MeaningServiceImpl implements MeaningService {
             .build();
 
     return meaningRepo.save(meaning).getId();
+  }
+
+  @Override
+  public void createMany(
+          Grammar grammar,
+          Integer groupKey,
+          List<String> meanings
+  ) {
+
+    if (meanings == null || meanings.isEmpty()) {
+      return;
+    }
+
+    List<Meaning> entities = new ArrayList<>();
+
+    for (String content : meanings) {
+
+      if (content == null || content.isBlank()) {
+        continue;
+      }
+
+      Meaning meaning = Meaning.builder()
+              .grammar(grammar)
+              .owner(grammar.getOwner())
+              .content(content.trim())
+              .groupKey(groupKey.shortValue())
+              .isPublic(grammar.getIsPublic())
+              .build();
+
+      entities.add(meaning);
+    }
+
+    if (!entities.isEmpty()) {
+      meaningRepo.saveAll(entities);
+    }
   }
 }

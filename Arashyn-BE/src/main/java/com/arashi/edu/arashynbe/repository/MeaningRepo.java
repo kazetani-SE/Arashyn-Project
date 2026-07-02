@@ -10,6 +10,6 @@ import java.util.UUID;
 @Repository
 public interface MeaningRepo extends JpaRepository<Meaning, UUID> {
 
-  List<Meaning> findByGrammarId(UUID grammarId);
+  List<Meaning> findByGrammarIdOrderByGroupKeyAsc(UUID grammarId);
 
 }

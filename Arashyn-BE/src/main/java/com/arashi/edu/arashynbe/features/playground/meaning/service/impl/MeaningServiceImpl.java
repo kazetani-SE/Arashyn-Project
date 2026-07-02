@@ -4,6 +4,8 @@ import com.arashi.edu.arashynbe.config.security.CurrentUser;
 import com.arashi.edu.arashynbe.entity.Account;
 import com.arashi.edu.arashynbe.entity.Grammar;
 import com.arashi.edu.arashynbe.entity.Meaning;
+import com.arashi.edu.arashynbe.features.playground.example.service.ExampleService;
+import com.arashi.edu.arashynbe.features.playground.meaning.dto.request.MeaningCreateBase;
 import com.arashi.edu.arashynbe.features.playground.meaning.dto.request.MeaningCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.meaning.service.MeaningService;
 import com.arashi.edu.arashynbe.repository.AccountRepo;
@@ -27,9 +29,10 @@ public class MeaningServiceImpl implements MeaningService {
   private final GrammarRepo grammarRepo;
   private final ComponentRepo componentRepo;
   private final AccountRepo accountRepo;
+  private final ExampleService exampleService;
 
   @Override
-  public UUID create(
+  public void create(
           UUID grammarId,
           MeaningCreateRequest request
   ) {
@@ -45,32 +48,46 @@ public class MeaningServiceImpl implements MeaningService {
       throw new ApiException(ErrorCode.FORBIDDEN);
     }
 
-    if (!componentRepo.existsByGrammarIdAndGroupKey(
-            grammarId,
-            request.groupKey().shortValue())) {
-      throw new ApiException(ErrorCode.INVALID_GROUP_KEY);
-    }
-
     Account owner = accountRepo.findById(userId)
             .orElseThrow(() ->
                     new ApiException(ErrorCode.USER_NOT_FOUND));
 
-    Meaning meaning = Meaning.builder()
-            .grammar(grammar)
-            .owner(owner)
-            .content(request.content().trim())
-            .groupKey(request.groupKey().shortValue())
-            .isPublic(grammar.getIsPublic())
-            .build();
+    List<Meaning> entities = new ArrayList<>();
 
-    return meaningRepo.save(meaning).getId();
+    for (MeaningCreateRequest.MeaningCreate dto : request.meanings()) {
+
+      if (!componentRepo.existsByGrammarIdAndGroupKey(
+              grammarId,
+              dto.groupKey().shortValue())) {
+        throw new ApiException(ErrorCode.INVALID_GROUP_KEY);
+      }
+
+      Meaning entity = Meaning.builder()
+              .grammar(grammar)
+              .owner(owner)
+              .content(dto.meaning().content().trim())
+              .groupKey(dto.groupKey().shortValue())
+              .isPublic(grammar.getIsPublic())
+              .build();
+
+      entities.add(entity);
+    }
+
+    List<Meaning> saved = meaningRepo.saveAll(entities);
+
+    for (int i = 0; i < saved.size(); i++) {
+      exampleService.createMany(
+              saved.get(i),
+              request.meanings().get(i).meaning().examples()
+      );
+    }
   }
 
   @Override
   public void createMany(
           Grammar grammar,
           Integer groupKey,
-          List<String> meanings
+          List<MeaningCreateBase> meanings
   ) {
 
     if (meanings == null || meanings.isEmpty()) {
@@ -79,25 +96,26 @@ public class MeaningServiceImpl implements MeaningService {
 
     List<Meaning> entities = new ArrayList<>();
 
-    for (String content : meanings) {
+    for (MeaningCreateBase dto : meanings) {
 
-      if (content == null || content.isBlank()) {
-        continue;
-      }
-
-      Meaning meaning = Meaning.builder()
+      Meaning entity = Meaning.builder()
               .grammar(grammar)
               .owner(grammar.getOwner())
-              .content(content.trim())
+              .content(dto.content().trim())
               .groupKey(groupKey.shortValue())
               .isPublic(grammar.getIsPublic())
               .build();
 
-      entities.add(meaning);
+      entities.add(entity);
     }
 
-    if (!entities.isEmpty()) {
-      meaningRepo.saveAll(entities);
+    List<Meaning> saved = meaningRepo.saveAll(entities);
+
+    for (int i = 0; i < saved.size(); i++) {
+      exampleService.createMany(
+              saved.get(i),
+              meanings.get(i).examples()
+      );
     }
   }
 }

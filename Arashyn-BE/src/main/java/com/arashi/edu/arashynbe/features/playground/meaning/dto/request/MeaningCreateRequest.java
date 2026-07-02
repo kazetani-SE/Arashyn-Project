@@ -1,18 +1,24 @@
 package com.arashi.edu.arashynbe.features.playground.meaning.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+
+import java.util.List;
 
 public record MeaningCreateRequest(
 
-        @NotBlank
-        @Size(max = 5000)
-        String content,
-
-        @NotNull
-        @Positive
-        Integer groupKey
+        @NotEmpty
+        List<@Valid MeaningCreate> meanings
 ) {
+
+        public record MeaningCreate(
+                @NotNull
+                @Positive
+                Integer groupKey,
+
+                @NotNull
+                @Valid
+                MeaningCreateBase meaning
+        ){}
+
 }

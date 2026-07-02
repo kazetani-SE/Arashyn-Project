@@ -10,7 +10,7 @@ import java.util.UUID;
 @Repository
 public interface ComponentRepo extends JpaRepository<Component, UUID> {
 
-  List<Component> findByGrammarIdOrderByOrderAsc(UUID grammarId);
+  List<Component> findByGrammarIdOrderByGroupKeyAscOrderAsc(UUID grammarId);
 
   List<Component> findByFormId(UUID formId);
 

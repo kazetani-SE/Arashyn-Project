@@ -8,7 +8,12 @@ import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.Grammar
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarReadService;
 import com.arashi.edu.arashynbe.features.playground.meaning.dto.response.GrammarMeaningResponse;
 import com.arashi.edu.arashynbe.features.playground.note.dto.response.GrammarNoteResponse;
-import com.arashi.edu.arashynbe.repository.*;
+import com.arashi.edu.arashynbe.repository.ComponentRepo;
+import com.arashi.edu.arashynbe.repository.ExampleRepo;
+import com.arashi.edu.arashynbe.repository.GrammarRepo;
+import com.arashi.edu.arashynbe.repository.MeaningRepo;
+import com.arashi.edu.arashynbe.repository.NoteRepo;
+import com.arashi.edu.arashynbe.repository.SystemFilterRepo;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;

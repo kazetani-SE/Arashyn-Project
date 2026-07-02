@@ -28,7 +28,7 @@ public class Component {
   @JoinColumn(name = "grammar_id", nullable = false)
   private Grammar grammar;
 
-  @ManyToOne(fetch = FetchType.LAZY)
+  @ManyToOne(fetch = FetchType.EAGER)
   @JoinColumn(name = "form_id")
   private Form form;
 

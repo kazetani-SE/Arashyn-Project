@@ -47,7 +47,8 @@ public class SecurityConfig {
                             "/error",
                             "/v3/api-docs/**",
                             "/swagger-ui/**",
-                            "/swagger-ui.html"
+                            "/swagger-ui.html",
+                            "/grammar-public/**"
                     ).permitAll()
 
                     .requestMatchers("/admin/**")

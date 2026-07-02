@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface NoteRepo extends JpaRepository<Note, UUID> {
 
-  List<Note> findAllByGrammarId(UUID grammarId);
+  List<Note> findAllByGrammarIdOrderByGroupKeyAsc(UUID grammarId);
 
   void deleteAllByGrammarId(UUID grammarId);
 

@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface ExampleRepo extends JpaRepository<Example, UUID> {
 
-  List<Example> findAllByMeaningId(UUID meaningId);
+  List<Example> findAllByMeaningIdIn(List<UUID> meaningIds);
 
   void deleteAllByMeaningId(UUID meaningId);
 

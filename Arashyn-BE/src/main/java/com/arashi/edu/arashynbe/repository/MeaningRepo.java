@@ -12,4 +12,8 @@ public interface MeaningRepo extends JpaRepository<Meaning, UUID> {
 
   List<Meaning> findByGrammarIdOrderByGroupKeyAsc(UUID grammarId);
 
+  List<Meaning> findByGrammarIdInAndGroupKeyOrderByGrammarIdAsc(
+          List<UUID> grammarIds,
+          Short groupKey
+  );
 }

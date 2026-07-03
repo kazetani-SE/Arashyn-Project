@@ -1,6 +1,8 @@
 package com.arashi.edu.arashynbe.features.playground.grammar.controller;
 
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarListRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,17 @@ import java.util.UUID;
 public class GrammarPublicController {
 
   private final GrammarService grammarService;
+
+  @PostMapping
+  public ResponseEntity<GrammarListResponse> getPublicGrammars(
+          @RequestBody GrammarListRequest request,
+          @RequestParam(defaultValue = "0") Integer page
+  ) {
+
+    return ResponseEntity.ok(
+            grammarService.getPublicGrammars(request, page)
+    );
+  }
 
   @GetMapping("/{grammarId}")
   public ResponseEntity<GrammarDetailResponse> getDetail(

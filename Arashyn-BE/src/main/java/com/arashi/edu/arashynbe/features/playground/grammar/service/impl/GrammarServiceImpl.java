@@ -7,7 +7,9 @@ import com.arashi.edu.arashynbe.features.playground.component.serivce.ComponentS
 import com.arashi.edu.arashynbe.features.playground.filter.dto.request.AssignFilterRequest;
 import com.arashi.edu.arashynbe.features.playground.filter.service.SystemFilterService;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarListRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarReadService;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
 import com.arashi.edu.arashynbe.features.playground.meaning.dto.response.GrammarMeaningResponse;
@@ -15,10 +17,15 @@ import com.arashi.edu.arashynbe.features.playground.meaning.service.MeaningServi
 import com.arashi.edu.arashynbe.features.playground.note.service.NoteService;
 import com.arashi.edu.arashynbe.repository.AccountRepo;
 import com.arashi.edu.arashynbe.repository.GrammarRepo;
+import com.arashi.edu.arashynbe.shared.enums.GrammarSortBy;
 import com.arashi.edu.arashynbe.shared.enums.Language;
+import com.arashi.edu.arashynbe.shared.enums.SortDirection;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +43,8 @@ public class GrammarServiceImpl implements GrammarService {
   private final NoteService noteService;
   private final SystemFilterService systemFilterService;
   private final GrammarReadService readService;
+
+  private final int PAGE_SIZE = 20;
 
   @Override
   @Transactional
@@ -127,5 +136,32 @@ public class GrammarServiceImpl implements GrammarService {
             readService.getNotes(grammarId),
             readService.getFilters(grammarId)
     );
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public GrammarListResponse getPublicGrammars(
+          GrammarListRequest request,
+          Integer page
+  ) {
+
+    GrammarSortBy sortBy = request.sortBy() == null
+            ? GrammarSortBy.TITLE
+            : request.sortBy();
+
+    SortDirection direction = request.direction() == null
+            ? SortDirection.DESC
+            : request.direction();
+
+    Pageable pageable = PageRequest.of(
+            page,
+            PAGE_SIZE,
+            Sort.by(
+                    direction.toSpringDirection(),
+                    sortBy.getField()
+            )
+    );
+
+    return readService.getPublicGrammars(request, pageable);
   }
 }

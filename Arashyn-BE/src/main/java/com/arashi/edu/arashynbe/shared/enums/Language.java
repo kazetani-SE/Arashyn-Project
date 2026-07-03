@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public enum Language {
-  VI("vi", "Vietnamese"),
-  EN("en", "English"),
-  JA("ja", "Japanese"),
-  KO("ko", "Korean"),
-  ZH("zh", "Chinese");
+  VI("VI", "Vietnamese"),
+  EN("EN", "English"),
+  JA("JA", "Japanese"),
+  KO("KO", "Korean"),
+  ZH("ZH", "Chinese");
 
   private final String code;
   private final String displayName;

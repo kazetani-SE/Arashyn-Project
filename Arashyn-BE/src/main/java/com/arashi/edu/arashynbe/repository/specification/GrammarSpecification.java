@@ -4,6 +4,7 @@ import com.arashi.edu.arashynbe.entity.Component;
 import com.arashi.edu.arashynbe.entity.Grammar;
 import com.arashi.edu.arashynbe.entity.support.GrammarFilter;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarListRequest;
+import com.arashi.edu.arashynbe.shared.enums.Language;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
@@ -40,6 +41,10 @@ public final class GrammarSpecification {
 
     if (request.keywords() != null && !request.keywords().isEmpty()) {
       spec = spec.and(hasKeywords(request.keywords()));
+    }
+
+    if (request.language() != null) {
+      spec = spec.and(languageIs(request.language()));
     }
 
     return spec;
@@ -128,5 +133,15 @@ public final class GrammarSpecification {
 
       return root.get("id").in(subQuery);
     };
+  }
+
+  public static Specification<Grammar> languageIs(
+          Language language
+  ) {
+    return (root, query, cb) ->
+            cb.equal(
+                    root.get("language"),
+                    language.getCode()
+            );
   }
 }

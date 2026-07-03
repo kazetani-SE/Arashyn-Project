@@ -1,6 +1,7 @@
 package com.arashi.edu.arashynbe.features.playground.grammar.dto.request;
 
 import com.arashi.edu.arashynbe.shared.enums.GrammarSortBy;
+import com.arashi.edu.arashynbe.shared.enums.Language;
 import com.arashi.edu.arashynbe.shared.enums.SortDirection;
 
 import java.util.List;
@@ -11,6 +12,8 @@ public record GrammarListRequest(
         String title,
 
         UUID owner,
+
+        Language language,
 
         List<String> keywords,
 

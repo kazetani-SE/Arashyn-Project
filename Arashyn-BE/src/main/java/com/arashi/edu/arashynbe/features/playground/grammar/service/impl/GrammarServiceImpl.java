@@ -12,6 +12,7 @@ import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.Existin
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarDeleteService;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarReadService;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarMatchService;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
@@ -45,6 +46,7 @@ public class GrammarServiceImpl implements GrammarService {
   private final SystemFilterService systemFilterService;
   private final GrammarReadService readService;
   private final GrammarMatchService grammarMatchService;
+  private final GrammarDeleteService grammarDeleteService;
 
   private final int PAGE_SIZE = 20;
 
@@ -139,5 +141,16 @@ public class GrammarServiceImpl implements GrammarService {
   public GrammarSimilarResponse findSimilarGrammar(@Valid GrammarCreateRequest request) {
     return grammarMatchService.findSimilarGrammar(request);
   }
+
+  @Override
+  public void deleteGrammar(UUID request) {
+    grammarDeleteService.deleteGrammar(request);
+  }
+
+  @Override
+  public void restoreGrammar(UUID request) {
+    grammarDeleteService.restoreGrammar(request);
+  }
+
 
 }

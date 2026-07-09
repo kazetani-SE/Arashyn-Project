@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -25,5 +26,36 @@ public interface GrammarRepo extends
   void assignFilter(
           UUID grammarId,
           UUID filterId
+  );
+
+  @Query("""
+    SELECT g.owner.id
+    FROM Grammar g
+    WHERE g.id = :grammarId
+    """)
+  Optional<UUID> getOwnerId(UUID grammarId);
+
+  @Modifying
+  @Transactional
+  @Query("""
+    UPDATE Grammar g
+    SET g.owner = null,
+        g.isPublic = false
+    WHERE g.id = :grammarId
+    """)
+  int softDelete(UUID grammarId);
+
+  @Modifying
+  @Transactional
+  @Query("""
+    UPDATE Grammar g
+    SET g.owner.id = :userId,
+        g.isPublic = true
+    WHERE g.id = :grammarId
+      AND g.owner IS NULL
+    """)
+  int restoreGrammar(
+          UUID grammarId,
+          UUID userId
   );
 }

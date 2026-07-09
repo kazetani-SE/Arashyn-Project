@@ -28,4 +28,8 @@ public interface GrammarService {
   GrammarSimilarResponse findSimilarGrammar(
           @Valid GrammarCreateRequest request
   );
+
+  void deleteGrammar(UUID request);
+
+  void restoreGrammar(UUID grammarId);
 }

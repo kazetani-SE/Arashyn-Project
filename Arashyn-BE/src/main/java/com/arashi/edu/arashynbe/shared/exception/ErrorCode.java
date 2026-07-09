@@ -66,6 +66,12 @@ public enum ErrorCode {
           "Failed to create grammar."
   ),
 
+  GRAMMAR_DELETE_FAILED(
+          HttpStatus.BAD_REQUEST,
+          "GRAMMAR_DELETE_FAILED",
+          "Failed to delete grammar."
+  ),
+
   // --------- Meaning ------------
   GRAMMAR_NOT_FOUND(
           HttpStatus.NOT_FOUND,

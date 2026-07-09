@@ -8,9 +8,11 @@ import com.arashi.edu.arashynbe.features.playground.filter.dto.request.AssignFil
 import com.arashi.edu.arashynbe.features.playground.filter.service.SystemFilterService;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarListRequest;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.ExistingGrammarResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarReadService;
+import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarRefactorService;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
 import com.arashi.edu.arashynbe.features.playground.meaning.dto.response.GrammarMeaningResponse;
 import com.arashi.edu.arashynbe.features.playground.meaning.service.MeaningService;
@@ -22,6 +24,7 @@ import com.arashi.edu.arashynbe.shared.enums.Language;
 import com.arashi.edu.arashynbe.shared.enums.SortDirection;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +46,7 @@ public class GrammarServiceImpl implements GrammarService {
   private final NoteService noteService;
   private final SystemFilterService systemFilterService;
   private final GrammarReadService readService;
+  private final GrammarRefactorService grammarRefactorService;
 
   private final int PAGE_SIZE = 20;
 
@@ -163,5 +167,12 @@ public class GrammarServiceImpl implements GrammarService {
     );
 
     return readService.getPublicGrammars(request, pageable);
+  }
+
+  @Override
+  public ExistingGrammarResponse findExistingGrammar(
+          @Valid GrammarCreateRequest request
+  ){
+    return grammarRefactorService.findExistingGrammar(request);
   }
 }

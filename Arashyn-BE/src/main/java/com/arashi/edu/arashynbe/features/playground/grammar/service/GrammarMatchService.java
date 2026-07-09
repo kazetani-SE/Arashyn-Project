@@ -5,7 +5,7 @@ import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.Existin
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse;
 import jakarta.validation.Valid;
 
-public interface GrammarIdentifyService {
+public interface GrammarMatchService {
 
   ExistingGrammarResponse findExistingGrammar(
           @Valid GrammarCreateRequest request

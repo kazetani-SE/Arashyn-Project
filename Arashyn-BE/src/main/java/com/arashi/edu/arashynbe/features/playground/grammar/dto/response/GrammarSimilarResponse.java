@@ -6,7 +6,20 @@ import java.util.List;
 import java.util.UUID;
 
 public record GrammarDuplicateResponse(
-        DuplicateType type,
-        List<UUID> grammarIds
+
+        List<GrammarDuplicateItem> fullMatches,
+
+        List<GrammarDuplicateItem> partialMatches
+
 ) {
+
+  public record GrammarDuplicateItem(
+
+          UUID grammarId,
+
+          DuplicateType type
+          
+  ) {
+  }
+
 }

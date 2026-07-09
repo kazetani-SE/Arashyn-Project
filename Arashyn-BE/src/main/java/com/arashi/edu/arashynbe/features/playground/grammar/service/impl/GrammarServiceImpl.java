@@ -13,15 +13,13 @@ import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.Grammar
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarReadService;
-import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarRefactorService;
+import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarMatchService;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
-import com.arashi.edu.arashynbe.features.playground.meaning.dto.response.GrammarMeaningResponse;
 import com.arashi.edu.arashynbe.features.playground.meaning.service.MeaningService;
 import com.arashi.edu.arashynbe.features.playground.note.service.NoteService;
 import com.arashi.edu.arashynbe.repository.AccountRepo;
 import com.arashi.edu.arashynbe.repository.GrammarRepo;
 import com.arashi.edu.arashynbe.shared.enums.GrammarSortBy;
-import com.arashi.edu.arashynbe.shared.enums.Language;
 import com.arashi.edu.arashynbe.shared.enums.SortDirection;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
@@ -33,7 +31,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -47,7 +44,7 @@ public class GrammarServiceImpl implements GrammarService {
   private final NoteService noteService;
   private final SystemFilterService systemFilterService;
   private final GrammarReadService readService;
-  private final GrammarRefactorService grammarRefactorService;
+  private final GrammarMatchService grammarMatchService;
 
   private final int PAGE_SIZE = 20;
 
@@ -101,46 +98,7 @@ public class GrammarServiceImpl implements GrammarService {
   @Override
   @Transactional(readOnly = true)
   public GrammarDetailResponse getDetail(UUID grammarId) {
-    var grammar = readService.requireGrammar(grammarId);
-
-    var components = readService.getComponents(grammarId);
-
-    var meanings = readService.getMeanings(grammarId);
-
-    var examples = readService.getExamples(
-            meanings.stream()
-                    .map(GrammarMeaningResponse::id)
-                    .toList()
-    );
-
-    meanings = meanings.stream()
-            .map(meaning -> new GrammarMeaningResponse(
-                    meaning.id(),
-                    meaning.content(),
-                    meaning.groupKey(),
-                    examples.getOrDefault(
-                            meaning.id(),
-                            List.of()
-                    )
-            ))
-            .toList();
-
-    var groups = readService.buildGroups(
-            components,
-            meanings
-    );
-
-    return new GrammarDetailResponse(
-            grammar.getId(),
-            grammar.getTitle(),
-            Language.valueOf(grammar.getLanguage()),
-            grammar.getIsPublic(),
-            grammar.getOwner().getId(),
-            grammar.getOwner().getUsername(),
-            groups,
-            readService.getNotes(grammarId),
-            readService.getFilters(grammarId)
-    );
+    return readService.getDetail(grammarId);
   }
 
   @Override
@@ -174,12 +132,12 @@ public class GrammarServiceImpl implements GrammarService {
   public ExistingGrammarResponse findExistingGrammar(
           @Valid GrammarCreateRequest request
   ){
-    return grammarRefactorService.findExistingGrammar(request);
+    return grammarMatchService.findExistingGrammar(request);
   }
 
   @Override
   public GrammarSimilarResponse findSimilarGrammar(@Valid GrammarCreateRequest request) {
-    return grammarRefactorService.findSimilarGrammar(request);
+    return grammarMatchService.findSimilarGrammar(request);
   }
 
 }

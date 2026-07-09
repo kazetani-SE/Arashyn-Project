@@ -47,4 +47,24 @@ public class GrammarProtectedController {
 
     return ResponseEntity.noContent().build();
   }
+
+  @DeleteMapping("/{grammarId}")
+  public ResponseEntity<Void> deleteGrammar(
+          @PathVariable UUID grammarId
+  ) {
+
+    grammarService.deleteGrammar(grammarId);
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/{grammarId}/restore")
+  public ResponseEntity<Void> restoreGrammar(
+          @PathVariable UUID grammarId
+  ) {
+
+    grammarService.restoreGrammar(grammarId);
+
+    return ResponseEntity.noContent().build();
+  }
 }

@@ -1,6 +1,6 @@
 package com.arashi.edu.arashynbe.shared.enums;
 
-public enum DuplicateType {
+public enum SimilarType {
 
   NONE("None"),
   PARTIAL("Partial"),
@@ -8,7 +8,7 @@ public enum DuplicateType {
 
   private final String label;
 
-  DuplicateType(String label) {
+  SimilarType(String label) {
     this.label = label;
   }
 

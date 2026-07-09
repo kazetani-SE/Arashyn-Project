@@ -11,6 +11,7 @@ import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarL
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.ExistingGrammarResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarReadService;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarRefactorService;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
@@ -175,4 +176,10 @@ public class GrammarServiceImpl implements GrammarService {
   ){
     return grammarRefactorService.findExistingGrammar(request);
   }
+
+  @Override
+  public GrammarSimilarResponse findSimilarGrammar(@Valid GrammarCreateRequest request) {
+    return grammarRefactorService.findSimilarGrammar(request);
+  }
+
 }

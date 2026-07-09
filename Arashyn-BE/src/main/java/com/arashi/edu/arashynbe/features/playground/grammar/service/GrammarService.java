@@ -5,6 +5,7 @@ import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarL
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.ExistingGrammarResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse;
 import jakarta.validation.Valid;
 
 import java.util.UUID;
@@ -21,6 +22,10 @@ public interface GrammarService {
   );
 
   ExistingGrammarResponse findExistingGrammar(
+          @Valid GrammarCreateRequest request
+  );
+
+  GrammarSimilarResponse findSimilarGrammar(
           @Valid GrammarCreateRequest request
   );
 }

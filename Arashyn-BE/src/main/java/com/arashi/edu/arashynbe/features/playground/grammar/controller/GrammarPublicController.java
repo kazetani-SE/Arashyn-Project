@@ -5,6 +5,7 @@ import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarL
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.ExistingGrammarResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,17 @@ public class GrammarPublicController {
 
     return ResponseEntity.ok(
             grammarService.findExistingGrammar(request)
+    );
+
+  }
+
+  @PostMapping("/similar")
+  public ResponseEntity<GrammarSimilarResponse> checkSimilarGrammar(
+          @RequestBody @Valid GrammarCreateRequest request
+  ){
+
+    return ResponseEntity.ok(
+            grammarService.findSimilarGrammar(request)
     );
 
   }

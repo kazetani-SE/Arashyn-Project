@@ -6,7 +6,7 @@ import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarC
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.ExistingGrammarResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse.GrammarSimilarItem;
-import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarRefactorService;
+import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarIdentifyService;
 import com.arashi.edu.arashynbe.repository.ComponentRepo;
 import com.arashi.edu.arashynbe.shared.enums.SimilarType;
 import jakarta.validation.Valid;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class GrammarRefactorServiceImpl implements GrammarRefactorService {
+public class GrammarIdentifyServiceImpl implements GrammarIdentifyService {
 
   private final ComponentRepo componentRepo;
 

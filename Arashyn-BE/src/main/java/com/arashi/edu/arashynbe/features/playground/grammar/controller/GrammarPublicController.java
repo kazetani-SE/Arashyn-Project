@@ -1,9 +1,12 @@
 package com.arashi.edu.arashynbe.features.playground.grammar.controller;
 
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarListRequest;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.ExistingGrammarResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,4 +40,14 @@ public class GrammarPublicController {
     );
   }
 
+  @PostMapping("/check-exist")
+  public ResponseEntity<ExistingGrammarResponse> checkGrammarExist(
+          @RequestBody @Valid GrammarCreateRequest request
+  ){
+
+    return ResponseEntity.ok(
+            grammarService.findExistingGrammar(request)
+    );
+
+  }
 }

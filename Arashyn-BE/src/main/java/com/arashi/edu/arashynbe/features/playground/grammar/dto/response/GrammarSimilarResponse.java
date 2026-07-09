@@ -1,24 +1,22 @@
 package com.arashi.edu.arashynbe.features.playground.grammar.dto.response;
 
-import com.arashi.edu.arashynbe.shared.enums.DuplicateType;
+import com.arashi.edu.arashynbe.shared.enums.SimilarType;
 
 import java.util.List;
 import java.util.UUID;
 
-public record GrammarDuplicateResponse(
+public record GrammarSimilarResponse(
 
-        List<GrammarDuplicateItem> fullMatches,
-
-        List<GrammarDuplicateItem> partialMatches
+        List<GrammarSimilarItem> matches
 
 ) {
 
-  public record GrammarDuplicateItem(
+  public record GrammarSimilarItem(
 
           UUID grammarId,
 
-          DuplicateType type
-          
+          SimilarType type
+
   ) {
   }
 

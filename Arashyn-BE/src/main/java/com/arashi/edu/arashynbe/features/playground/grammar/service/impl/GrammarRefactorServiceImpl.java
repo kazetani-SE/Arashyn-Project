@@ -4,8 +4,11 @@ import com.arashi.edu.arashynbe.entity.Component;
 import com.arashi.edu.arashynbe.features.playground.component.dto.request.ComponentCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.ExistingGrammarResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse.GrammarSimilarItem;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarRefactorService;
 import com.arashi.edu.arashynbe.repository.ComponentRepo;
+import com.arashi.edu.arashynbe.shared.enums.SimilarType;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,37 +27,102 @@ public class GrammarRefactorServiceImpl implements GrammarRefactorService {
           @Valid GrammarCreateRequest request
   ) {
 
-    Set<UUID> candidateGrammarIds = null;
+    List<GrammarCreateRequest.Group> groups = request.groups();
 
-    for (GrammarCreateRequest.Group group : request.groups()) {
+    Set<UUID> candidateGrammarIds = intersectCandidateGrammarIds(groups);
+
+    if (candidateGrammarIds.isEmpty()) {
+      return new ExistingGrammarResponse(Optional.empty());
+    }
+
+    Map<UUID, Map<Short, List<Component>>> grammarMap =
+            fetchGroupedComponents(candidateGrammarIds);
+
+    Optional<UUID> matchedGrammarId = grammarMap.entrySet().stream()
+            .filter(entry -> compareGrammar(groups, entry.getValue()) == SimilarType.FULL)
+            .map(Map.Entry::getKey)
+            .findFirst();
+
+    return new ExistingGrammarResponse(matchedGrammarId);
+  }
+
+  @Override
+  public GrammarSimilarResponse findSimilarGrammar(
+          @Valid GrammarCreateRequest request
+  ) {
+
+    List<GrammarCreateRequest.Group> groups = request.groups();
+
+    // Similar grammar only needs at least one matching anchor -> union
+    Set<UUID> candidateGrammarIds = unionCandidateGrammarIds(groups);
+
+    if (candidateGrammarIds.isEmpty()) {
+      return new GrammarSimilarResponse(List.of());
+    }
+
+    Map<UUID, Map<Short, List<Component>>> grammarMap =
+            fetchGroupedComponents(candidateGrammarIds);
+
+    List<GrammarSimilarItem> matches = grammarMap.entrySet().stream()
+            .map(entry -> new GrammarSimilarItem(
+                    entry.getKey(),
+                    compareGrammar(groups, entry.getValue())
+            ))
+            .filter(item -> item.type().isDuplicate())
+            .toList();
+
+    return new GrammarSimilarResponse(matches);
+  }
+
+  /**
+   * Get grammar IDs that contain anchors from ALL request groups (Intersection).
+   * Used for exact match detection.
+   */
+  private Set<UUID> intersectCandidateGrammarIds(
+          List<GrammarCreateRequest.Group> groups
+  ) {
+
+    Set<UUID> result = null;
+
+    for (GrammarCreateRequest.Group group : groups) {
 
       ComponentCreateRequest anchor = findAnchor(group.components());
+      List<UUID> currentIds = findCandidateGrammarIds(anchor);
 
-      List<UUID> currentCandidateIds = findCandidateGrammarIds(anchor);
-
-      if (currentCandidateIds.isEmpty()) {
-        return new ExistingGrammarResponse(Optional.empty());
+      if (currentIds.isEmpty()) {
+        return Set.of();
       }
 
-      if (candidateGrammarIds == null) {
-        candidateGrammarIds = new HashSet<>(currentCandidateIds);
+      if (result == null) {
+        result = new HashSet<>(currentIds);
       } else {
-        candidateGrammarIds.retainAll(currentCandidateIds);
+        result.retainAll(currentIds);
       }
 
-      if (candidateGrammarIds.isEmpty()) {
-        return new ExistingGrammarResponse(Optional.empty());
+      if (result.isEmpty()) {
+        return Set.of();
       }
     }
 
-    List<Component> candidateComponents =
-            componentRepo.findByGrammarIdInOrderByGrammarIdAscOrderAsc(
-                    new ArrayList<>(candidateGrammarIds)
-            );
+    return result == null ? Set.of() : result;
+  }
 
-    return new ExistingGrammarResponse(
-            findMatchingGrammar(request.groups(), candidateComponents)
-    );
+  /**
+   * Get grammar IDs that contain anchors from AT LEAST ONE request group (Union).
+   * Used for partial/similar match detection.
+   */
+  private Set<UUID> unionCandidateGrammarIds(
+          List<GrammarCreateRequest.Group> groups
+  ) {
+
+    Set<UUID> result = new HashSet<>();
+
+    for (GrammarCreateRequest.Group group : groups) {
+      ComponentCreateRequest anchor = findAnchor(group.components());
+      result.addAll(findCandidateGrammarIds(anchor));
+    }
+
+    return result;
   }
 
   private ComponentCreateRequest findAnchor(
@@ -83,100 +151,102 @@ public class GrammarRefactorServiceImpl implements GrammarRefactorService {
     );
   }
 
-  private Optional<UUID> findMatchingGrammar(
-          List<GrammarCreateRequest.Group> requestGroups,
-          List<Component> candidateComponents
+  private Map<UUID, Map<Short, List<Component>>> fetchGroupedComponents(
+          Set<UUID> grammarIds
   ) {
 
-    Map<UUID, Map<Short, List<Component>>> grammarMap =
-            candidateComponents.stream()
-                    .collect(Collectors.groupingBy(
-                            component -> component.getGrammar().getId(),
-                            Collectors.groupingBy(Component::getGroupKey)
-                    ));
+    List<Component> components =
+            componentRepo.findByGrammarIdInOrderByGrammarIdAscOrderAsc(
+                    new ArrayList<>(grammarIds)
+            );
 
-    for (Map.Entry<UUID, Map<Short, List<Component>>> entry : grammarMap.entrySet()) {
+    return components.stream()
+            .collect(Collectors.groupingBy(
+                    component -> component.getGrammar().getId(),
+                    Collectors.groupingBy(Component::getGroupKey)
+            ));
+  }
 
-      UUID grammarId = entry.getKey();
-      Map<Short, List<Component>> candidateGroups = entry.getValue();
+  /**
+   * Compare a candidate grammar with the request:
+   * - FULL: Group count matches AND all groups match exactly.
+   * - PARTIAL: At least one group matches exactly, but not FULL.
+   * - NONE: No groups match.
+   */
+  private SimilarType compareGrammar(
+          List<GrammarCreateRequest.Group> requestGroups,
+          Map<Short, List<Component>> candidateGroups
+  ) {
 
-      // Different number of groups
-      if (candidateGroups.size() != requestGroups.size()) {
-        continue;
-      }
+    boolean anyGroupMatched = false;
+    boolean allGroupsMatched = candidateGroups.size() == requestGroups.size();
 
-      boolean grammarMatched = true;
+    for (GrammarCreateRequest.Group requestGroup : requestGroups) {
 
-      for (GrammarCreateRequest.Group requestGroup : requestGroups) {
+      boolean matched = isGroupMatch(requestGroup, candidateGroups);
 
-        List<Component> candidateGroup =
-                candidateGroups.get(requestGroup.groupKey().shortValue());
-
-        if (candidateGroup == null) {
-          grammarMatched = false;
-          break;
-        }
-
-        List<ComponentCreateRequest> requestComponents = requestGroup.components();
-
-        // Different number of components
-        if (candidateGroup.size() != requestComponents.size()) {
-          grammarMatched = false;
-          break;
-        }
-
-        candidateGroup.sort(Comparator.comparing(Component::getOrder));
-
-        boolean groupMatched = true;
-
-        for (int i = 0; i < requestComponents.size(); i++) {
-
-          ComponentCreateRequest request = requestComponents.get(i);
-          Component candidate = candidateGroup.get(i);
-
-          // Compare order
-          if (!request.order().equals(candidate.getOrder())) {
-            groupMatched = false;
-            break;
-          }
-
-          // Compare optional
-          if (request.optional() != candidate.getOptional()) {
-            groupMatched = false;
-            break;
-          }
-
-          // Compare keyword
-          if (request.keyWord() != null) {
-
-            if (!request.keyWord().equals(candidate.getKeyword())) {
-              groupMatched = false;
-            }
-
-          } else {
-
-            if (!request.formId().equals(candidate.getForm().getId())) {
-              groupMatched = false;
-            }
-
-          }
-
-          if (!groupMatched) {
-            break;
-          }
-        }
-
-        if (!groupMatched) {
-          grammarMatched = false;
-          break;
-        }
-      }
-
-      if (grammarMatched) {
-        return Optional.of(grammarId);
+      if (matched) {
+        anyGroupMatched = true;
+      } else {
+        allGroupsMatched = false;
       }
     }
 
-    return Optional.empty();
+    if (allGroupsMatched) {
+      return SimilarType.FULL;
+    }
+
+    if (anyGroupMatched) {
+      return SimilarType.PARTIAL;
+    }
+
+    return SimilarType.NONE;
+  }
+
+  private boolean isGroupMatch(
+          GrammarCreateRequest.Group requestGroup,
+          Map<Short, List<Component>> candidateGroups
+  ) {
+
+    List<Component> candidateGroup =
+            candidateGroups.get(requestGroup.groupKey().shortValue());
+
+    if (candidateGroup == null) {
+      return false;
+    }
+
+    List<ComponentCreateRequest> requestComponents = requestGroup.components();
+
+    if (candidateGroup.size() != requestComponents.size()) {
+      return false;
+    }
+
+    for (int i = 0; i < requestComponents.size(); i++) {
+      if (!isComponentMatch(requestComponents.get(i), candidateGroup.get(i))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private boolean isComponentMatch(
+          ComponentCreateRequest request,
+          Component candidate
+  ) {
+
+    if (!request.order().equals(candidate.getOrder())) {
+      return false;
+    }
+
+    if (request.optional() != candidate.getOptional()) {
+      return false;
+    }
+
+    if (request.keyWord() != null) {
+      return request.keyWord().equals(candidate.getKeyword());
+    }
+
+    return request.formId().equals(candidate.getForm().getId());
   }
 }

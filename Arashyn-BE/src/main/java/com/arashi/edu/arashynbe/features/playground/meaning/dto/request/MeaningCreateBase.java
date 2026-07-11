@@ -12,6 +12,8 @@ public record MeaningCreateBase(
         @Size(max = 5000)
         String content,
 
+        Boolean isPublic,
+
         List<@Valid ExampleCreateRequest> examples
 ) {
 }

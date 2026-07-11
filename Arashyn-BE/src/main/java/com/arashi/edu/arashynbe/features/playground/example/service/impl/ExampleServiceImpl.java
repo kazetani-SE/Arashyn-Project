@@ -47,6 +47,9 @@ public class ExampleServiceImpl implements ExampleService {
             .orElseThrow(() ->
                     new ApiException(ErrorCode.USER_NOT_FOUND));
 
+    boolean isPublic = meaning.getIsPublic()
+            && !Boolean.FALSE.equals(request.isPublic());
+
     Example example = Example.builder()
             .meaning(meaning)
             .owner(owner)
@@ -62,7 +65,7 @@ public class ExampleServiceImpl implements ExampleService {
                             : request.note().trim()
             )
             .groupKey(meaning.getGroupKey())
-            .isPublic(meaning.getIsPublic())
+            .isPublic(isPublic)
             .build();
 
     return exampleRepo.save(example).getId();
@@ -88,6 +91,9 @@ public class ExampleServiceImpl implements ExampleService {
         continue;
       }
 
+      boolean isPublic = meaning.getIsPublic()
+              && !Boolean.FALSE.equals(dto.isPublic());
+
       Example example = Example.builder()
               .meaning(meaning)
               .owner(meaning.getOwner())
@@ -103,7 +109,7 @@ public class ExampleServiceImpl implements ExampleService {
                               : dto.note().trim()
               )
               .groupKey(meaning.getGroupKey())
-              .isPublic(meaning.getIsPublic())
+              .isPublic(isPublic)
               .build();
 
       entities.add(example);

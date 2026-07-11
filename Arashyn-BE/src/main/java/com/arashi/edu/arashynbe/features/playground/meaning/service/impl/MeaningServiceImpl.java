@@ -43,11 +43,6 @@ public class MeaningServiceImpl implements MeaningService {
             .orElseThrow(() ->
                     new ApiException(ErrorCode.GRAMMAR_NOT_FOUND));
 
-    if (!grammar.getIsPublic()
-            && !grammar.getOwner().getId().equals(userId)) {
-      throw new ApiException(ErrorCode.FORBIDDEN);
-    }
-
     Account owner = accountRepo.findById(userId)
             .orElseThrow(() ->
                     new ApiException(ErrorCode.USER_NOT_FOUND));
@@ -62,12 +57,16 @@ public class MeaningServiceImpl implements MeaningService {
         throw new ApiException(ErrorCode.INVALID_GROUP_KEY);
       }
 
+      boolean isPublic = grammar.getOwner() != null
+              && grammar.getIsPublic()
+              && !Boolean.FALSE.equals(dto.meaning().isPublic());
+
       Meaning entity = Meaning.builder()
               .grammar(grammar)
               .owner(owner)
               .content(dto.meaning().content().trim())
               .groupKey(dto.groupKey().shortValue())
-              .isPublic(grammar.getIsPublic())
+              .isPublic(isPublic)
               .build();
 
       entities.add(entity);
@@ -94,16 +93,26 @@ public class MeaningServiceImpl implements MeaningService {
       return;
     }
 
+    if (!componentRepo.existsByGrammarIdAndGroupKey(
+            grammar.getId(),
+            groupKey.shortValue())) {
+      throw new ApiException(ErrorCode.INVALID_GROUP_KEY);
+    }
+
     List<Meaning> entities = new ArrayList<>();
 
     for (MeaningCreateBase dto : meanings) {
+
+      boolean isPublic = grammar.getOwner() != null
+              && grammar.getIsPublic()
+              && !Boolean.FALSE.equals(dto.isPublic());
 
       Meaning entity = Meaning.builder()
               .grammar(grammar)
               .owner(grammar.getOwner())
               .content(dto.content().trim())
               .groupKey(groupKey.shortValue())
-              .isPublic(grammar.getIsPublic())
+              .isPublic(isPublic)
               .build();
 
       entities.add(entity);

@@ -7,6 +7,7 @@ import com.arashi.edu.arashynbe.entity.Note;
 import com.arashi.edu.arashynbe.features.playground.note.dto.request.NoteCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.note.service.NoteService;
 import com.arashi.edu.arashynbe.repository.AccountRepo;
+import com.arashi.edu.arashynbe.repository.ComponentRepo;
 import com.arashi.edu.arashynbe.repository.GrammarRepo;
 import com.arashi.edu.arashynbe.repository.NoteRepo;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
@@ -25,6 +26,7 @@ public class NoteServiceImpl implements NoteService {
   private final NoteRepo noteRepo;
   private final GrammarRepo grammarRepo;
   private final AccountRepo accountRepo;
+  private final ComponentRepo componentRepo;
 
   @Override
   public UUID create(
@@ -38,21 +40,26 @@ public class NoteServiceImpl implements NoteService {
             .orElseThrow(() ->
                     new ApiException(ErrorCode.GRAMMAR_NOT_FOUND));
 
-    if (!grammar.getIsPublic()
-            && !grammar.getOwner().getId().equals(userId)) {
-      throw new ApiException(ErrorCode.FORBIDDEN);
+    if (!componentRepo.existsByGrammarIdAndGroupKey(
+            grammarId,
+            request.groupKey().shortValue())) {
+      throw new ApiException(ErrorCode.INVALID_GROUP_KEY);
     }
 
     Account owner = accountRepo.findById(userId)
             .orElseThrow(() ->
                     new ApiException(ErrorCode.USER_NOT_FOUND));
 
+    boolean isPublic = grammar.getOwner() != null
+            && grammar.getIsPublic()
+            && !Boolean.FALSE.equals(request.isPublic());
+
     Note note = Note.builder()
             .grammar(grammar)
             .owner(owner)
             .content(request.content().trim())
             .groupKey(request.groupKey().shortValue())
-            .isPublic(grammar.getIsPublic())
+            .isPublic(isPublic)
             .build();
 
     return noteRepo.save(note).getId();
@@ -76,12 +83,22 @@ public class NoteServiceImpl implements NoteService {
         continue;
       }
 
+      if (!componentRepo.existsByGrammarIdAndGroupKey(
+              grammar.getId(),
+              dto.groupKey().shortValue())) {
+        throw new ApiException(ErrorCode.INVALID_GROUP_KEY);
+      }
+
+      boolean isPublic = grammar.getOwner() != null
+              && grammar.getIsPublic()
+              && !Boolean.FALSE.equals(dto.isPublic());
+
       Note note = Note.builder()
               .grammar(grammar)
               .owner(grammar.getOwner())
               .content(dto.content().trim())
               .groupKey(dto.groupKey().shortValue())
-              .isPublic(grammar.getIsPublic())
+              .isPublic(isPublic)
               .build();
 
       entities.add(note);

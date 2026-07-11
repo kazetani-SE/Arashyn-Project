@@ -11,6 +11,8 @@ public record NoteCreateRequest(
         @Size(max = 5000)
         String content,
 
+        Boolean isPublic,
+
         @NotNull
         @Positive
         Integer groupKey

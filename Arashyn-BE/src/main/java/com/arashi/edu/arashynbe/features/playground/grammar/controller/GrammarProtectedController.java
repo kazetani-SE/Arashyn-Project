@@ -3,6 +3,7 @@ package com.arashi.edu.arashynbe.features.playground.grammar.controller;
 import com.arashi.edu.arashynbe.features.playground.filter.dto.request.AssignFilterRequest;
 import com.arashi.edu.arashynbe.features.playground.filter.service.SystemFilterService;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarExtendRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +65,16 @@ public class GrammarProtectedController {
   ) {
 
     grammarService.restoreGrammar(grammarId);
+
+    return ResponseEntity.noContent().build();
+  }
+
+  @PostMapping("/{grammarId}/extend")
+  public ResponseEntity<Void> extendGrammar(
+          @PathVariable UUID grammarId,
+          @RequestBody GrammarExtendRequest request
+  ){
+    grammarService.extendGrammar(grammarId, request);
 
     return ResponseEntity.noContent().build();
   }

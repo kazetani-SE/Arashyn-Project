@@ -7,15 +7,13 @@ import com.arashi.edu.arashynbe.features.playground.component.serivce.ComponentS
 import com.arashi.edu.arashynbe.features.playground.filter.dto.request.AssignFilterRequest;
 import com.arashi.edu.arashynbe.features.playground.filter.service.SystemFilterService;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarExtendRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarListRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.ExistingGrammarResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse;
-import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarDeleteService;
-import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarReadService;
-import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarMatchService;
-import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
+import com.arashi.edu.arashynbe.features.playground.grammar.service.*;
 import com.arashi.edu.arashynbe.features.playground.meaning.service.MeaningService;
 import com.arashi.edu.arashynbe.features.playground.note.service.NoteService;
 import com.arashi.edu.arashynbe.repository.AccountRepo;
@@ -47,6 +45,7 @@ public class GrammarServiceImpl implements GrammarService {
   private final GrammarReadService readService;
   private final GrammarMatchService grammarMatchService;
   private final GrammarDeleteService grammarDeleteService;
+  private final GrammarModifyService  grammarModifyService;
 
   private final int PAGE_SIZE = 20;
 
@@ -150,6 +149,11 @@ public class GrammarServiceImpl implements GrammarService {
   @Override
   public void restoreGrammar(UUID request) {
     grammarDeleteService.restoreGrammar(request);
+  }
+
+  @Override
+  public void extendGrammar(UUID grammarId, GrammarExtendRequest request) {
+    grammarModifyService.extendGrammar(grammarId, request);
   }
 
 

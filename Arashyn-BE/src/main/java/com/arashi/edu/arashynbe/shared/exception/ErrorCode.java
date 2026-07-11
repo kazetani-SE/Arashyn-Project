@@ -72,6 +72,18 @@ public enum ErrorCode {
           "Failed to delete grammar."
   ),
 
+  GRAMMAR_EXTEND_FAILED(
+          HttpStatus.BAD_REQUEST,
+          "GRAMMAR_EXTEND_FAILED",
+          "Failed to extend grammar."
+  ),
+
+  EMPTY_EXTEND_REQUEST(
+          HttpStatus.BAD_REQUEST,
+          "EMPTY_EXTEND_REQUEST",
+          "At least one meaning, note, or filter must be provided."
+  ),
+
   // --------- Meaning ------------
   GRAMMAR_NOT_FOUND(
           HttpStatus.NOT_FOUND,

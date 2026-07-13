@@ -21,7 +21,7 @@ public final class GrammarSpecification {
           GrammarListRequest request
   ) {
 
-    Specification<Grammar> spec = isPublic();
+    Specification<Grammar> spec = hasOwner();
 
     if (request.title() != null && !request.title().isBlank()) {
       spec = spec.and(titleContains(request.title()));
@@ -50,9 +50,9 @@ public final class GrammarSpecification {
     return spec;
   }
 
-  public static Specification<Grammar> isPublic() {
+  public static Specification<Grammar> hasOwner() {
     return (root, query, cb) ->
-            cb.isTrue(root.get("isPublic"));
+            cb.isNotNull(root.get("owner"));
   }
 
   public static Specification<Grammar> titleContains(String title) {

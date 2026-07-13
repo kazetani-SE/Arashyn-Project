@@ -13,6 +13,7 @@ import com.arashi.edu.arashynbe.features.playground.note.dto.request.NoteTransfe
 import com.arashi.edu.arashynbe.features.playground.note.service.NoteService;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,10 +78,10 @@ public class GrammarModifyServiceImpl implements GrammarModifyService {
 
   @Override
   @Transactional
-  public void updateGrammar(GrammarUpdateRequest request) {
+  public void updateGrammar(@Valid GrammarUpdateRequest request) {
     UUID oldGrammarId = request.oldGrammarID();
 
-    UUID newGrammarId = UUID.fromString(
+    var newGrammarId = UUID.fromString(
             grammarCreateService.createNewGrammar(request.newGrammar())
     );
 

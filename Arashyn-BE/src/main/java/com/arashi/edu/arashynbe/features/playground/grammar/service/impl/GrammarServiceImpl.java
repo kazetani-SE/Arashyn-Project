@@ -4,6 +4,7 @@ import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarC
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarExtendRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarListRequest;
 
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarUpdateRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.ExistingGrammarResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarEditResponse;
@@ -34,7 +35,7 @@ import java.util.UUID;
 public class GrammarServiceImpl implements GrammarService {
 
   private final GrammarCreateService grammarCreateService;
-  private final GrammarReadService readService;
+  private final GrammarReadService grammarReadService;
   private final GrammarMatchService grammarMatchService;
   private final GrammarDeleteService grammarDeleteService;
   private final GrammarModifyService  grammarModifyService;
@@ -49,7 +50,7 @@ public class GrammarServiceImpl implements GrammarService {
   @Override
   @Transactional(readOnly = true)
   public GrammarDetailResponse getDetail(UUID grammarId) {
-    return readService.getDetail(grammarId);
+    return grammarReadService.getDetail(grammarId);
   }
 
   @Override
@@ -76,7 +77,7 @@ public class GrammarServiceImpl implements GrammarService {
             )
     );
 
-    return readService.getPublicGrammars(request, pageable);
+    return grammarReadService.getPublicGrammars(request, pageable);
   }
 
   @Override
@@ -108,8 +109,13 @@ public class GrammarServiceImpl implements GrammarService {
 
   @Override
   @Transactional(readOnly = true)
-  public GrammarEditResponse getUpdateDetail(UUID grammarId) {
-    return readService.getEditDetail(grammarId);
+  public GrammarEditResponse getEditDetail(UUID grammarId) {
+    return grammarReadService.getEditDetail(grammarId);
+  }
+
+  @Override
+  public void updateGrammar(GrammarUpdateRequest request) {
+    grammarModifyService.updateGrammar(request);
   }
 
 

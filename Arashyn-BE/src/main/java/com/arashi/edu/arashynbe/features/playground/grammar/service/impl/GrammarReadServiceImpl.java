@@ -2,6 +2,7 @@ package com.arashi.edu.arashynbe.features.playground.grammar.service.impl;
 
 import com.arashi.edu.arashynbe.config.security.CurrentUser;
 import com.arashi.edu.arashynbe.entity.Grammar;
+import com.arashi.edu.arashynbe.entity.SystemFilter;
 import com.arashi.edu.arashynbe.features.playground.component.dto.request.ComponentCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.component.dto.response.GrammarComponentEditResponse;
 import com.arashi.edu.arashynbe.features.playground.component.dto.response.GrammarComponentResponse;
@@ -192,7 +193,7 @@ public class GrammarReadServiceImpl implements GrammarReadService {
                             note.groupKey()
                     ))
                     .toList(),
-            null
+            getEditFilterIds(grammarId)
     );
 
     return new GrammarEditResponse(
@@ -208,6 +209,7 @@ public class GrammarReadServiceImpl implements GrammarReadService {
             ));
   }
 
+  // ---- DETAIL HELPER ----
   private List<GrammarComponentResponse> getComponents(UUID grammarId) {
     return componentRepo.findByGrammarIdOrderByGroupKeyAscOrderAsc(grammarId)
             .stream()
@@ -316,8 +318,7 @@ public class GrammarReadServiceImpl implements GrammarReadService {
             .toList();
   }
 
-
-
+  // ---- EDIT HELPER -----
   private List<GrammarComponentEditResponse> getEditComponents(UUID grammarId){
     return componentRepo.findByGrammarIdOrderByGroupKeyAscOrderAsc(grammarId)
             .stream()
@@ -377,6 +378,13 @@ public class GrammarReadServiceImpl implements GrammarReadService {
                     note.getGroupKey(),
                     note.getIsPublic()
             ))
+            .toList();
+  }
+
+  private List<UUID> getEditFilterIds(UUID grammarId) {
+    return systemFilterRepo.findAllByGrammarId(grammarId)
+            .stream()
+            .map(SystemFilter::getId)
             .toList();
   }
 

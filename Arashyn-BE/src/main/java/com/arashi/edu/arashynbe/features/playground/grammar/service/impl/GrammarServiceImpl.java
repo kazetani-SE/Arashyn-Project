@@ -39,6 +39,7 @@ public class GrammarServiceImpl implements GrammarService {
   private final GrammarMatchService grammarMatchService;
   private final GrammarDeleteService grammarDeleteService;
   private final GrammarModifyService  grammarModifyService;
+  private final GrammarListReadServiceImpl grammarListReadService;
 
   private final int PAGE_SIZE = 20;
 
@@ -77,7 +78,7 @@ public class GrammarServiceImpl implements GrammarService {
             )
     );
 
-    return grammarReadService.getPublicGrammars(request, pageable);
+    return grammarListReadService.getPublicGrammars(request, pageable);
   }
 
   @Override

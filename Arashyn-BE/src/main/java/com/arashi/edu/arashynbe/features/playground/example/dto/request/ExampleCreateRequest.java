@@ -13,7 +13,8 @@ public record ExampleCreateRequest(
         String translation,
 
         @Size(max = 5000)
-        String note
+        String note,
 
+        Boolean isPublic
 ) {
 }

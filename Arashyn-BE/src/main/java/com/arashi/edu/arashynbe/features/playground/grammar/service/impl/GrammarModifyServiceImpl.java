@@ -1,0 +1,105 @@
+package com.arashi.edu.arashynbe.features.playground.grammar.service.impl;
+
+import com.arashi.edu.arashynbe.config.security.CurrentUser;
+import com.arashi.edu.arashynbe.features.playground.filter.service.SystemFilterService;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarExtendRequest;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarUpdateRequest;
+import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarCreateService;
+import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarDeleteService;
+import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarModifyService;
+import com.arashi.edu.arashynbe.features.playground.meaning.dto.request.MeaningTransferRefRequest;
+import com.arashi.edu.arashynbe.features.playground.meaning.service.MeaningService;
+import com.arashi.edu.arashynbe.features.playground.note.dto.request.NoteTransferRefRequest;
+import com.arashi.edu.arashynbe.features.playground.note.service.NoteService;
+import com.arashi.edu.arashynbe.shared.exception.ApiException;
+import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
+
+@Service
+@AllArgsConstructor
+public class GrammarModifyServiceImpl implements GrammarModifyService {
+
+  private final MeaningService meaningService;
+  private final NoteService noteService;
+  private final SystemFilterService systemFilterService;
+  private final GrammarCreateService grammarCreateService;
+  private final GrammarDeleteService grammarDeleteService;
+
+  @Override
+  @Transactional
+  public void extendGrammar(UUID grammarId, GrammarExtendRequest request) {
+
+    boolean hasMeanings =
+            request.meanings() != null
+                    && request.meanings().meanings() != null
+                    && !request.meanings().meanings().isEmpty();
+
+    boolean hasNotes =
+            request.notes() != null
+                    && !request.notes().isEmpty();
+
+    boolean hasFilters =
+            request.filters() != null
+                    && request.filters().filterIds() != null
+                    && !request.filters().filterIds().isEmpty();
+
+    if (!hasMeanings && !hasNotes && !hasFilters) {
+      throw new ApiException(ErrorCode.EMPTY_EXTEND_REQUEST);
+    }
+
+    if (hasMeanings) {
+      meaningService.create(
+              grammarId,
+              request.meanings()
+      );
+    }
+
+    if (hasNotes) {
+      for (var note : request.notes()) {
+        noteService.create(
+                grammarId,
+                note
+        );
+      }
+    }
+
+    if (hasFilters) {
+      systemFilterService.assignFilters(
+              grammarId,
+              request.filters()
+      );
+    }
+  }
+
+  @Override
+  @Transactional
+  public void updateGrammar(GrammarUpdateRequest request) {
+    UUID oldGrammarId = request.oldGrammarID();
+
+    UUID newGrammarId = UUID.fromString(
+            grammarCreateService.createNewGrammar(request.newGrammar())
+    );
+
+    meaningService.transferReference(
+            new MeaningTransferRefRequest(
+                    oldGrammarId,
+                    newGrammarId,
+                    CurrentUser.getId()
+            )
+    );
+
+    noteService.transferReference(
+            new NoteTransferRefRequest(
+                    oldGrammarId,
+                    newGrammarId,
+                    CurrentUser.getId()
+            )
+    );
+
+    grammarDeleteService.deleteGrammar(oldGrammarId);
+  }
+}

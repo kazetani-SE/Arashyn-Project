@@ -1,6 +1,7 @@
 package com.arashi.edu.arashynbe.features.playground.note.service;
 
 import com.arashi.edu.arashynbe.entity.Grammar;
+import com.arashi.edu.arashynbe.features.playground.note.dto.request.NoteTransferRefRequest;
 import com.arashi.edu.arashynbe.features.playground.note.dto.request.NoteCreateRequest;
 
 import java.util.List;
@@ -16,5 +17,9 @@ public interface NoteService {
   void createMany(
           Grammar grammar,
           List<NoteCreateRequest> notes
+  );
+
+  void transferReference(
+          NoteTransferRefRequest request
   );
 }

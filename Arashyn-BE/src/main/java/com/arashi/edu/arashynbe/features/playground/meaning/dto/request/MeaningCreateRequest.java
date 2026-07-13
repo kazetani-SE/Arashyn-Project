@@ -10,15 +10,4 @@ public record MeaningCreateRequest(
         @NotEmpty
         List<@Valid MeaningCreate> meanings
 ) {
-
-        public record MeaningCreate(
-                @NotNull
-                @Positive
-                Integer groupKey,
-
-                @NotNull
-                @Valid
-                MeaningCreateBase meaning
-        ){}
-
 }

@@ -5,6 +5,8 @@ import com.arashi.edu.arashynbe.entity.Account;
 import com.arashi.edu.arashynbe.entity.Grammar;
 import com.arashi.edu.arashynbe.entity.Meaning;
 import com.arashi.edu.arashynbe.features.playground.example.service.ExampleService;
+import com.arashi.edu.arashynbe.features.playground.meaning.dto.request.MeaningTransferRefRequest;
+import com.arashi.edu.arashynbe.features.playground.meaning.dto.request.MeaningCreate;
 import com.arashi.edu.arashynbe.features.playground.meaning.dto.request.MeaningCreateBase;
 import com.arashi.edu.arashynbe.features.playground.meaning.dto.request.MeaningCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.meaning.service.MeaningService;
@@ -16,6 +18,7 @@ import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +52,7 @@ public class MeaningServiceImpl implements MeaningService {
 
     List<Meaning> entities = new ArrayList<>();
 
-    for (MeaningCreateRequest.MeaningCreate dto : request.meanings()) {
+    for (MeaningCreate dto : request.meanings()) {
 
       if (!componentRepo.existsByGrammarIdAndGroupKey(
               grammarId,
@@ -126,5 +129,30 @@ public class MeaningServiceImpl implements MeaningService {
               meanings.get(i).examples()
       );
     }
+  }
+
+  @Override
+  @Transactional
+  public void transferReference(
+          MeaningTransferRefRequest request
+  ) {
+
+    if (!grammarRepo.existsById(request.oldGrammarId())) {
+      throw new ApiException(ErrorCode.GRAMMAR_NOT_FOUND);
+    }
+
+    if (!grammarRepo.existsById(request.newGrammarId())) {
+      throw new ApiException(ErrorCode.GRAMMAR_NOT_FOUND);
+    }
+
+    if (!accountRepo.existsById(request.creatorId())) {
+      throw new ApiException(ErrorCode.USER_NOT_FOUND);
+    }
+
+    meaningRepo.updateGrammarReferenceExceptCreator(
+            request.oldGrammarId(),
+            request.newGrammarId(),
+            request.creatorId()
+    );
   }
 }

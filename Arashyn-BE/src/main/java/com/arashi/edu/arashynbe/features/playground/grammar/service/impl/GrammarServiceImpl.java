@@ -1,27 +1,12 @@
 package com.arashi.edu.arashynbe.features.playground.grammar.service.impl;
 
-import com.arashi.edu.arashynbe.config.security.CurrentUser;
-import com.arashi.edu.arashynbe.entity.Account;
-import com.arashi.edu.arashynbe.entity.Grammar;
-import com.arashi.edu.arashynbe.features.playground.component.serivce.ComponentService;
-import com.arashi.edu.arashynbe.features.playground.filter.dto.request.AssignFilterRequest;
-import com.arashi.edu.arashynbe.features.playground.filter.service.SystemFilterService;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarExtendRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarListRequest;
-import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.ExistingGrammarResponse;
-import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
-import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
-import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.*;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.*;
-import com.arashi.edu.arashynbe.features.playground.meaning.service.MeaningService;
-import com.arashi.edu.arashynbe.features.playground.note.service.NoteService;
-import com.arashi.edu.arashynbe.repository.AccountRepo;
-import com.arashi.edu.arashynbe.repository.GrammarRepo;
 import com.arashi.edu.arashynbe.shared.enums.GrammarSortBy;
 import com.arashi.edu.arashynbe.shared.enums.SortDirection;
-import com.arashi.edu.arashynbe.shared.exception.ApiException;
-import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -36,12 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GrammarServiceImpl implements GrammarService {
 
-  private final AccountRepo accountRepo;
-  private final GrammarRepo grammarRepo;
-  private final ComponentService componentService;
-  private final MeaningService meaningService;
-  private final NoteService noteService;
-  private final SystemFilterService systemFilterService;
+  private final GrammarCreateService grammarCreateService;
   private final GrammarReadService readService;
   private final GrammarMatchService grammarMatchService;
   private final GrammarDeleteService grammarDeleteService;
@@ -50,50 +30,8 @@ public class GrammarServiceImpl implements GrammarService {
   private final int PAGE_SIZE = 20;
 
   @Override
-  @Transactional
   public String createNewGrammar(GrammarCreateRequest request) {
-
-    var userId = CurrentUser.getId();
-
-    Account owner = accountRepo.findById(userId)
-            .orElseThrow(() ->
-                    new ApiException(ErrorCode.USER_NOT_FOUND));
-
-    Grammar grammar = Grammar.builder()
-            .title(request.title().trim())
-            .language(request.language().name())
-            .owner(owner)
-            .isPublic(request.isPublic())
-            .build();
-
-    Grammar savedGrammar = grammarRepo.save(grammar);
-
-    systemFilterService.assignFilters(
-            savedGrammar,
-            new AssignFilterRequest(request.filterIds())
-    );
-
-    for (GrammarCreateRequest.Group group : request.groups()) {
-
-      componentService.createComponents(
-              savedGrammar,
-              group.groupKey(),
-              group.components()
-      );
-
-      meaningService.createMany(
-              savedGrammar,
-              group.groupKey(),
-              group.meanings()
-      );
-    }
-
-    noteService.createMany(
-            savedGrammar,
-            request.notes()
-    );
-
-    return savedGrammar.getId().toString();
+    return grammarCreateService.createNewGrammar(request);
   }
 
   @Override
@@ -154,6 +92,12 @@ public class GrammarServiceImpl implements GrammarService {
   @Override
   public void extendGrammar(UUID grammarId, GrammarExtendRequest request) {
     grammarModifyService.extendGrammar(grammarId, request);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public GrammarEditResponse getUpdateDetail(UUID grammarId) {
+    return readService.getEditDetail(grammarId);
   }
 
 

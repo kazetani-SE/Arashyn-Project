@@ -1,18 +1,29 @@
 package com.arashi.edu.arashynbe.features.playground.grammar.service.impl;
 
+import com.arashi.edu.arashynbe.config.security.CurrentUser;
 import com.arashi.edu.arashynbe.entity.Grammar;
+import com.arashi.edu.arashynbe.features.playground.component.dto.request.ComponentCreateRequest;
+import com.arashi.edu.arashynbe.features.playground.component.dto.response.GrammarComponentEditResponse;
 import com.arashi.edu.arashynbe.features.playground.component.dto.response.GrammarComponentResponse;
 import com.arashi.edu.arashynbe.features.playground.component.dto.response.GrammarComponentSummaryResponse;
+import com.arashi.edu.arashynbe.features.playground.example.dto.request.ExampleCreateRequest;
+import com.arashi.edu.arashynbe.features.playground.example.dto.response.GrammarExampleEditResponse;
 import com.arashi.edu.arashynbe.features.playground.example.dto.response.GrammarExampleResponse;
 import com.arashi.edu.arashynbe.features.playground.filter.dto.GrammarFilterRow;
 import com.arashi.edu.arashynbe.features.playground.filter.dto.response.GrammarFilterResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarListRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarEditResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSummaryResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarReadService;
+import com.arashi.edu.arashynbe.features.playground.meaning.dto.request.MeaningCreateBase;
+import com.arashi.edu.arashynbe.features.playground.meaning.dto.response.GrammarMeaningEditResponse;
 import com.arashi.edu.arashynbe.features.playground.meaning.dto.response.GrammarMeaningResponse;
 import com.arashi.edu.arashynbe.features.playground.meaning.dto.response.GrammarMeaningSummaryResponse;
+import com.arashi.edu.arashynbe.features.playground.note.dto.request.NoteCreateRequest;
+import com.arashi.edu.arashynbe.features.playground.note.dto.response.GrammarNoteEditResponse;
 import com.arashi.edu.arashynbe.features.playground.note.dto.response.GrammarNoteResponse;
 import com.arashi.edu.arashynbe.repository.ComponentRepo;
 import com.arashi.edu.arashynbe.repository.ExampleRepo;
@@ -135,6 +146,61 @@ public class GrammarReadServiceImpl implements GrammarReadService {
     );
   }
 
+  @Override
+  public GrammarEditResponse getEditDetail(UUID grammarId) {
+
+    Grammar grammar = requireGrammar(grammarId);
+
+    UUID currentUserId = CurrentUser.getId();
+
+    if (grammar.getOwner() == null
+            || !grammar.getOwner().getId().equals(currentUserId)) {
+      throw new ApiException(ErrorCode.FORBIDDEN);
+    }
+
+    var components = getEditComponents(grammarId);
+
+    var meanings = getEditMeanings(
+            grammarId,
+            currentUserId
+    );
+
+    var examples = getEditExamples(
+            meanings.stream()
+                    .map(GrammarMeaningEditResponse::id)
+                    .toList()
+    );
+
+    meanings = attachEditExamples(
+            meanings,
+            examples
+    );
+
+    GrammarCreateRequest detail = new GrammarCreateRequest(
+            grammar.getTitle(),
+            Language.valueOf(grammar.getLanguage()),
+            grammar.getIsPublic(),
+            buildEditGroups(
+                    components,
+                    meanings
+            ),
+            getEditNotes(grammarId, currentUserId)
+                    .stream()
+                    .map(note -> new NoteCreateRequest(
+                            note.content(),
+                            note.isPublic(),
+                            note.groupKey()
+                    ))
+                    .toList(),
+            null
+    );
+
+    return new GrammarEditResponse(
+            grammar.getId(),
+            detail
+    );
+  }
+
   private Grammar requireGrammar(UUID grammarId) {
     return grammarRepo.findById(grammarId)
             .orElseThrow(() -> new ApiException(
@@ -249,7 +315,158 @@ public class GrammarReadServiceImpl implements GrammarReadService {
             ))
             .toList();
   }
-  
+
+
+
+  private List<GrammarComponentEditResponse> getEditComponents(UUID grammarId){
+    return componentRepo.findByGrammarIdOrderByGroupKeyAscOrderAsc(grammarId)
+            .stream()
+            .map(component -> new GrammarComponentEditResponse(
+                    component.getId(),
+                    component.getOrder(),
+                    component.getKeyword(),
+                    component.getForm() == null
+                            ? null
+                            : component.getForm().getId(),
+                    component.getGroupKey(),
+                    component.getOptional()
+            ))
+            .toList();
+  }
+
+  private List<GrammarMeaningEditResponse> getEditMeanings(
+          UUID grammarId,
+          UUID ownerId
+  ){
+    return meaningRepo.findByGrammarIdAndOwnerIdOrderByGroupKeyAsc(grammarId, ownerId)
+            .stream()
+            .map(meaning -> new GrammarMeaningEditResponse(
+                    meaning.getId(),
+                    meaning.getContent(),
+                    meaning.getGroupKey(),
+                    meaning.getIsPublic(),
+                    List.of()
+            ))
+            .toList();
+  }
+
+  private Map<UUID, List<GrammarExampleEditResponse>> getEditExamples(List<UUID> meaningIds) {
+    return exampleRepo.findAllByMeaningIdIn(meaningIds)
+            .stream()
+            .collect(Collectors.groupingBy(
+                    example -> example.getMeaning().getId(),
+                    Collectors.mapping(
+                            example -> new GrammarExampleEditResponse(
+                                    example.getId(),
+                                    example.getSentence(),
+                                    example.getTranslation(),
+                                    example.getNote(),
+                                    example.getIsPublic()
+                            ),
+                            toList()
+                    )
+            ));
+  }
+
+  private List<GrammarNoteEditResponse> getEditNotes(UUID grammarId, UUID ownerId) {
+    return noteRepo.findByGrammarIdAndOwnerIdOrderByGroupKeyAsc(grammarId, ownerId)
+            .stream()
+            .map(note -> new GrammarNoteEditResponse(
+                    note.getId(),
+                    note.getContent(),
+                    note.getGroupKey(),
+                    note.getIsPublic()
+            ))
+            .toList();
+  }
+
+  private List<GrammarMeaningEditResponse> attachEditExamples(
+          List<GrammarMeaningEditResponse> meanings,
+          Map<UUID, List<GrammarExampleEditResponse>> examples
+  ) {
+
+    return meanings.stream()
+            .map(meaning -> new GrammarMeaningEditResponse(
+                    meaning.id(),
+                    meaning.content(),
+                    meaning.groupKey(),
+                    meaning.isPublic(),
+                    examples.getOrDefault(
+                            meaning.id(),
+                            List.of()
+                    )
+            ))
+            .toList();
+  }
+
+  private List<GrammarCreateRequest.Group> buildEditGroups(
+          List<GrammarComponentEditResponse> components,
+          List<GrammarMeaningEditResponse> meanings
+  ) {
+
+    Map<Integer, List<GrammarComponentEditResponse>> componentMap =
+            components.stream()
+                    .collect(Collectors.groupingBy(c -> c.groupKey().intValue()));
+
+    Map<Integer, List<GrammarMeaningEditResponse>> meaningMap =
+            meanings.stream()
+                    .collect(Collectors.groupingBy(m -> m.groupKey().intValue()));
+
+    Set<Integer> groupKeys = new TreeSet<>();
+    groupKeys.addAll(componentMap.keySet());
+    groupKeys.addAll(meaningMap.keySet());
+
+    return groupKeys.stream()
+            .map(groupKey -> new GrammarCreateRequest.Group(
+                    groupKey,
+                    toComponentRequests(
+                            componentMap.getOrDefault(groupKey, List.of())
+                    ),
+                    toMeaningRequests(
+                            meaningMap.getOrDefault(groupKey, List.of())
+                    )
+            ))
+            .toList();
+  }
+
+  private List<ComponentCreateRequest> toComponentRequests(
+          List<GrammarComponentEditResponse> components
+  ) {
+    return components.stream()
+            .map(component -> new ComponentCreateRequest(
+                    component.order(),
+                    component.formId(),
+                    component.keyword(),
+                    component.optional()
+            ))
+            .toList();
+  }
+
+  private List<MeaningCreateBase> toMeaningRequests(
+          List<GrammarMeaningEditResponse> meanings
+  ) {
+    return meanings.stream()
+            .map(meaning -> new MeaningCreateBase(
+                    meaning.content(),
+                    meaning.isPublic(),
+                    toExampleRequests(meaning.examples())
+            ))
+            .toList();
+  }
+
+  private List<ExampleCreateRequest> toExampleRequests(
+          List<GrammarExampleEditResponse> examples
+  ) {
+    return examples.stream()
+            .map(example -> new ExampleCreateRequest(
+                    example.sentence(),
+                    example.translation(),
+                    example.note(),
+                    example.isPublic()
+            ))
+            .toList();
+  }
+
   private Map<UUID, List<GrammarComponentSummaryResponse>> buildComponentMap(
           List<UUID> grammarIds
   ) {

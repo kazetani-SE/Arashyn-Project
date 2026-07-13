@@ -4,6 +4,7 @@ import com.arashi.edu.arashynbe.config.security.CurrentUser;
 import com.arashi.edu.arashynbe.entity.Account;
 import com.arashi.edu.arashynbe.entity.Grammar;
 import com.arashi.edu.arashynbe.entity.Note;
+import com.arashi.edu.arashynbe.features.playground.note.dto.request.NoteTransferRefRequest;
 import com.arashi.edu.arashynbe.features.playground.note.dto.request.NoteCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.note.service.NoteService;
 import com.arashi.edu.arashynbe.repository.AccountRepo;
@@ -14,6 +15,7 @@ import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -107,5 +109,30 @@ public class NoteServiceImpl implements NoteService {
     if (!entities.isEmpty()) {
       noteRepo.saveAll(entities);
     }
+  }
+
+  @Override
+  @Transactional
+  public void transferReference(
+          NoteTransferRefRequest request
+  ) {
+
+    if (!grammarRepo.existsById(request.oldGrammarId())) {
+      throw new ApiException(ErrorCode.GRAMMAR_NOT_FOUND);
+    }
+
+    if (!grammarRepo.existsById(request.newGrammarId())) {
+      throw new ApiException(ErrorCode.GRAMMAR_NOT_FOUND);
+    }
+
+    if (!accountRepo.existsById(request.creatorId())) {
+      throw new ApiException(ErrorCode.USER_NOT_FOUND);
+    }
+
+    noteRepo.updateGrammarReferenceExceptCreator(
+            request.oldGrammarId(),
+            request.newGrammarId(),
+            request.creatorId()
+    );
   }
 }

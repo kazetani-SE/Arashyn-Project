@@ -66,6 +66,12 @@ public enum ErrorCode {
           "Failed to create grammar."
   ),
 
+  GRAMMAR_ALREADY_EXISTS(
+          HttpStatus.CONFLICT,
+          "GRAMMAR_ALREADY_EXISTS",
+          "Grammar already exists."
+  ),
+
   GRAMMAR_DELETE_FAILED(
           HttpStatus.BAD_REQUEST,
           "GRAMMAR_DELETE_FAILED",

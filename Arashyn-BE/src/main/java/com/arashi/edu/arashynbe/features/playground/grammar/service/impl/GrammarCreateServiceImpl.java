@@ -8,6 +8,7 @@ import com.arashi.edu.arashynbe.features.playground.filter.dto.request.AssignFil
 import com.arashi.edu.arashynbe.features.playground.filter.service.SystemFilterService;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarCreateService;
+import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarMatchService;
 import com.arashi.edu.arashynbe.features.playground.meaning.service.MeaningService;
 import com.arashi.edu.arashynbe.features.playground.note.service.NoteService;
 import com.arashi.edu.arashynbe.repository.AccountRepo;
@@ -15,6 +16,7 @@ import com.arashi.edu.arashynbe.repository.GrammarRepo;
 import com.arashi.edu.arashynbe.shared.enums.Language;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,10 +31,15 @@ public class GrammarCreateServiceImpl implements GrammarCreateService {
   private final MeaningService meaningService;
   private final NoteService noteService;
   private final SystemFilterService systemFilterService;
+  private final GrammarMatchService grammarMatchService;
 
   @Override
   @Transactional
-  public String createNewGrammar(GrammarCreateRequest request) {
+  public String createNewGrammar(@Valid GrammarCreateRequest request) {
+
+    if (grammarMatchService.findExistingGrammar(request).grammarId().isPresent()) {
+      throw new ApiException(ErrorCode.GRAMMAR_ALREADY_EXISTS);
+    }
 
     Account owner = loadCurrentUser();
 

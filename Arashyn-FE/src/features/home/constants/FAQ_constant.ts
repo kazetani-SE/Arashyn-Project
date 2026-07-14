@@ -10,10 +10,6 @@ export const L_FAQ:FAQItem[] = [
         a: "Duolingo focuses on vocabulary and phrases. Arashyn is specifically built for grammar and understanding sentence structure.",
     },
     {
-        q: "Is the AI mentor really AI?",
-        a: "Yes. Our mentor uses GPT models with grammar-focused prompting and personalized explanations.",
-    },
-    {
         q: "Can I use Arashyn offline?",
         a: "Pro users can download grammar libraries and practice sets for offline use.",
     },

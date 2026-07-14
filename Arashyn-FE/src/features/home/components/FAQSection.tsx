@@ -12,7 +12,9 @@ export default function FAQSection({
         <section className="relative w-full py-32 mt-[-15vh]">
             <div className="container mx-auto px-6">
                 <div className="mb-14 text-center">
-                    <div className="border-indigo-500/20 bg-indigo-500/10 text-indigo-400 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em]">
+                    <div className="border-indigo-500/20 bg-indigo-500/10 text-indigo-400
+                    inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-semibold
+                    uppercase tracking-[0.2em]">
                         <MessageCircle className="size-3" />
                         FAQ
                     </div>
@@ -23,11 +25,13 @@ export default function FAQSection({
                     {items.map((item, index) => (
                         <div
                             key={index}
-                            className="border-white/10 bg-white/[0.03] rounded-3xl border overflow-hidden backdrop-blur-xl"
+                            className="border-white/10 bg-white/[0.03] rounded-3xl border
+                            overflow-hidden backdrop-blur-xl"
                         >
                             <button
                                 onClick={() => setOpen(open === index ? null : index)}
-                                className="flex w-full items-center justify-between px-6 py-5 text-left"
+                                className="flex w-full items-center justify-between px-6 py-5
+                                text-left cursor-pointer"
                             >
                                 <span className="font-medium text-white">{item.q}</span>
                                 <ChevronDown

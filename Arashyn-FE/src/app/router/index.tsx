@@ -7,6 +7,8 @@ import {ROUTE_PATHS} from "@/app/router/route.ts";
 import LoginPage from "@/features/login/LoginPage.tsx";
 import LoginPart from "@/features/login/components/LoginPart.tsx";
 import RegisterPart from "@/features/login/components/RegisterPart.tsx";
+import DiscoverPage from "@/features/discover/DiscoverPage.tsx";
+import MainPage from "@/features/main/MainPage.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -33,6 +35,15 @@ export const router = createBrowserRouter([
             {
                 path: ROUTE_PATHS.REGISTER,
                 element: <RegisterPart/>,
+            },
+        ]
+    },
+    {
+        element:<MainPage/>,
+        children:[
+            {
+                path: ROUTE_PATHS.DISCOVER,
+                element: <DiscoverPage/>,
             },
         ]
     },

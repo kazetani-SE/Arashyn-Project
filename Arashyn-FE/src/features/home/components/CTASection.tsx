@@ -17,7 +17,9 @@ export default function CTASection() {
                     just memorize it.
                 </p>
 
-                <button className="bg-indigo-500 shadow-[0_0_60px_rgba(99,102,241,0.45)] inline-flex items-center gap-2 rounded-xl px-10 py-4 text-lg font-bold text-white">
+                <button className="bg-indigo-500 shadow-[0_0_60px_rgba(99,102,241,0.45)]
+                inline-flex items-center gap-2 rounded-xl px-10 py-4 text-lg font-bold
+                text-white hover:bg-indigo-600 cursor-pointer">
                     Get Started Free
                     <ArrowRight className="size-5" />
                 </button>

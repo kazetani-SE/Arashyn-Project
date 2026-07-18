@@ -48,7 +48,7 @@ function HeroActions() {
     return (
         <div className="mt-10 flex items-center gap-4">
             <button className="bg-indigo-500 text-primary-foreground !text-white font-bold
-            inline-flex items-center gap-2 rounded-xl px-8 py-4">
+            inline-flex items-center gap-2 rounded-xl px-8 py-4 hover:bg-indigo-600 cursor-pointer">
                 Start for Free
                 <ArrowRight className="size-4" />
             </button>

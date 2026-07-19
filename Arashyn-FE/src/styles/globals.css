@@ -19,3 +19,14 @@ body,
 body {
   margin: 0;
 }
+
+button:not(:disabled) {
+    cursor: pointer;
+}
+
+button:disabled,
+[role="button"]:disabled,
+input:disabled,
+textarea:disabled {
+    cursor: not-allowed;
+}

@@ -6,5 +6,5 @@ export function useSetBreadcrumb(title: string, href: string) {
 
     useEffect(() => {
         pushOrJump({ title, href });
-    }, [title, href]);
+    }, [title, href, pushOrJump]);
 }

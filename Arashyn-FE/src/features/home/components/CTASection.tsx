@@ -1,6 +1,14 @@
 import { ArrowRight } from "lucide-react";
+import {useNavigate} from "react-router-dom";
+import {ROUTE_PATHS} from "@/app/router/route.ts";
 
 export default function CTASection() {
+    const navigate = useNavigate();
+
+    const startHandler = () => {
+        navigate(ROUTE_PATHS.DISCOVER);
+    }
+
     return (
         <section className="relative z-10 overflow-hidden py-36 mt-[-20vh]">
             <div className="absolute left-1/2 top-1/2 h-[500px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-0 blur-[180px]" />
@@ -19,7 +27,9 @@ export default function CTASection() {
 
                 <button className="bg-indigo-500 shadow-[0_0_60px_rgba(99,102,241,0.45)]
                 inline-flex items-center gap-2 rounded-xl px-10 py-4 text-lg font-bold
-                text-white hover:bg-indigo-600 cursor-pointer">
+                text-white hover:bg-indigo-600 cursor-pointer"
+                onClick={startHandler}
+                >
                     Get Started Free
                     <ArrowRight className="size-5" />
                 </button>

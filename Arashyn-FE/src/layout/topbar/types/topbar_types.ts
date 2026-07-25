@@ -1,4 +1,5 @@
 export type SearchType =
+    | "All"
     | "Grammar"
     | "Component"
     | "Vocabulary"

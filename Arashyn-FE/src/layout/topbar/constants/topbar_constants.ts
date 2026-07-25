@@ -1,6 +1,8 @@
 import type {BreadcrumbProps, QuickCreateAction, SearchType} from "@/layout/topbar/types/topbar_types.ts";
+import {ROUTE_PATHS} from "@/app/router/route.ts";
 
 export const SEARCH_TYPES: SearchType[] = [
+    "All",
     "Grammar",
     "Component",
     "Vocabulary",
@@ -37,14 +39,10 @@ export const QUICK_CREATE_ACTIONS: QuickCreateAction[] = [
 export const GRAMMAR_DETAIL_BREADCRUMB: BreadcrumbProps["items"] = [
     {
         title: "Home",
-        href: "/",
+        href: ROUTE_PATHS.DEFAULT,
     },
-    {
-        title: "Grammar",
-        href: "/grammar",
-    },
-    {
-        title: "JLPT N5",
-        href: "/grammar/jlpt-n5",
-    },
+    // {
+    //     title: "Discover",
+    //     href: ROUTE_PATHS.DISCOVER,
+    // },
 ];

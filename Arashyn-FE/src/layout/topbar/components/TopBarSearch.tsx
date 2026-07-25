@@ -7,15 +7,18 @@ import { Input } from "@/components/ui/input.tsx";
 import { Separator } from "@/components/ui/separator.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
-
-const SEARCH_TYPES = ["Grammar", "Component", "Vocabulary", "Sentence"];
+import {SEARCH_TYPES} from "@/layout/topbar/constants/topbar_constants.ts";
+import {useNavigate} from "react-router-dom";
+import {ROUTE_PATHS} from "@/app/router/route.ts";
 
 export default function TopBarSearch() {
+    const navigate = useNavigate();
+
     const [expanded, setExpanded] = useState(false);
     const [typeOpen, setTypeOpen] = useState(false);
     const [filterOpen, setFilterOpen] = useState(false);
     const [search, setSearch] = useState("");
-    const [type, setType] = useState<SearchType>("Grammar");
+    const [type, setType] = useState<SearchType>("All");
     const [filters, setFilters] = useState<SearchFilter[]>([
         { id: "jp", name: "Japanese" },
         { id: "n3", name: "JLPT N3" },
@@ -24,7 +27,13 @@ export default function TopBarSearch() {
     const containerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // Đóng khi click ra ngoài
+    const handleSearch = () => {
+        const trimmed = search.trim();
+        if (!trimmed) return;
+
+        navigate(`${ROUTE_PATHS.DISCOVER}?q=${encodeURIComponent(trimmed)}`);
+    };
+
     useEffect(() => {
         function handlePointerDown(e: MouseEvent) {
             const inside = containerRef.current?.contains(e.target as Node);
@@ -37,7 +46,6 @@ export default function TopBarSearch() {
 
     const isOpen = expanded || typeOpen || filterOpen;
 
-    // Khôi phục focus vào input sau khi state thay đổi
     useEffect(() => {
         if (isOpen && inputRef.current) {
             setTimeout(() => {
@@ -62,7 +70,7 @@ export default function TopBarSearch() {
             >
                 <button
                     type="button"
-                    onClick={() => {}}
+                    onClick={handleSearch}
                     className="mr-3 shrink-0 cursor-pointer"
                 >
                     <Search
@@ -88,6 +96,11 @@ export default function TopBarSearch() {
                     value={search}
                     onFocus={() => setExpanded(true)}
                     onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            handleSearch();
+                        }
+                    }}
                     placeholder="Search..."
                     className="border-0 bg-transparent p-0 shadow-none focus-visible:ring-0"
                 />

@@ -1,5 +1,7 @@
 import {ArrowRight, Check } from "lucide-react";
 import {HERO_BENEFITS} from "@/features/home/constants/hero_constant.ts";
+import {useNavigate} from "react-router-dom";
+import {ROUTE_PATHS} from "@/app/router/route.ts";
 
 export default function HeroSection() {
     return (
@@ -45,10 +47,18 @@ function HeroDescription() {
 }
 
 function HeroActions() {
+    const navigate = useNavigate();
+
+    const startHandler = () => {
+        navigate(ROUTE_PATHS.DISCOVER);
+    }
+
     return (
         <div className="mt-10 flex items-center gap-4">
             <button className="bg-indigo-500 text-primary-foreground !text-white font-bold
-            inline-flex items-center gap-2 rounded-xl px-8 py-4 hover:bg-indigo-600 cursor-pointer">
+            inline-flex items-center gap-2 rounded-xl px-8 py-4 hover:bg-indigo-600 cursor-pointer"
+            onClick={startHandler}
+            >
                 Start for Free
                 <ArrowRight className="size-4" />
             </button>

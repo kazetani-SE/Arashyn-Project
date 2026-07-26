@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useBreadcrumbContext } from "@/layout/topbar/contexts/BreadcrumbContext.tsx";
+import {useBreadcrumbContext} from "@/layout/topbar/contexts/useBreadcrumbContext.ts";
 
 export function useSetBreadcrumb(title: string, href: string) {
     const { pushOrJump } = useBreadcrumbContext();

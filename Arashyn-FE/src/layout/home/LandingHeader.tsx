@@ -10,7 +10,7 @@ export default function LandingHeader() {
     }
 
     const startHandler = () => {
-        navigate(ROUTE_PATHS.DISCOVER);
+        navigate(ROUTE_PATHS.REGISTER);
     }
 
     return (

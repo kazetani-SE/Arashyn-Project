@@ -1,7 +1,7 @@
 import Sidebar from "@/layout/sidebar/Sidebar.tsx";
 import { Outlet } from "react-router-dom";
 import TopBar from "@/layout/topbar/Topbar.tsx";
-import { BreadcrumbProvider } from "@/layout/topbar/contexts/BreadcrumbContext.tsx";
+import {BreadcrumbProvider} from "@/layout/topbar/contexts/BreadcrumbProvider.tsx";
 
 export default function MainPage() {
     return (

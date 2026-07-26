@@ -1,6 +1,6 @@
 import {ChevronRight} from "lucide-react";
 import {useNavigate} from "react-router-dom";
-import {useBreadcrumbContext} from "@/layout/topbar/contexts/BreadcrumbContext.tsx";
+import {useBreadcrumbContext} from "@/layout/topbar/contexts/useBreadcrumbContext.ts";
 
 export default function Breadcrumb() {
     const navigate = useNavigate();

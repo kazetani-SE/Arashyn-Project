@@ -5,7 +5,7 @@ export const FEATURES:FeatureItem[] = [
     {
         id: "grammar-mentor",
         title: "Grammar Through Structure",
-        description: "Get instant, context-aware explanations for any grammar rule across 32 languages, adapted to your proficiency level.",
+        description: "Get instant, contexts-aware explanations for any grammar rule across 32 languages, adapted to your proficiency level.",
         icon: Brain,
     },
     {

@@ -8,7 +8,10 @@ import LoginPage from "@/features/login/LoginPage.tsx";
 import LoginPart from "@/features/login/components/LoginPart.tsx";
 import RegisterPart from "@/features/login/components/RegisterPart.tsx";
 import DiscoverPage from "@/features/discover/DiscoverPage.tsx";
-import MainPage from "@/features/main/MainPage.tsx";
+import MainPage from "@/page/MainPage.tsx";
+import SettingPage from "@/features/setting/SettingPage.tsx";
+import DashboardPage from "@/features/dashboard/DashboardPage.tsx";
+import CommunityPage from "@/features/community/CommunityPage.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -45,6 +48,18 @@ export const router = createBrowserRouter([
                 path: ROUTE_PATHS.DISCOVER,
                 element: <DiscoverPage/>,
             },
+            {
+                path: ROUTE_PATHS.SETTINGS,
+                element: <SettingPage/>,
+            },
+            {
+                path: ROUTE_PATHS.DASHBOARD,
+                element: <DashboardPage/>,
+            },
+            {
+                path: ROUTE_PATHS.COMMUNITY,
+                element: <CommunityPage/>,
+            }
         ]
     },
 ]);

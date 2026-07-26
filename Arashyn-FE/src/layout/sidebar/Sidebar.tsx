@@ -6,8 +6,10 @@ import SidebarLogo from "@/layout/sidebar/components/SidebarLogo.tsx";
 import SidebarNavigation from "@/layout/sidebar/components/SidebarNavigation.tsx";
 import SidebarFolders from "@/layout/sidebar/components/SidebarFolders.tsx";
 import SidebarProfile from "@/layout/sidebar/components/SidebarProfile.tsx";
+import {useLocation} from "react-router-dom";
 
 export default function Sidebar() {
+    const location = useLocation();
     const [collapsed, setCollapsed] = useState(false);
 
     const [expanded, setExpanded] = useState<Record<string, boolean>>(
@@ -20,6 +22,8 @@ export default function Sidebar() {
     const activeMenu = MENUS.find((item) =>
         location.pathname.startsWith(item.path)
     )?.label;
+
+    console.log(activeMenu);
 
     return (
         <aside

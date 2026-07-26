@@ -3,10 +3,14 @@ import {ROUTE_PATHS} from "@/app/router/route.ts";
 import {useNavigate} from "react-router-dom";
 
 export default function LandingHeader() {
-    const nav = useNavigate();
+    const navigate = useNavigate();
 
     const loginHandler = () => {
-        nav(ROUTE_PATHS.LOGIN);
+        navigate(ROUTE_PATHS.LOGIN);
+    }
+
+    const startHandler = () => {
+        navigate(ROUTE_PATHS.REGISTER);
     }
 
     return (
@@ -44,7 +48,9 @@ export default function LandingHeader() {
                         Log in
                     </button>
                     <button className="bg-indigo-500 shadow-[0_0_24px_rgba(99,102,241,0.4)]
-                    rounded-xl px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-600 cursor-pointer">
+                    rounded-xl px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-600 cursor-pointer"
+                    onClick={startHandler}
+                    >
                         Get Started
                     </button>
                 </div>

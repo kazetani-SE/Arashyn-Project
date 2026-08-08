@@ -2,6 +2,9 @@ import {Button} from "@/components/ui/button.tsx";
 import {Card, CardContent, CardHeader} from "@/components/ui/card.tsx";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import type {SectionProps} from "@/features/discover/types/props.ts";
+import {useGrammar, useGrammarList} from "@/shared/hook/GrammarComponentBuild.ts";
+import {grammarData, grammarList} from "@/shared/constant/GrammarData.ts";
+import {SummarizeCard} from "@/components/item/SummarizeCard.tsx";
 
 export default function DiscoverSection({
                                             title,
@@ -10,6 +13,10 @@ export default function DiscoverSection({
                                             showViewAll = true,
                                             onViewAll,
                                         }: SectionProps) {
+
+    const { title: grammarTitle, patterns, meanings, filters } = useGrammar(grammarData)
+    const items = useGrammarList(grammarList)
+
     return (
         <section className="space-y-4">
             {showViewAll && (<div className="flex items-center justify-between">
@@ -46,6 +53,29 @@ export default function DiscoverSection({
                             </div>
                         </CardContent>
                     </Card>
+                ))}
+                <SummarizeCard
+                    title={grammarTitle}
+                    filters={filters}
+                    patterns={patterns.map(({ groupKey, pattern }) => ({
+                        key: groupKey,
+                        content: pattern,
+                    }))}
+                    className="h-full"
+                    meanings={meanings}
+                />
+                {items.map(({ id, title, patterns, meanings, filters }) => (
+                    <SummarizeCard
+                        key={id}
+                        className="h-full"
+                        title={title}
+                        filters={filters}
+                        patterns={patterns.map(({ groupKey, pattern }) => ({
+                            key: groupKey,
+                            content: pattern,
+                        }))}
+                        meanings={meanings}
+                    />
                 ))}
             </div>
         </section>

@@ -52,4 +52,8 @@ public interface ComponentRepo extends JpaRepository<Component, UUID> {
           List<UUID> grammarIds
   );
 
+
+  List<Component> findByGrammarIdInOrderByGrammarIdAscGroupKeyAscOrderAsc(
+          List<UUID> grammarIds
+  );
 }

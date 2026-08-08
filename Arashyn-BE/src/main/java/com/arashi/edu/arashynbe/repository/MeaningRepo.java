@@ -49,4 +49,16 @@ public interface MeaningRepo extends JpaRepository<Meaning, UUID> {
           @Param("newGrammarId") UUID newGrammarId,
           @Param("creatorId") UUID creatorId
   );
+
+  @Query("""
+    SELECT m
+    FROM Meaning m
+    JOIN m.grammar g
+    WHERE g.id IN :grammarIds
+      AND m.owner.id = g.owner.id
+    ORDER BY g.id ASC, m.groupKey ASC
+    """)
+  List<Meaning> findAllByGrammarIdsAndGrammarOwner(
+          @Param("grammarIds") List<UUID> grammarIds
+  );
 }

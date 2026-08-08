@@ -91,15 +91,15 @@ public class GrammarListReadServiceImpl implements GrammarListReadService {
   ) {
 
     return componentRepo
-            .findByGrammarIdInAndGroupKeyOrderByGrammarIdAscOrderAsc(
-                    grammarIds,
-                    (short) 1
+            .findByGrammarIdInOrderByGrammarIdAscGroupKeyAscOrderAsc(
+                    grammarIds
             )
             .stream()
             .collect(Collectors.groupingBy(
                     component -> component.getGrammar().getId(),
                     Collectors.mapping(
                             component -> new GrammarComponentSummaryResponse(
+                                    component.getGroupKey(),
                                     component.getOrder(),
                                     component.getKeyword(),
                                     component.getForm() == null
@@ -114,25 +114,16 @@ public class GrammarListReadServiceImpl implements GrammarListReadService {
   private Map<UUID, List<GrammarMeaningSummaryResponse>> buildMeaningMap(
           List<UUID> grammarIds
   ) {
-
     return meaningRepo
-            .findByGrammarIdInAndGroupKeyOrderByGrammarIdAsc(
-                    grammarIds,
-                    (short) 1
-            )
+            .findAllByGrammarIdsAndGrammarOwner(grammarIds)
             .stream()
             .collect(Collectors.groupingBy(
                     meaning -> meaning.getGrammar().getId(),
-                    Collectors.collectingAndThen(
-                            Collectors.mapping(
-                                    meaning -> new GrammarMeaningSummaryResponse(
-                                            meaning.getContent()
-                                    ),
-                                    toList()
+                    Collectors.mapping(
+                            meaning -> new GrammarMeaningSummaryResponse(
+                                    meaning.getContent()
                             ),
-                            list -> list.stream()
-                                    .limit(2)
-                                    .toList()
+                            toList()
                     )
             ));
   }

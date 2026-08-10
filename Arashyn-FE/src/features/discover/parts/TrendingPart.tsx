@@ -1,12 +1,12 @@
 import DiscoverSection from "@/features/discover/components/DiscoverSection.tsx";
-import {CATEGORIES} from "@/features/discover/constants/categories.ts";
-import type {SeeAllType} from "@/features/discover/types/domains.ts";
+import { CATEGORIES } from "@/features/popular/constants/categories.ts";
+import { BROWSABLE_TYPES } from "@/features/popular/constants/all_type.ts";
 
 type TrendingPartProps = {
-    onSelectCategory: (type: SeeAllType) => void;
+    onSelectCategory: (type: (typeof BROWSABLE_TYPES)[number]) => void;
 };
 
-function TrendingPart({onSelectCategory}: TrendingPartProps) {
+function TrendingPart({ onSelectCategory }: TrendingPartProps) {
     return (
         <div className="container mx-auto max-w-7xl space-y-12 py-8 px-6">
             <div className="space-y-2">
@@ -16,9 +16,10 @@ function TrendingPart({onSelectCategory}: TrendingPartProps) {
                 </p>
             </div>
 
-            {(Object.entries(CATEGORIES) as [SeeAllType, typeof CATEGORIES[SeeAllType]][])
-                .filter(([type]) => type !== "search")
-                .map(([type, category]) => (
+            {BROWSABLE_TYPES.map((type) => {
+                const category = CATEGORIES[type];
+
+                return (
                     <DiscoverSection
                         key={type}
                         title={category.title}
@@ -26,9 +27,10 @@ function TrendingPart({onSelectCategory}: TrendingPartProps) {
                         iconClassName={category.iconClassName}
                         onViewAll={() => onSelectCategory(type)}
                     />
-                ))}
+                );
+            })}
         </div>
     );
 }
 
-export default TrendingPart
+export default TrendingPart;

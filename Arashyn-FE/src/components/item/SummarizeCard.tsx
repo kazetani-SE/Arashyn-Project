@@ -1,4 +1,6 @@
 import * as React from "react"
+import {useNavigate} from "react-router-dom";
+import {ROUTE_PATHS} from "@/app/router/route.ts";
 
 function cn(...classes: Array<string | false | null | undefined>) {
     return classes.filter(Boolean).join(" ")
@@ -40,6 +42,12 @@ function SummarizeCard({
                            classNames,
                            ...props
                        }: SummarizeCardProps) {
+
+    const navigate = useNavigate();
+    const onClickHandler = () =>{
+        navigate(ROUTE_PATHS.DETAIL);
+    }
+
     return (
         <div
             data-slot="summarize-card"
@@ -49,6 +57,7 @@ function SummarizeCard({
                 className
             )}
             {...props}
+            onClick={onClickHandler}
         >
             <div
                 data-slot="summarize-card-header"

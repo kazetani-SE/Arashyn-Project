@@ -1,6 +1,6 @@
-import type {GrammarResponse} from "@/shared/response/GrammarResponse.ts";
+import type {grammar_response} from "@/shared/response/grammar_response.ts";
 
-export const grammarData: GrammarResponse = {
+export const grammar_data: grammar_response = {
     id: "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
     title: "～ことにする (ko to ni suru)",
     components: [
@@ -46,7 +46,7 @@ export const grammarData: GrammarResponse = {
     ],
 }
 
-export const grammarList: GrammarResponse[] = [
+export const grammarList: grammar_response[] = [
     {
         id: "f8e7d6c5-b4a3-2f1e-0d9c-8b7a6f5e4d3c",
         title: "～ものだ (mono da)",

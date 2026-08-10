@@ -13,7 +13,7 @@ export type GrammarFilter = {
     name: string
 }
 
-export type GrammarResponse = {
+export type grammar_response = {
     id: string
     title: string
     components: GrammarComponent[]

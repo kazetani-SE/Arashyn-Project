@@ -1,6 +1,8 @@
 export type SearchType =
     | "All"
     | "Grammar"
+    | "Deck"
+    | "Folder"
     | "Component"
     | "Vocabulary"
     | "Sentence";
@@ -12,6 +14,7 @@ export type BreadcrumbProps = {
 type BreadcrumbItem = {
     title: string;
     href: string;
+    key?: string;
 }
 
 export type QuickCreateAction = {

@@ -1,4 +1,6 @@
 import { GraduationCap, PanelLeft } from "lucide-react";
+import {useNavigate} from "react-router-dom";
+import {ROUTE_PATHS} from "@/app/router/route.ts";
 
 type SidebarLogoProps = {
     collapsed: boolean;
@@ -9,11 +11,18 @@ export default function SidebarLogo({
                                         collapsed,
                                         onToggle,
                                     }: SidebarLogoProps) {
+
+    const navigate = useNavigate();
+    const onClickHandler = () => {
+        navigate(ROUTE_PATHS.DEFAULT);
+    }
+
     return (
         <div
             className={`flex items-center border-b border-sidebar-border py-5 ${
                 collapsed ? "flex-col gap-2 px-2" : "px-5"
-            }`}
+            } cursor-pointer`}
+            onClick={onClickHandler}
         >
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                 <GraduationCap className="size-5" />

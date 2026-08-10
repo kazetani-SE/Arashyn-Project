@@ -1,43 +1,35 @@
-import { useState } from "react";
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { FeatureBackground } from "@/components/background/FeatureBackground";
-import { ROUTE_PATHS } from "@/app/router/route";
+import { ROUTE_PATHS, ROUTES } from "@/app/router/route.ts";
 import { useSetBreadcrumb } from "@/layout/topbar/hooks/useSetBreadcrumb";
 
 import TrendingPart from "@/features/discover/parts/TrendingPart.tsx";
-import ItemListPart from "@/features/discover/parts/ItemListPart.tsx";
-import type { SeeAllType } from "@/features/discover/types/domains.ts";
-import {useSearchParams} from "react-router-dom";
+import { BROWSABLE_TYPES } from "@/features/popular/constants/all_type.ts";
 
 export default function DiscoverPage() {
     useSetBreadcrumb("DiscoverPage", ROUTE_PATHS.DISCOVER);
 
-    const [searchParams, setSearchParams] = useSearchParams();
-    const query = searchParams.get("q");
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const query = searchParams.get("query");
 
-    const [selectedType, setSelectedType] = useState<SeeAllType | null>(null);
-
-    const effectiveType: SeeAllType | null = query ? "search" : selectedType;
-
-    const handleBack = () => {
-        setSelectedType(null);
+    useEffect(() => {
         if (query) {
-            setSearchParams({});
+            navigate(ROUTES.search({ query }), { replace: true });
         }
+    }, [query, navigate]);
+
+    const handleSelectCategory = (type: (typeof BROWSABLE_TYPES)[number]) => {
+        navigate(ROUTES.itemList(type));
     };
+
+    if (query) return null;
 
     return (
         <div>
             <FeatureBackground />
-
-            {effectiveType === null ? (
-                <TrendingPart onSelectCategory={setSelectedType} />
-            ) : (
-                <ItemListPart
-                    type={effectiveType}
-                    query={effectiveType === "search" ? query ?? undefined : undefined}
-                    onBack={handleBack}
-                />
-            )}
+            <TrendingPart onSelectCategory={handleSelectCategory} />
         </div>
     );
 }

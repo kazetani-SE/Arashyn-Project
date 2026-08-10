@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/input.tsx";
 import { Separator } from "@/components/ui/separator.tsx";
 import { Badge } from "@/components/ui/badge.tsx";
 import { Checkbox } from "@/components/ui/checkbox.tsx";
-import {SEARCH_TYPES} from "@/layout/topbar/constants/topbar_constants.ts";
+import {SEARCH_TYPE_TO_ALL_TYPE, SEARCH_TYPES} from "@/layout/topbar/constants/topbar_constants.ts";
 import {useNavigate} from "react-router-dom";
-import {ROUTE_PATHS} from "@/app/router/route.ts";
+import {ROUTES} from "@/app/router/route.ts";
 
 export default function TopBarSearch() {
     const navigate = useNavigate();
@@ -31,7 +31,13 @@ export default function TopBarSearch() {
         const trimmed = search.trim();
         if (!trimmed) return;
 
-        navigate(`${ROUTE_PATHS.DISCOVER}?q=${encodeURIComponent(trimmed)}`);
+        navigate(
+            ROUTES.search({
+                query: trimmed,
+                type: SEARCH_TYPE_TO_ALL_TYPE[type],
+                filters: filters.map((f) => f.id),
+            })
+        );
     };
 
     useEffect(() => {

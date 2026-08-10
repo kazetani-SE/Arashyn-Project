@@ -2,8 +2,8 @@ import {Button} from "@/components/ui/button.tsx";
 import {Card, CardContent, CardHeader} from "@/components/ui/card.tsx";
 import {Skeleton} from "@/components/ui/skeleton.tsx";
 import type {SectionProps} from "@/features/discover/types/props.ts";
-import {useGrammar, useGrammarList} from "@/shared/hook/GrammarComponentBuild.ts";
-import {grammarData, grammarList} from "@/shared/constant/GrammarData.ts";
+import {useGrammar, useGrammarList} from "@/shared/hook/grammar_component_build.ts";
+import {grammar_data, grammarList} from "@/shared/constant/grammar_data.ts";
 import {SummarizeCard} from "@/components/item/SummarizeCard.tsx";
 
 export default function DiscoverSection({
@@ -14,7 +14,7 @@ export default function DiscoverSection({
                                             onViewAll,
                                         }: SectionProps) {
 
-    const { title: grammarTitle, patterns, meanings, filters } = useGrammar(grammarData)
+    const { title: grammarTitle, patterns, meanings, filters } = useGrammar(grammar_data)
     const items = useGrammarList(grammarList)
 
     return (

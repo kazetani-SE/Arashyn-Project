@@ -1,4 +1,4 @@
-import type {detail_response} from "@/shared/response/detail_response.ts";
+import type {detail_response} from "@/shared/responses/detail_response.ts";
 
 export const detail_data: detail_response = {
     id: "e41d5cd4-a1d5-4b12-b926-551c52182f10",

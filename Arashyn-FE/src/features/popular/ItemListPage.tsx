@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { ArrowLeft } from "lucide-react";
-import DiscoverSection from "@/features/discover/components/DiscoverSection.tsx";
 import {
     Select,
     SelectContent,
@@ -10,12 +9,17 @@ import {
     SelectValue,
 } from "@/components/ui/select.tsx";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import type { AllType } from "@/features/popular/constants/all_type.ts";
+import {type AllType, isBrowsableType} from "@/features/popular/constants/all_type.ts";
 import { CATEGORIES } from "@/features/popular/constants/categories.ts";
 import { ROUTE_PATHS } from "@/app/router/route.ts";
 import { SORT_OPTIONS } from "@/features/popular/constants/sort.ts";
 import { FeatureBackground } from "@/components/background/FeatureBackground.tsx";
 import { useSetBreadcrumb } from "@/layout/topbar/hooks/useSetBreadcrumb.ts";
+import ItemGrid from "@/features/popular/components/ItemGrid.tsx";
+import {useItemList} from "@/features/popular/hook/use_item_list.ts";
+
+const DEFAULT_PAGE = 0;
+const DEFAULT_SIZE = 21;
 
 export default function ItemListPage() {
     const { type: typeFromPath } = useParams<{ type: string }>();
@@ -54,6 +58,25 @@ export default function ItemListPage() {
         }
     }, [isValid, navigate]);
 
+    // Pagination is read from the URL so back/forward + refresh keep the page
+    // in sync. Defaults match the API defaults: page 0, size 6.
+    const page = Number(searchParams.get("page") ?? DEFAULT_PAGE);
+    const size = Number(searchParams.get("size") ?? DEFAULT_SIZE);
+
+    const {
+        data,
+        isLoading,
+        isError,
+    } = useItemList({
+        // Falls back to "grammar" only to keep the hook call unconditional
+        // (hooks can't be called conditionally); `enabled` inside the hook
+        // guards deck/folder from actually firing until they're wired up.
+        type: isValid && type && isBrowsableType(type) ? type : "grammar",
+        page,
+        size,
+        query,
+    });
+
     if (!isValid || !type || !config) return null;
 
     const sortBy = searchParams.get("sort") ?? sortOptions[0]?.value ?? "";
@@ -62,7 +85,7 @@ export default function ItemListPage() {
         const newSort = value ?? sortOptions[0]?.value ?? "";
         setSearchParams((prev) => {
             prev.set("sort", newSort);
-            prev.set("page", "1");
+            prev.set("page", String(DEFAULT_PAGE));
             return prev;
         });
     };
@@ -71,7 +94,7 @@ export default function ItemListPage() {
     const Icon = config.icon;
 
     const onBack = () => {
-        navigate(-1);
+        navigate(ROUTE_PATHS.DISCOVER, { replace: true });
     };
 
     return (
@@ -112,13 +135,7 @@ export default function ItemListPage() {
                 </div>
             </div>
 
-            <DiscoverSection
-                title={config.title}
-                icon={config.icon}
-                iconClassName={config.iconClassName}
-                itemCount={18}
-                showViewAll={false}
-            />
+            <ItemGrid items={data?.grammars ?? []} isLoading={isLoading} isError={isError} />
         </div>
     );
 }

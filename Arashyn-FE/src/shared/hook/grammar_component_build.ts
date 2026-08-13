@@ -1,5 +1,5 @@
 import * as React from "react"
-import type { grammar_response } from "@/shared/response/grammar_response.ts"
+import type { grammar_response } from "@/shared/responses/grammar_response.ts"
 
 function transformGrammar(data: grammar_response) {
     const grouped = new Map<number, typeof data.components>()

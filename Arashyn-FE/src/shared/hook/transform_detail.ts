@@ -1,5 +1,5 @@
 import * as React from "react"
-import type { detail_response } from "@/shared/response/detail_response.ts"
+import type { detail_response } from "@/shared/responses/detail_response.ts"
 
 function transformDetail(data: detail_response) {
     // Sắp xếp groups theo groupKey, components trong mỗi group theo order

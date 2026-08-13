@@ -18,11 +18,12 @@ export const ROUTE_PATHS = {
 export const ROUTES = {
     itemList: (
         type: AllType,
-        params?: { page?: number; sort?: string },
+        params?: { page?: number; sort?: string; direction?: "asc" | "desc" },
     ) => {
         const searchParams = new URLSearchParams();
         if (params?.page) searchParams.set("page", String(params.page));
         if (params?.sort) searchParams.set("sort", params.sort);
+        if (params?.direction) searchParams.set("direction", String(params.direction));
         const qs = searchParams.toString();
         return `/item_list/${type}${qs ? `?${qs}` : ""}`;
     },
@@ -32,6 +33,7 @@ export const ROUTES = {
         type?: AllType;
         page?: number;
         sort?: string;
+        direction?: "asc" | "desc";
         filters?: string[];
     }) => {
         const searchParams = new URLSearchParams();
@@ -39,6 +41,7 @@ export const ROUTES = {
         searchParams.set("query", params.query);
         if (params.page) searchParams.set("page", String(params.page));
         if (params.sort) searchParams.set("sort", params.sort);
+        if (params.direction) searchParams.set("direction", String(params.direction));
         if (params.filters?.length) searchParams.set("filters", params.filters.join(","));
         return `/search?${searchParams.toString()}`;
     },

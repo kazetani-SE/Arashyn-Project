@@ -1,4 +1,4 @@
-import DiscoverSection from "@/features/discover/components/DiscoverSection.tsx";
+import TrendingSection from "@/features/discover/components/TrendingSection.tsx";
 import { CATEGORIES } from "@/features/popular/constants/categories.ts";
 import { BROWSABLE_TYPES } from "@/features/popular/constants/all_type.ts";
 
@@ -20,8 +20,9 @@ function TrendingPart({ onSelectCategory }: TrendingPartProps) {
                 const category = CATEGORIES[type];
 
                 return (
-                    <DiscoverSection
+                    <TrendingSection
                         key={type}
+                        type={type}
                         title={category.title}
                         icon={category.icon}
                         iconClassName={category.iconClassName}

@@ -28,6 +28,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -119,5 +120,14 @@ public class GrammarServiceImpl implements GrammarService {
     grammarModifyService.updateGrammar(request);
   }
 
+  @Override
+  public GrammarListResponse getGrammars(Pageable pageable) {
+    return grammarListReadService.getGrammars(pageable);
+  }
+
+  @Override
+  public GrammarListResponse search(String query, List<String> filters, Pageable pageable) {
+    return grammarListReadService.search(query, filters, pageable);
+  }
 
 }

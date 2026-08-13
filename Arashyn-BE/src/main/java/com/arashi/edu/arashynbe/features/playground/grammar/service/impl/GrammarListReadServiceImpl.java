@@ -20,9 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -50,6 +49,88 @@ public class GrammarListReadServiceImpl implements GrammarListReadService {
 
     if (grammars.isEmpty()) {
       return null;
+    }
+
+    List<UUID> grammarIds = grammars.stream()
+            .map(Grammar::getId)
+            .toList();
+
+    Map<UUID, List<GrammarComponentSummaryResponse>> componentMap =
+            buildComponentMap(grammarIds);
+
+    Map<UUID, List<GrammarMeaningSummaryResponse>> meaningMap =
+            buildMeaningMap(grammarIds);
+
+    Map<UUID, List<GrammarFilterResponse>> filterMap =
+            buildFilterMap(grammarIds);
+
+    List<GrammarSummaryResponse> responses =
+            grammars.stream()
+                    .map(grammar -> buildSummaryResponse(
+                            grammar,
+                            componentMap,
+                            meaningMap,
+                            filterMap
+                    ))
+                    .toList();
+
+    return new GrammarListResponse(
+            responses,
+            grammarPage.getNumber(),
+            grammarPage.getSize(),
+            grammarPage.getTotalPages(),
+            grammarPage.getTotalElements(),
+            grammarPage.hasNext(),
+            grammarPage.hasPrevious()
+    );
+  }
+
+  @Override
+  public GrammarListResponse getGrammars(
+          Pageable pageable
+  ) {
+    Page<Grammar> grammarPage =
+            grammarRepo.findMostPopularGrammars(pageable);
+
+    return buildGrammarListResponse(grammarPage);
+  }
+
+  @Override
+  public GrammarListResponse search(String query, List<String> filters, Pageable pageable) {
+    String normalizedQuery = query == null ? "" : query.trim();
+
+    List<UUID> filterIds = Optional.ofNullable(filters)
+            .orElseGet(List::of)
+            .stream()
+            .filter(Objects::nonNull)
+            .filter(Predicate.not(String::isBlank))
+            .map(UUID::fromString)
+            .distinct()
+            .toList();
+
+    Page<Grammar> grammarPage = filterIds.isEmpty()
+            ? grammarRepo.searchByTitle(normalizedQuery, pageable)
+            : grammarRepo.searchByTitleAndFilters(normalizedQuery, filterIds, filterIds.size(), pageable);
+
+    return buildGrammarListResponse(grammarPage);
+  }
+
+  private GrammarListResponse buildGrammarListResponse(
+          Page<Grammar> grammarPage
+  ) {
+
+    List<Grammar> grammars = grammarPage.getContent();
+
+    if (grammars.isEmpty()) {
+      return new GrammarListResponse(
+              List.of(),
+              grammarPage.getNumber(),
+              grammarPage.getSize(),
+              grammarPage.getTotalPages(),
+              grammarPage.getTotalElements(),
+              grammarPage.hasNext(),
+              grammarPage.hasPrevious()
+      );
     }
 
     List<UUID> grammarIds = grammars.stream()

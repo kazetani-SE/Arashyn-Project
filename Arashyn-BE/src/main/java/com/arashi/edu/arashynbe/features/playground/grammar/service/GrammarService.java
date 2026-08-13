@@ -10,7 +10,9 @@ import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.Grammar
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface GrammarService {
@@ -41,4 +43,12 @@ public interface GrammarService {
   GrammarEditResponse getEditDetail(UUID grammarId);
 
   void updateGrammar(GrammarUpdateRequest request);
+
+  GrammarListResponse getGrammars(Pageable pageable  );
+
+  GrammarListResponse search(
+          String query,
+          List<String> filters,
+          Pageable pageable
+  );
 }

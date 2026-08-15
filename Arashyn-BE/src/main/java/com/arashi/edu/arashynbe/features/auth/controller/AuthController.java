@@ -1,11 +1,12 @@
 package com.arashi.edu.arashynbe.features.auth.controller;
 
-import com.arashi.edu.arashynbe.features.auth.dto.request.RegisterVerifyRequest;
-import com.arashi.edu.arashynbe.features.auth.dto.request.VerifyOtpRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.request.CompleteRegisterRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.request.LoginRequest;
+import com.arashi.edu.arashynbe.features.auth.dto.request.RefreshRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.request.RegisterRequest;
+import com.arashi.edu.arashynbe.features.auth.dto.request.RegisterVerifyRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.request.ResendVerificationRequest;
+import com.arashi.edu.arashynbe.features.auth.dto.request.VerifyOtpRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.response.LoginResponse;
 import com.arashi.edu.arashynbe.features.auth.dto.response.RegisterResponse;
 import com.arashi.edu.arashynbe.features.auth.service.AuthService;
@@ -93,5 +94,10 @@ public class AuthController {
     return ResponseEntity.ok(
             authService.login(request)
     );
+  }
+
+  @PostMapping("/refresh")
+  public LoginResponse refresh(@RequestBody RefreshRequest request) {
+    return authService.refresh(request);
   }
 }

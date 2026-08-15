@@ -38,6 +38,24 @@ public enum ErrorCode {
           "Username already exists."
   ),
 
+  INVALID_ACCESS_TOKEN(
+          HttpStatus.UNAUTHORIZED,
+          "INVALID_ACCESS_TOKEN",
+          "Access token is invalid or malformed."
+  ),
+
+  INVALID_REFRESH_TOKEN(
+          HttpStatus.UNAUTHORIZED,
+          "INVALID_REFRESH_TOKEN",
+          "Refresh token is invalid or expired."
+  ),
+
+  SESSION_NOT_FOUND(
+          HttpStatus.UNAUTHORIZED,
+          "SESSION_NOT_FOUND",
+          "No active session found for this account."
+  ),
+
   // ---------- Registration ----------
   EMAIL_NOT_VERIFIED(
           HttpStatus.BAD_REQUEST,

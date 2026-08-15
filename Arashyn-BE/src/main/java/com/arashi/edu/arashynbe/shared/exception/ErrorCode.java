@@ -38,11 +38,55 @@ public enum ErrorCode {
           "Username already exists."
   ),
 
+  // ---------- Registration ----------
+  EMAIL_NOT_VERIFIED(
+          HttpStatus.BAD_REQUEST,
+          "EMAIL_NOT_VERIFIED",
+          "Email verification has not been completed."
+  ),
+
+  REGISTRATION_PAYLOAD_INVALID(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          "REGISTRATION_PAYLOAD_INVALID",
+          "Stored registration data is invalid."
+  ),
+
   // ---------- Authorization ----------
   FORBIDDEN(
           HttpStatus.FORBIDDEN,
           "FORBIDDEN",
           "You do not have permission."
+  ),
+
+  // ---------- Registration OTP ----------
+  PENDING_REGISTRATION_NOT_FOUND(
+          HttpStatus.NOT_FOUND,
+          "PENDING_REGISTRATION_NOT_FOUND",
+          "No pending registration found for this email."
+  ),
+
+  VERIFICATION_CODE_INVALID(
+          HttpStatus.BAD_REQUEST,
+          "VERIFICATION_CODE_INVALID",
+          "Invalid verification code."
+  ),
+
+  VERIFICATION_CODE_EXPIRED(
+          HttpStatus.BAD_REQUEST,
+          "VERIFICATION_CODE_EXPIRED",
+          "Verification code has expired."
+  ),
+
+  VERIFICATION_CODE_RESEND_COOLDOWN(
+          HttpStatus.TOO_MANY_REQUESTS,
+          "VERIFICATION_CODE_RESEND_COOLDOWN",
+          "Please wait before requesting another verification code."
+  ),
+
+  REGISTRATION_PAYLOAD_SERIALIZATION_FAILED(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          "REGISTRATION_PAYLOAD_SERIALIZATION_FAILED",
+          "Failed to store registration data."
   ),
 
   // ---------- Resource ----------

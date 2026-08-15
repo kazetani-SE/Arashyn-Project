@@ -16,8 +16,6 @@ public interface PendingRegistrationRepository extends JpaRepository<PendingRegi
 
   boolean existsByEmail(String email);
 
-  boolean existsByVerificationCode(String verificationCode);
-
   void deleteByEmail(String email);
 
   // Used by a scheduled cleanup job

@@ -36,6 +36,7 @@ public class AuthServiceImpl implements AuthService {
 
     account.setId(response.user().id());
     account.setUsername(request.userName());
+    account.setEmail(request.email());
     account.setRole(Role.USER);
     account.setBanned(false);
     account.setCreatedAt(Instant.now());
@@ -43,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
     accountRepository.save(account);
 
     return new RegisterResponse(
-            "Registration successful. Please verify your email."
+            "Registration successful."
     );
   }
 

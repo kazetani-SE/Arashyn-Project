@@ -10,4 +10,6 @@ public interface SupabaseAuthClient {
   SupabaseRegisterResponse register(RegisterRequest request);
 
   SupabaseLoginResponse login(LoginRequest request);
+
+  SupabaseLoginResponse refresh(String refreshToken);
 }

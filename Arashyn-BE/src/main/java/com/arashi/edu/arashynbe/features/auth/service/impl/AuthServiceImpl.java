@@ -4,10 +4,12 @@ import com.arashi.edu.arashynbe.entity.Account;
 import com.arashi.edu.arashynbe.entity.AccountSession;
 import com.arashi.edu.arashynbe.features.auth.client.SupabaseAuthClient;
 import com.arashi.edu.arashynbe.features.auth.dto.request.LoginRequest;
+import com.arashi.edu.arashynbe.features.auth.dto.request.RefreshRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.request.RegisterRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.response.LoginResponse;
 import com.arashi.edu.arashynbe.features.auth.dto.response.RegisterResponse;
 import com.arashi.edu.arashynbe.features.auth.service.AuthService;
+import com.arashi.edu.arashynbe.features.auth.support.SupabaseJwtDecoder;
 import com.arashi.edu.arashynbe.repository.AccountRepo;
 import com.arashi.edu.arashynbe.repository.AccountSessionRepo;
 import com.arashi.edu.arashynbe.shared.enums.Role;
@@ -26,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
   private final SupabaseAuthClient supabaseAuthClient;
   private final AccountRepo accountRepository;
   private final AccountSessionRepo accountSessionRepo;
+  private final SupabaseJwtDecoder supabaseJwtDecoder;
 
   @Override
   public RegisterResponse register(RegisterRequest request) {
@@ -66,6 +69,26 @@ public class AuthServiceImpl implements AuthService {
 
     accountSessionRepo.save(session);
 
-    return new LoginResponse(response.accessToken());
+    return new LoginResponse(account.getUsername(), account.getAvatar(), response.accessToken());
+  }
+
+  @Override
+  public LoginResponse refresh(RefreshRequest request) {
+
+    var claims = supabaseJwtDecoder.decodeAllowExpired(request.accessToken());
+    var accountId = UUID.fromString(claims.getSubject());
+
+    var account = accountRepository.findById(accountId)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_NOT_FOUND));
+
+    var session = accountSessionRepo.findById(accountId)
+            .orElseThrow(() -> new ApiException(ErrorCode.SESSION_NOT_FOUND));
+
+    var response = supabaseAuthClient.refresh(session.getRefreshToken());
+
+    session.setRefreshToken(response.refreshToken());
+    accountSessionRepo.save(session);
+
+    return new LoginResponse(account.getUsername(), account.getAvatar(), response.accessToken());
   }
 }

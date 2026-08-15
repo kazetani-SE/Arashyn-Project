@@ -2,6 +2,7 @@ package com.arashi.edu.arashynbe.features.auth.client;
 
 import com.arashi.edu.arashynbe.features.auth.dto.request.LoginRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.request.RegisterRequest;
+import com.arashi.edu.arashynbe.features.auth.dto.request.SupabaseRefreshTokenRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.response.SupabaseLoginResponse;
 import com.arashi.edu.arashynbe.features.auth.dto.response.SupabaseRegisterResponse;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
@@ -61,6 +62,25 @@ public class SupabaseAuthClientImpl implements SupabaseAuthClient {
       throw ex;
     }
 
+  }
+
+  @Override
+  public SupabaseLoginResponse refresh(String refreshToken) {
+    try {
+      return supabaseRestClient
+              .post()
+              .uri("/auth/v1/token?grant_type=refresh_token")
+              .body(new SupabaseRefreshTokenRequest(refreshToken))
+              .retrieve()
+              .body(SupabaseLoginResponse.class);
+
+    } catch (HttpClientErrorException.BadRequest | HttpClientErrorException.Unauthorized ex) {
+      String body = ex.getResponseBodyAsString();
+      if (body.contains("invalid_grant") || body.contains("refresh_token_not_found")) {
+        throw new ApiException(ErrorCode.INVALID_REFRESH_TOKEN);
+      }
+      throw ex;
+    }
   }
 
 }

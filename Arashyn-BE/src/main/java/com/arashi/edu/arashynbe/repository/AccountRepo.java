@@ -15,4 +15,6 @@ public interface AccountRepo extends JpaRepository<Account, UUID> {
     where a.id = :id
 """)
   Optional<Role> findRoleById(UUID id);
+
+  boolean existsByEmail(String email);
 }

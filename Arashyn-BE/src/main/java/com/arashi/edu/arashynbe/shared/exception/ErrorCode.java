@@ -59,6 +59,19 @@ public enum ErrorCode {
           "Unexpected server error."
   ),
 
+  // ---------- Email ----------
+  EMAIL_TEMPLATE_PROCESSING_FAILED(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          "EMAIL_TEMPLATE_PROCESSING_FAILED",
+          "Failed to create email from templates."
+  ),
+
+  VERIFICATION_EMAIL_SEND_FAILED(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+          "VERIFICATION_EMAIL_SEND_FAILED",
+          "Failed to send verification email."
+  ),
+
   // ---------- Grammar ----------
   GRAMMAR_CREATE_FAILED(
           HttpStatus.BAD_REQUEST,

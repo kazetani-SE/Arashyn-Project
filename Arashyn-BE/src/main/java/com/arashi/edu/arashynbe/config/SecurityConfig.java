@@ -60,6 +60,9 @@ public class SecurityConfig {
                     .requestMatchers("/system-filters/**")
                     .hasAnyRole(CONTRIBUTOR,ADMIN)
 
+                    .requestMatchers("/email/**")
+                    .hasRole(ADMIN)
+
                     .anyRequest()
                     .authenticated())
 

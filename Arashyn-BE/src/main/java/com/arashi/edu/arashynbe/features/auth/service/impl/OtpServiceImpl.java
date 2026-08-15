@@ -1,8 +1,9 @@
 package com.arashi.edu.arashynbe.features.auth.service.impl;
 
-import com.arashi.edu.arashynbe.features.auth.repository.PendingRegistrationRepository;
+import com.arashi.edu.arashynbe.features.auth.dto.GeneratedOtp;
 import com.arashi.edu.arashynbe.features.auth.service.OtpService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -11,23 +12,38 @@ import java.security.SecureRandom;
 @RequiredArgsConstructor
 public class OtpServiceImpl implements OtpService {
 
-  private final int OTP_LENGTH = 6;
-  private final int EXPIRATION_TIME = 5; // minutes
-  private final int RESEND_COOLDOWN = 60;  // seconds
-  private static final String CODE_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  private static final int OTP_LENGTH = 6;
+  private static final int EXPIRATION_TIME = 5;
+  private static final int RESEND_COOLDOWN = 1;
+
+  private static final String CODE_CHARACTERS =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
   private final SecureRandom secureRandom = new SecureRandom();
-  private final PendingRegistrationRepository pendingRegistrationRepository;
+  private final BCryptPasswordEncoder passwordEncoder =
+          new BCryptPasswordEncoder();
 
   @Override
-  public String generateCode(String email) {
+  public GeneratedOtp generateCode(String email) {
     String rawCode = generateRandomCode(OTP_LENGTH);
+    String hashedCode = passwordEncoder.encode(rawCode);
 
-    while(pendingRegistrationRepository.existsByVerificationCode(rawCode)) {
-      rawCode = generateRandomCode(OTP_LENGTH);
-    }
+    return new GeneratedOtp(rawCode, hashedCode);
+  }
 
-    return rawCode;
+  @Override
+  public boolean matches(String rawCode, String hashedCode) {
+    return passwordEncoder.matches(rawCode, hashedCode);
+  }
+
+  @Override
+  public int getExpirationTime() {
+    return EXPIRATION_TIME;
+  }
+
+  @Override
+  public int getResendCooldown() {
+    return RESEND_COOLDOWN;
   }
 
   private String generateRandomCode(int length) {

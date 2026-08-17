@@ -1,15 +1,38 @@
-import {useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {ROUTE_PATHS} from "@/app/router/route.ts";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ROUTE_PATHS } from "@/app/router/route.ts";
 import OAuthButtons from "@/features/login/components/supports/OAuthButtons.tsx";
 import Divider from "@/features/login/components/supports/Divider.tsx";
 import EmailInput from "@/features/login/components/supports/EmailInput.tsx";
 import PasswordInput from "@/features/login/components/supports/PasswordInput.tsx";
+import { useLogin } from "@/features/login/hook/use_login.ts";
 
 export default function LoginPart() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    const { login, isPending, error } = useLogin();
     const nav = useNavigate();
+
+    const canSubmit = email.trim() !== "" && password.trim() !== "" && !isPending;
+
+    const errorMessage =
+        error?.code === "UNAUTHORIZED"
+            ? "Incorrect email or password."
+            : error?.code === "NETWORK_ERROR"
+                ? "Unable to connect to the server. Please try again."
+                : error?.message;
+
+    const handleSubmit = async () => {
+        if (!canSubmit) return;
+
+        try {
+            await login({ email, password });
+            nav(ROUTE_PATHS.DISCOVER);
+        } catch {
+            //
+        }
+    };
 
     return (
         <div className="flex h-full w-full items-center justify-center">
@@ -27,6 +50,10 @@ export default function LoginPart() {
                     <PasswordInput value={password} onChange={setPassword} />
                 </div>
 
+                {errorMessage && (
+                    <p className="mb-4 text-center text-xs text-red-400">{errorMessage}</p>
+                )}
+
                 <div className="mb-4 flex justify-end">
                     <button
                         className="text-xs text-indigo-400 cursor-pointer"
@@ -34,9 +61,13 @@ export default function LoginPart() {
                     >Forgot password?</button>
                 </div>
 
-                <button className="mb-4 w-full rounded-xl bg-indigo-500 py-3.5 font-bold
-                cursor-pointer hover:bg-indigo-600">
-                    Sign In
+                <button
+                    onClick={handleSubmit}
+                    disabled={!canSubmit}
+                    className="mb-4 w-full rounded-xl bg-indigo-500 py-3.5 font-bold
+                    cursor-pointer hover:bg-indigo-600 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                    {isPending ? "Signing in..." : "Sign In"}
                 </button>
 
                 <p className="text-center text-xs">

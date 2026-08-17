@@ -15,7 +15,6 @@ export const apiClient = axios.create({
 // -----------------------------------------------------
 // REQUEST INTERCEPTOR
 // - Attach access token to headers
-// - Optionally attach request-id, locale, etc. if needed
 // -----------------------------------------------------
 apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
@@ -31,10 +30,19 @@ apiClient.interceptors.request.use(
 // -----------------------------------------------------
 // RESPONSE INTERCEPTOR
 // - Normalize error into AppError (see error_handler.ts)
-// - Handle token refresh on 401 (boilerplate provided, complete with real logic)
+// - Handle token refresh on 401, EXCEPT auth endpoints
+//   (401 on /auth/login, /auth/verify* means "invalid credentials",
+//   not "token expired", so it should not trigger the refresh flow)
 // -----------------------------------------------------
 let isRefreshing = false;
 let pendingQueue: Array<() => void> = [];
+
+const AUTH_ENDPOINTS = ["/auth/login", "/auth/refresh", "/auth/verify"];
+
+function isAuthEndpoint(url?: string): boolean {
+    if (!url) return false;
+    return AUTH_ENDPOINTS.some((endpoint) => url.includes(endpoint));
+}
 
 apiClient.interceptors.response.use(
     (response) => response,
@@ -45,12 +53,15 @@ apiClient.interceptors.response.use(
 
         const status = error.response?.status;
 
-        // --- Token refresh handling template, complete endpoint/logic as needed ---
-        if (status === 401 && originalRequest && !originalRequest._retry) {
+        if (
+            status === 401 &&
+            originalRequest &&
+            !originalRequest._retry &&
+            !isAuthEndpoint(originalRequest.url)
+        ) {
             originalRequest._retry = true;
 
             if (isRefreshing) {
-                // If refreshing, queue request and retry once token is updated
                 return new Promise((resolve) => {
                     pendingQueue.push(() => resolve(apiClient(originalRequest)));
                 });
@@ -58,14 +69,16 @@ apiClient.interceptors.response.use(
 
             isRefreshing = true;
             try {
-                const newToken = await refreshAccessToken(); // TODO: implement
+                const newToken = await refreshAccessToken();
                 setAccessToken(newToken);
                 pendingQueue.forEach((cb) => cb());
                 pendingQueue = [];
                 return apiClient(originalRequest);
             } catch (refreshError) {
                 clearAccessToken();
-                redirectToLogin(); // TODO: implement (navigate using actual router)
+                pendingQueue.forEach((cb) => cb());
+                pendingQueue = [];
+                redirectToLogin();
                 return Promise.reject(normalizeError(refreshError));
             } finally {
                 isRefreshing = false;
@@ -78,8 +91,6 @@ apiClient.interceptors.response.use(
 
 // -----------------------------------------------------
 // Token storage — temporary placeholder, replace with real lib/auth later
-// (e.g., store in httpOnly cookies instead of localStorage
-// for better security if needed)
 // -----------------------------------------------------
 export function getAccessToken(): string | null {
     return localStorage.getItem("access_token");
@@ -95,7 +106,7 @@ export function clearAccessToken(): void {
 
 async function refreshAccessToken(): Promise<string> {
     // TODO: Call real refresh-token endpoint, e.g.:
-    // const res = await apiClient.post("/auth/refresh");
+    // const res = await apiClient.post("/auth/refresh", { accessToken: getAccessToken() });
     // return res.data.data.accessToken;
     throw new Error("refreshAccessToken() has not been implemented yet");
 }

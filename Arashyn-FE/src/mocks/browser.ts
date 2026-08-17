@@ -1,6 +1,8 @@
 import { setupWorker } from "msw/browser";
-import { grammarHandler } from "@/mocks/handlers/grammar.handler.ts";
+import { grammar_handler } from "@/mocks/handlers/grammar_handler.ts";
+import {auth_handler} from "@/mocks/handlers/auth_handler.ts";
 
 export const worker = setupWorker(
-    ...grammarHandler,
+    ...grammar_handler,
+    ...auth_handler,
 );

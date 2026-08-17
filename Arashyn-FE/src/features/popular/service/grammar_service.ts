@@ -16,7 +16,7 @@ export const grammarService = {
     list: (params: GrammarListParams = {}) => {
         const { page = DEFAULT_PAGE, size = DEFAULT_SIZE, query, filters } = params;
 
-        return api.get<PageResponse<grammar_response>>("/api/grammars", {
+        return api.get<PageResponse<grammar_response>>("/grammar-public/item_list/grammar", {
             params: {
                 page,
                 size,

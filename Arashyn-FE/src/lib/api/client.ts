@@ -1,5 +1,6 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { normalizeError } from "@/lib/api/error_handler.ts";
+import { useAuthStore } from "@/shared/store/auth_store.ts";
 
 const API_BASE_URL = import.meta.env.VITE_ARASHYN_API_BASE_URL || "http://localhost:8080";
 const API_TIMEOUT = 15000;
@@ -10,12 +11,9 @@ export const apiClient = axios.create({
     headers: {
         "Content-Type": "application/json",
     },
+    withCredentials: true,
 });
 
-// -----------------------------------------------------
-// REQUEST INTERCEPTOR
-// - Attach access token to headers
-// -----------------------------------------------------
 apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
         const token = getAccessToken();
@@ -27,13 +25,6 @@ apiClient.interceptors.request.use(
     (error) => Promise.reject(normalizeError(error)),
 );
 
-// -----------------------------------------------------
-// RESPONSE INTERCEPTOR
-// - Normalize error into AppError (see error_handler.ts)
-// - Handle token refresh on 401, EXCEPT auth endpoints
-//   (401 on /auth/login, /auth/verify* means "invalid credentials",
-//   not "token expired", so it should not trigger the refresh flow)
-// -----------------------------------------------------
 let isRefreshing = false;
 let pendingQueue: Array<() => void> = [];
 
@@ -90,28 +81,31 @@ apiClient.interceptors.response.use(
 );
 
 // -----------------------------------------------------
-// Token storage — temporary placeholder, replace with real lib/auth later
+// Token storage — backed by useAuthStore (in-memory), not localStorage
 // -----------------------------------------------------
 export function getAccessToken(): string | null {
-    return localStorage.getItem("access_token");
+    return useAuthStore.getState().accessToken;
 }
 
 export function setAccessToken(token: string): void {
-    localStorage.setItem("access_token", token);
+    useAuthStore.setState({ accessToken: token });
 }
 
 export function clearAccessToken(): void {
-    localStorage.removeItem("access_token");
+    useAuthStore.getState().clearAuth();
 }
 
 async function refreshAccessToken(): Promise<string> {
-    // TODO: Call real refresh-token endpoint, e.g.:
-    // const res = await apiClient.post("/auth/refresh", { accessToken: getAccessToken() });
-    // return res.data.data.accessToken;
-    throw new Error("refreshAccessToken() has not been implemented yet");
+    const res = await apiClient.post("/auth/refresh");
+    const data = res.data.data;
+    useAuthStore.getState().setAuth({
+        accessToken: data.accessToken,
+        username: data.username,
+        avatar: data.avatar,
+    });
+    return data.accessToken;
 }
 
 function redirectToLogin(): void {
-    // TODO: Use actual router (react-router navigate, next/navigation, etc.)
     window.location.href = "/login";
 }

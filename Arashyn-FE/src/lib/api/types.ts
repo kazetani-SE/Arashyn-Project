@@ -34,3 +34,20 @@ export type AppErrorCode =
 export type ApiCall<TRequest, TResponse> = (
     payload: TRequest
 ) => Promise<ApiResponse<TResponse>>;
+
+export type PageParams = {
+    page?: number;
+    size?: number;
+    query?: string;
+    filters?: string[];
+};
+
+export type PageResponse<T> = {
+    items: T[];
+    page: number;
+    size: number;
+    totalPages: number;
+    totalElements: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+};

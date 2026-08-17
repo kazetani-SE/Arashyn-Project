@@ -13,7 +13,7 @@ const ALL_GRAMMARS: grammar_response[] = [
     ...grammarList.filter((g) => g.id !== grammar_data.id),
 ];
 
-export const grammarHandler = [
+export const grammar_handler = [
     // GET /api/grammars?page=0&size=20&q=xxx&filters=N3,N2
     http.get(`${BASE_URL}/api/grammars`, async ({ request }) => {
         const url = new URL(request.url);

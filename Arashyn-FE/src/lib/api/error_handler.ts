@@ -102,9 +102,11 @@ function normalizeConnectionError(error: AxiosError): AppError {
 /**
  * Maps backend business error codes into frontend-level error categories.
  */
+// lib/api/error_handler.ts
 function mapBackendErrorCode(backendCode: string, status: number): AppErrorCode {
     switch (backendCode) {
-        case "UNAUTHORIZED": return "UNAUTHORIZED";
+        case "UNAUTHORIZED":
+        case "INVALID_CREDENTIALS": return "UNAUTHORIZED";
         case "FORBIDDEN": return "FORBIDDEN";
         case "VALIDATION_ERROR": return "VALIDATION_ERROR";
         case "NOT_FOUND":

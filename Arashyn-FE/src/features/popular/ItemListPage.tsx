@@ -135,7 +135,7 @@ export default function ItemListPage() {
                 </div>
             </div>
 
-            <ItemGrid items={data?.grammars ?? []} isLoading={isLoading} isError={isError} />
+            <ItemGrid items={data?.items ?? []} isLoading={isLoading} isError={isError} />
         </div>
     );
 }

@@ -38,7 +38,11 @@ export default function SidebarLogo({
             )}
 
             <button
-                onClick={onToggle}
+                type="button"
+                onClick={(e) => {
+                    e.stopPropagation();
+                    onToggle();
+                }}
                 className={`rounded-lg p-2 text-slate-400 transition hover:bg-indigo-500/10 hover:text-white ${
                     collapsed ? "" : "ml-auto"
                 }`}

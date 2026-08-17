@@ -34,7 +34,7 @@ export default function TrendingSection({
     });
 
     // Maps raw grammar_response[] -> display shape ({ id, title, patterns, meanings, filters }).
-    const items = useGrammarList(data?.grammars ?? []);
+    const items = useGrammarList(data?.items ?? []);
 
     return (
         <section className="space-y-4">

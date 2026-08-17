@@ -1,6 +1,6 @@
-import { apiClient } from "@/lib/api/client.ts"; // adjust to your actual axios/fetch instance
-import type { ApiResponse } from "@/lib/api/types.ts";
-import type { GrammarListResponse } from "@/mocks/types/response/grammar_list_response.ts";
+import { api } from "@/lib/api/request.ts";
+import type { PageResponse } from "@/lib/api/types.ts";
+import type { grammar_response } from "@/shared/responses/grammar_response.ts";
 
 export type GrammarListParams = {
     page?: number;
@@ -13,21 +13,16 @@ const DEFAULT_PAGE = 0;
 const DEFAULT_SIZE = 6;
 
 export const grammarService = {
-    list: async (params: GrammarListParams = {}): Promise<GrammarListResponse> => {
+    list: (params: GrammarListParams = {}) => {
         const { page = DEFAULT_PAGE, size = DEFAULT_SIZE, query, filters } = params;
 
-        const response = await apiClient.get<ApiResponse<GrammarListResponse>>(
-            "/api/grammars",
-            {
-                params: {
-                    page,
-                    size,
-                    q: query || undefined,
-                    filters: filters && filters.length > 0 ? filters.join(",") : undefined,
-                },
+        return api.get<PageResponse<grammar_response>>("/api/grammars", {
+            params: {
+                page,
+                size,
+                q: query || undefined,
+                filters: filters && filters.length > 0 ? filters.join(",") : undefined,
             },
-        );
-
-        return response.data.data;
+        });
     },
 };

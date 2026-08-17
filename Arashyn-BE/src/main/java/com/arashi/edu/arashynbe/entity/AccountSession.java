@@ -3,7 +3,7 @@ package com.arashi.edu.arashynbe.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -28,20 +28,20 @@ public class AccountSession {
   private String refreshToken;
 
   @Column(name = "created_at", nullable = false, updatable = false)
-  private OffsetDateTime createdAt;
+  private Instant createdAt;
 
   @Column(name = "updated_at", nullable = false)
-  private OffsetDateTime updatedAt;
+  private Instant updatedAt;
 
   @PrePersist
   void prePersist() {
-    OffsetDateTime now = OffsetDateTime.now();
+    Instant now = Instant.now();
     createdAt = now;
     updatedAt = now;
   }
 
   @PreUpdate
   void preUpdate() {
-    updatedAt = OffsetDateTime.now();
+    updatedAt = Instant.now();
   }
 }

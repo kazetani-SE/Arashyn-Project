@@ -56,6 +56,12 @@ public enum ErrorCode {
           "No active session found for this account."
   ),
 
+  SESSION_EXPIRED(
+          HttpStatus.UNAUTHORIZED,
+          "SESSION_EXPIRED",
+          "Session expired, please login again."
+  ),
+
   // ---------- Registration ----------
   EMAIL_NOT_VERIFIED(
           HttpStatus.BAD_REQUEST,

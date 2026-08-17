@@ -2,7 +2,6 @@ package com.arashi.edu.arashynbe.features.auth.controller;
 
 import com.arashi.edu.arashynbe.features.auth.dto.request.CompleteRegisterRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.request.LoginRequest;
-import com.arashi.edu.arashynbe.features.auth.dto.request.RefreshRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.request.RegisterRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.request.RegisterVerifyRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.request.ResendVerificationRequest;
@@ -11,15 +10,19 @@ import com.arashi.edu.arashynbe.features.auth.dto.response.LoginResponse;
 import com.arashi.edu.arashynbe.features.auth.dto.response.RegisterResponse;
 import com.arashi.edu.arashynbe.features.auth.service.AuthService;
 import com.arashi.edu.arashynbe.features.auth.service.RegistrationOtpService;
+import com.arashi.edu.arashynbe.features.auth.support.CookieUtil;
+import com.arashi.edu.arashynbe.shared.exception.ApiException;
+import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/auth")
@@ -89,15 +92,46 @@ public class AuthController {
 
   @PostMapping("/login")
   public ResponseEntity<LoginResponse> login(
-          @Valid @RequestBody LoginRequest request
+          @Valid @RequestBody LoginRequest request,
+          HttpServletResponse httpResponse
   ) {
-    return ResponseEntity.ok(
-            authService.login(request)
-    );
+    var result = authService.login(request);
+
+    httpResponse.addHeader(HttpHeaders.SET_COOKIE,
+            CookieUtil.refreshTokenCookie(result.refreshToken(), Duration.ofDays(30)).toString());
+
+    return ResponseEntity.ok(new LoginResponse(result.username(), result.avatar(), result.accessToken()));
   }
 
   @PostMapping("/refresh")
-  public LoginResponse refresh(@RequestBody RefreshRequest request) {
-    return authService.refresh(request);
+  public ResponseEntity<LoginResponse> refresh(
+          @CookieValue(name = "refresh_token", required = false) String refreshToken,
+          HttpServletResponse httpResponse
+  ) {
+    try{
+      var result = authService.refresh(refreshToken);
+
+      httpResponse.addHeader(HttpHeaders.SET_COOKIE,
+              CookieUtil.refreshTokenCookie(result.refreshToken(), Duration.ofDays(30)).toString());
+
+      return ResponseEntity.ok(new LoginResponse(result.username(), result.avatar(), result.accessToken()));
+    }catch (ApiException e) {
+      if (e.getErrorCode() == ErrorCode.SESSION_EXPIRED) {
+        httpResponse.addHeader(HttpHeaders.SET_COOKIE, CookieUtil.expiredRefreshTokenCookie().toString());
+      }
+      throw e;
+    }
+  }
+
+  @PostMapping("/logout")
+  public ResponseEntity<Void> logout(
+          @CookieValue(name = "refresh_token", required = false) String refreshToken,
+          HttpServletResponse res
+  ) {
+    authService.logout(refreshToken);
+
+    res.addHeader(HttpHeaders.SET_COOKIE, CookieUtil.expiredRefreshTokenCookie().toString());
+
+    return ResponseEntity.noContent().build();
   }
 }

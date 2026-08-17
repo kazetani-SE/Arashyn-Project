@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public class GrammarPublicController {
 
-  private final int PAGE_SIZE = 20;
+  private final String PAGE_SIZE = "20";
 
   private final GrammarService grammarService;
 
@@ -43,12 +43,13 @@ public class GrammarPublicController {
   @GetMapping("/item_list/grammar")
   public ResponseEntity<GrammarListResponse> getItems(
           @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = PAGE_SIZE) int size,
           @RequestParam(defaultValue = "created_at") String sort,
           @RequestParam(defaultValue = "desc") String direction
   ) {
     Pageable pageable = PageRequest.of(
             page,
-            PAGE_SIZE,
+            size,
             Sort.by(
                     Sort.Direction.fromString(direction),
                     sort

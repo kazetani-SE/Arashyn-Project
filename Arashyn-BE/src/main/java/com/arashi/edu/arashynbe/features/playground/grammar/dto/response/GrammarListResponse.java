@@ -4,7 +4,7 @@ import java.util.List;
 
 public record GrammarListResponse(
 
-        List<GrammarSummaryResponse> grammars,
+        List<GrammarSummaryResponse> items,
 
         Integer page,
 

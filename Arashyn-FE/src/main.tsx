@@ -8,13 +8,16 @@ import "@/styles/globals.css";
 import "@/styles/theme.css";
 import { enableMocking } from "@/mocks/enable_mocking.ts";
 import {queryClient} from "@/lib/query/query_client.ts";
+import AuthBootstrap from "@/app/AuthBootstrap.tsx";
 
 enableMocking().then(() => {
     ReactDOM.createRoot(
         document.getElementById("root")!,
     ).render(
         <QueryClientProvider client={queryClient}>
-            <RouterProvider router={router} />
+            <AuthBootstrap>
+                <RouterProvider router={router} />
+            </AuthBootstrap>
         </QueryClientProvider>,
     );
 });

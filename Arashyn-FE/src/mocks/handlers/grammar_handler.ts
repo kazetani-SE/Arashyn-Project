@@ -48,7 +48,7 @@ export const grammar_handler = [
         const paginated = filtered.slice(start, start + size);
 
         const body: GrammarListResponse = {
-            grammars: paginated,
+            items: paginated,
             page,
             size,
             totalPages,

@@ -51,6 +51,10 @@ export const authService = {
         api.post<LoginResponse>("/auth/login", payload),
 
     /** POST /auth/refresh */
-    refresh: (payload: RefreshPayload) =>
-        api.post<LoginResponse>("/auth/refresh", payload),
+    refresh: () =>
+        api.post<LoginResponse>("/auth/refresh"),
+
+    /** POST /auth/logout */
+    logout: () =>
+        api.post<void>("/auth/logout"),
 };

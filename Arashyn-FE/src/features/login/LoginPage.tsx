@@ -1,4 +1,4 @@
-import LeftPart from "@/features/login/components/LeftPart.tsx";
+import LeftPart from "@/features/login/parts/LeftPart.tsx";
 import {Outlet} from "react-router-dom";
 
 

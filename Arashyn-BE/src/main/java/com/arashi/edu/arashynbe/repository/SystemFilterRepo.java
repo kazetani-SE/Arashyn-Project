@@ -28,6 +28,7 @@ public interface SystemFilterRepo extends JpaRepository<SystemFilter, UUID> {
 
   @Query(value = """
     SELECT
+        sf.id AS id,
         gf.grammar_id AS grammarId,
         sf.name AS name
     FROM grammar_filter gf

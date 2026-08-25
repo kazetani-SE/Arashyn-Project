@@ -219,6 +219,7 @@ public class GrammarListReadServiceImpl implements GrammarListReadService {
                     GrammarFilterRow::grammarId,
                     Collectors.mapping(
                             row -> new GrammarFilterResponse(
+                                    row.id(),
                                     row.name()
                             ),
                             toList()

@@ -4,6 +4,8 @@ import java.util.UUID;
 
 public record GrammarFilterRow(
 
+        UUID id,
+
         UUID grammarId,
 
         String name

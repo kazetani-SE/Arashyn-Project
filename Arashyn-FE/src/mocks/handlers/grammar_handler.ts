@@ -14,8 +14,8 @@ const ALL_GRAMMARS: grammar_response[] = [
 ];
 
 export const grammar_handler = [
-    // GET /api/grammars?page=0&size=20&q=xxx&filters=N3,N2
-    http.get(`${BASE_URL}/api/grammars`, async ({ request }) => {
+    // GET /grammar-public/item_list/grammar?page=0&size=20&q=xxx&filters=N3,N2
+    http.get(`${BASE_URL}/grammar-public/item_list/grammar`, async ({ request }) => {
         const url = new URL(request.url);
 
         const page = Number(url.searchParams.get("page") ?? 0);
@@ -60,15 +60,15 @@ export const grammar_handler = [
         return mockSuccess(body, "Success", { delayMs: "realistic" });
     }),
 
-    // GET /api/grammars/:id
-    http.get(`${BASE_URL}/api/grammars/:id`, async ({ params }) => {
-        const { id } = params;
-        const found = ALL_GRAMMARS.find((g) => g.id === id);
+    // GET /grammar-public/:grammarId
+    http.get(`${BASE_URL}/grammar-public/:grammarId`, async ({ params }) => {
+        const { grammarId } = params;
+        const found = ALL_GRAMMARS.find((g) => g.id === grammarId);
 
         if (!found) {
             return mockError("Grammar not found", 404, {
                 code: "GRAMMAR_NOT_FOUND",
-                path: `/api/grammars/${id}`,
+                path: `/grammar-public/${grammarId}`,
             });
         }
 

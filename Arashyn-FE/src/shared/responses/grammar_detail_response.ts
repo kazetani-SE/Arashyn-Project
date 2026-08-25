@@ -37,7 +37,7 @@ export type Filter = {
     name: string;
 }
 
-export type detail_response = {
+export type grammar_detail_response = {
     id: string;
     title: string;
     language: string;

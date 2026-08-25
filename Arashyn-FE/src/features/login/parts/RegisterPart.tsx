@@ -1,12 +1,12 @@
 import {useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {ROUTE_PATHS} from "@/app/router/route.ts";
-import OAuthButtons from "@/features/login/components/supports/OAuthButtons.tsx";
-import Divider from "@/features/login/components/supports/Divider.tsx";
-import EmailInput from "@/features/login/components/supports/EmailInput.tsx";
-import UsernameInput from "@/features/login/components/supports/UsernameInput.tsx";
-import PasswordInput from "@/features/login/components/supports/PasswordInput.tsx";
-import ConfirmPasswordInput from "@/features/login/components/supports/ConfirmPasswordInput.tsx";
+import OAuthButtons from "@/features/login/components/OAuthButtons.tsx";
+import Divider from "@/features/login/components/Divider.tsx";
+import EmailInput from "@/features/login/components/EmailInput.tsx";
+import UsernameInput from "@/features/login/components/UsernameInput.tsx";
+import PasswordInput from "@/features/login/components/PasswordInput.tsx";
+import ConfirmPasswordInput from "@/features/login/components/ConfirmPasswordInput.tsx";
 import {Input} from "@/components/ui/input.tsx";
 
 const OTP_LENGTH = 6;

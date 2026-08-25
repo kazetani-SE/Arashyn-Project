@@ -209,6 +209,7 @@ public class GrammarReadServiceImpl implements GrammarReadService {
     return systemFilterRepo.findAllByGrammarId(grammarId)
             .stream()
             .map(filter -> new GrammarFilterResponse(
+                    filter.getId(),
                     filter.getName()
             ))
             .toList();

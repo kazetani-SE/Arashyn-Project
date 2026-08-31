@@ -1,17 +1,10 @@
 import { http } from "msw";
-import {grammar_data, grammarList} from "@/shared/constant/grammar_data.ts";
-import type {GrammarListResponse} from "@/mocks/types/response/grammar_list_response.ts";
-import {mockError, mockSuccess} from "@/mocks/utils.ts";
-import type {grammar_response} from "@/entities/grammar/grammar_types.ts";
+import type { GrammarListResponse } from "@/mocks/types/response/grammar_list_response.ts";
+import { mockError, mockSuccess } from "@/mocks/utils.ts";
+import type { grammar_response, grammar_detail_response } from "@/entities/grammar/grammar_types.ts";
+import {grammar_detail_data, grammar_list_data} from "@/mocks/constant/grammar_mock_data.ts";
 
 const BASE_URL = import.meta.env.VITE_ARASHYN_API_BASE_URL ?? "http://localhost:8080";
-
-// Combine the single detailed mock with the list mocks into one dataset,
-// de-duped by id, so both the list and detail endpoints share the same source.
-const ALL_GRAMMARS: grammar_response[] = [
-    grammar_data,
-    ...grammarList.filter((g) => g.id !== grammar_data.id),
-];
 
 export const grammar_handler = [
     // GET /grammar-public/item_list/grammar?page=0&size=20&q=xxx&filters=N3,N2
@@ -26,7 +19,7 @@ export const grammar_handler = [
             ? filterParam.split(",").map((f) => f.trim().toLowerCase())
             : [];
 
-        let filtered = ALL_GRAMMARS;
+        let filtered: grammar_response[] = grammar_list_data;
 
         if (query) {
             filtered = filtered.filter(
@@ -63,7 +56,7 @@ export const grammar_handler = [
     // GET /grammar-public/:grammarId
     http.get(`${BASE_URL}/grammar-public/:grammarId`, async ({ params }) => {
         const { grammarId } = params;
-        const found = ALL_GRAMMARS.find((g) => g.id === grammarId);
+        const found = grammar_detail_data.find((g) => g.id === grammarId);
 
         if (!found) {
             return mockError("Grammar not found", 404, {
@@ -72,6 +65,6 @@ export const grammar_handler = [
             });
         }
 
-        return mockSuccess<grammar_response>(found, "Success", { delayMs: "realistic" });
+        return mockSuccess<grammar_detail_response>(found, "Success", { delayMs: "realistic" });
     }),
 ];

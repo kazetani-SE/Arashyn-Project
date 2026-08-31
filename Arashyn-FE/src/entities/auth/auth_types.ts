@@ -1,5 +1,3 @@
-import type { LoginResponse, RegisterResponse } from "@/shared/responses/auth_response.ts";
-
 export interface RegisterVerifyPayload {
     email: string;
     userName: string;
@@ -28,4 +26,12 @@ export interface RefreshPayload {
     accessToken: string;
 }
 
-export type { LoginResponse, RegisterResponse };
+export interface LoginResponse {
+    username: string;
+    avatar: string;
+    accessToken: string;
+}
+
+export interface RegisterResponse {
+    message: string;
+}

@@ -89,6 +89,7 @@ export default function TrendingSection({
                         <SummarizeCard
                             key={id}
                             className="h-full"
+                            grammarId={id}
                             title={itemTitle}
                             filters={filters}
                             patterns={patterns.map(({ groupKey, pattern }) => ({

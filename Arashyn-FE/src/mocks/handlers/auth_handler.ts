@@ -1,6 +1,5 @@
 import { http, HttpResponse } from "msw";
 import { mockError, mockSuccess } from "@/mocks/utils.ts";
-import type { LoginResponse, RegisterResponse } from "@/shared/responses/auth_response.ts";
 import {
     users,
     pendingVerifications,
@@ -8,6 +7,7 @@ import {
     MOCK_OTP,
     OTP_TTL_MS,
 } from "@/mocks/constant/auth_data.ts";
+import type {LoginResponse, RegisterResponse} from "@/entities/auth/auth_types.ts";
 
 const BASE_URL = import.meta.env.VITE_ARASHYN_API_BASE_URL ?? "http://localhost:8080";
 

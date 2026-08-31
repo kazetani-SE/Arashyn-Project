@@ -1,4 +1,5 @@
-import type { Example, Meaning } from "@/shared/responses/grammar_detail_response.ts"
+import type {Example} from "@/entities/example/example_types.ts";
+import type {Meaning} from "@/entities/meaning/meaning_types.ts";
 
 function ExampleItem({ example }: { example: Example }) {
     return (

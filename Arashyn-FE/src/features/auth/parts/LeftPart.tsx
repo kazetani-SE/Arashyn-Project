@@ -1,6 +1,6 @@
 import {BookOpen, Sparkles, Star} from "lucide-react";
-import {FEATURES} from "@/features/login/constants/feature_constant.ts";
-import {STATS} from "@/features/login/constants/stat_constant.ts";
+import {FEATURES} from "@/features/auth/constants/feature_constant.ts";
+import {STATS} from "@/features/auth/constants/stat_constant.ts";
 import {useNavigate} from "react-router-dom";
 import {ROUTE_PATHS} from "@/app/router/route.ts";
 

@@ -1,5 +1,5 @@
 import {Flame, Globe, RefreshCw, TrendingUp} from "lucide-react";
-import type {Feature} from "@/features/login/types/feature_type.ts";
+import type {Feature} from "@/features/auth/types/feature_type.ts";
 
 export const FEATURES:Feature[] = [
     {

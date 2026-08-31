@@ -1,8 +1,8 @@
 import * as React from "react"
 import { Badge } from "@/components/ui/badge"
 import { Globe, Lock, User } from "lucide-react"
-import type { grammar_detail_response } from "@/shared/responses/grammar_detail_response.ts"
 import {VariantNav} from "@/features/detail/components/VariantNav.tsx";
+import type {grammar_detail_response} from "@/entities/grammar/grammar_types.ts";
 
 function SummarizePart({
                            data,

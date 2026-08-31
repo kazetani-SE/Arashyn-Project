@@ -1,7 +1,6 @@
-import * as React from "react"
 import type {grammar_response} from "@/entities/grammar/grammar_types.ts";
 
-function transformGrammar(data: grammar_response) {
+export function transformGrammar(data: grammar_response) {
     const grouped = new Map<number, typeof data.components>()
 
     for (const component of data.components) {
@@ -31,25 +30,13 @@ function transformGrammar(data: grammar_response) {
     return {
         id: data.id,
         title: data.title,
-
         groups,
         patterns,
-
         pattern: patterns.map((item) => item.pattern).join("\n"),
-
         meanings,
         filters,
-
         data,
     }
 }
 
 export type GrammarView = ReturnType<typeof transformGrammar>
-
-export function useGrammar(data: grammar_response): GrammarView {
-    return React.useMemo(() => transformGrammar(data), [data])
-}
-
-export function useGrammarList(list: grammar_response[]): GrammarView[] {
-    return React.useMemo(() => list.map(transformGrammar), [list])
-}

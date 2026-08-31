@@ -1,4 +1,4 @@
-import type { grammar_response } from "@/shared/responses/grammar_response.ts";
+import type {grammar_response} from "@/entities/grammar/grammar_types.ts";
 
 export const grammar_data: grammar_response = {
     id: "6848c939-ac4d-4bf2-aa77-b6d525c76989",

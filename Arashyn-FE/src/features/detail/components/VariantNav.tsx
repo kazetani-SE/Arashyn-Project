@@ -1,4 +1,4 @@
-import type { Component, ComponentGroup } from "@/shared/responses/grammar_detail_response.ts"
+import type {Component, ComponentGroup} from "@/entities/component/component_types.ts";
 
 function renderPattern(components: Component[]) {
     return [...components]

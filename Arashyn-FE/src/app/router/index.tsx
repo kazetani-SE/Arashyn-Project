@@ -4,9 +4,9 @@ import {
 import HomePage from "@/features/home/HomePage.tsx";
 import LandingPage from "@/page/LandingPage.tsx";
 import {ROUTE_PATHS} from "@/app/router/route.ts";
-import LoginPage from "@/features/login/LoginPage.tsx";
-import LoginPart from "@/features/login/parts/LoginPart.tsx";
-import RegisterPart from "@/features/login/parts/RegisterPart.tsx";
+import AuthPage from "@/features/auth/AuthPage.tsx";
+import LoginPart from "@/features/auth/parts/LoginPart.tsx";
+import RegisterPart from "@/features/auth/parts/RegisterPart.tsx";
 import DiscoverPage from "@/features/discover/DiscoverPage.tsx";
 import MainPage from "@/page/MainPage.tsx";
 import SettingPage from "@/features/setting/SettingPage.tsx";
@@ -31,7 +31,7 @@ export const router = createBrowserRouter([
         ],
     },
     {
-        element:<LoginPage/>,
+        element:<AuthPage/>,
         children:[
             {
                 path: ROUTE_PATHS.LOGIN,

@@ -1,4 +1,4 @@
-import type {Stat} from "@/features/login/types/stat_type.ts";
+import type {Stat} from "@/features/auth/types/stat_type.ts";
 
 export const STATS:Stat[] = [
     {

@@ -1,11 +1,13 @@
 import {FeatureBackground} from "@/components/background/FeatureBackground.tsx";
 import {useSetBreadcrumb} from "@/layout/topbar/hooks/useSetBreadcrumb.ts";
 import {ROUTE_PATHS, ROUTES} from "@/app/router/route.ts";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {type ApiResponse} from "@/features/detail/parts/TestPart.tsx";
 import {ContentPart} from "@/features/detail/parts/ContentPart.tsx";
-import type {grammar_detail_response} from "@/shared/responses/grammar_detail_response.ts";
 import {SummarizePart} from "@/features/detail/parts/SummarizePart.tsx";
+import type {grammar_detail_response} from "@/entities/grammar/grammar_types.ts";
+import {ArrowLeft} from "lucide-react";
+import {Button} from "@/components/ui/button.tsx";
 
 const mockResponse: ApiResponse<grammar_detail_response> = {
     data: {
@@ -120,19 +122,36 @@ const mockResponse: ApiResponse<grammar_detail_response> = {
 };
 
 export default function DetailPage() {
-
     const { grammarId } = useParams<{ grammarId: string }>();
-    useSetBreadcrumb("Detail", grammarId ? ROUTES.grammarDetail(grammarId) : ROUTE_PATHS.DETAIL);
+    const navigate = useNavigate();
+
+    useSetBreadcrumb(
+        "Detail",
+        grammarId ? ROUTES.grammarDetail(grammarId) : ROUTE_PATHS.DETAIL
+    );
+
+    const onBack = () => {
+        navigate(ROUTE_PATHS.DISCOVER, { replace: true });
+    };
 
     return (
         <div>
             <FeatureBackground />
 
-            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-10 px-6 py-10 md:grid-cols-[220px_1fr]">
-                <SummarizePart data={mockResponse.data} />
+            <div className="mx-auto max-w-5xl px-6 py-10">
+                <div className="mb-4">
+                    <Button variant="ghost" className="gap-2" onClick={onBack}>
+                        <ArrowLeft className="h-4 w-4" />
+                        Back to Discover
+                    </Button>
+                </div>
 
-                <ContentPart data={mockResponse.data} />
+                <div className="grid grid-cols-1 gap-10 md:grid-cols-[220px_1fr]">
+                    <SummarizePart data={mockResponse.data} />
+
+                    <ContentPart data={mockResponse.data} />
+                </div>
             </div>
         </div>
-    )
+    );
 }

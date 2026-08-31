@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { authService } from "@/features/login/service/auth_service.ts";
 import { useAuthStore } from "@/shared/store/auth_store.ts";
+import {authService} from "@/entities/auth/auth_service.ts";
 
 export default function AuthBootstrap({ children }: { children: React.ReactNode }) {
     const setAuth = useAuthStore((s) => s.setAuth);

@@ -2,7 +2,7 @@ import { LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_PATHS } from "@/app/router/route.ts";
-import {useAuth} from "@/shared/hook/use_auth.ts";
+import {useAuth} from "@/entities/auth/use_auth.ts";
 
 type SidebarProfileProps = {
     collapsed: boolean;

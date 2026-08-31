@@ -1,8 +1,9 @@
 import * as React from "react"
 import { Badge } from "@/components/ui/badge"
 import { Globe, Lock, User } from "lucide-react"
-import type {Component, grammar_detail_response} from "@/shared/responses/grammar_detail_response.ts";
 import type { ApiResponse } from "@/lib/api/types";
+import type {grammar_detail_response} from "@/entities/grammar/grammar_types.ts";
+import type {Component} from "@/entities/component/component_types.ts";
 
 const mockResponse: ApiResponse<grammar_detail_response> = {
     data: {

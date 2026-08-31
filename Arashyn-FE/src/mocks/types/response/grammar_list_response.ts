@@ -1,4 +1,4 @@
-import type { grammar_response } from "@/shared/responses/grammar_response.ts";
+import type {grammar_response} from "@/entities/grammar/grammar_types.ts";
 
 export type GrammarListResponse = {
     items: grammar_response[];

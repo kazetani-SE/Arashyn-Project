@@ -1,5 +1,5 @@
 import * as React from "react"
-import type { grammar_detail_response } from "@/shared/responses/grammar_detail_response.ts"
+import type {grammar_detail_response} from "@/entities/grammar/grammar_types.ts";
 
 function transformDetail(data: grammar_detail_response) {
     const groups = [...data.groups]

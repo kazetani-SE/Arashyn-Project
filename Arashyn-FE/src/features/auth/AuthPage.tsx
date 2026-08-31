@@ -1,8 +1,8 @@
-import LeftPart from "@/features/login/parts/LeftPart.tsx";
+import LeftPart from "@/features/auth/parts/LeftPart.tsx";
 import {Outlet} from "react-router-dom";
 
 
-export default function LoginPage() {
+export default function AuthPage() {
     return (
         <div className="relative min-h-screen overflow-x-hidden">
             <PageBackground/>

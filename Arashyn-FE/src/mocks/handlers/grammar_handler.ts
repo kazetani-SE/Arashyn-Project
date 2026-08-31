@@ -1,8 +1,8 @@
 import { http } from "msw";
-import type { grammar_response } from "@/shared/responses/grammar_response.ts";
 import {grammar_data, grammarList} from "@/shared/constant/grammar_data.ts";
 import type {GrammarListResponse} from "@/mocks/types/response/grammar_list_response.ts";
 import {mockError, mockSuccess} from "@/mocks/utils.ts";
+import type {grammar_response} from "@/entities/grammar/grammar_types.ts";
 
 const BASE_URL = import.meta.env.VITE_ARASHYN_API_BASE_URL ?? "http://localhost:8080";
 

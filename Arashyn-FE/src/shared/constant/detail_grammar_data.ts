@@ -1,4 +1,4 @@
-import type {grammar_detail_response} from "@/shared/responses/grammar_detail_response.ts";
+import type {grammar_detail_response} from "@/entities/grammar/grammar_types.ts";
 
 export const detail_grammar_data: grammar_detail_response[] = [
     {

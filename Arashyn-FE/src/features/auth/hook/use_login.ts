@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import { authService, type LoginPayload } from "@/features/login/service/auth_service.ts";
+import { authService } from "@/entities/auth/auth_service.ts";
+import type { LoginPayload } from "@/entities/auth/auth_types.ts";
 import { isAppError, normalizeError } from "@/lib/api/error_handler.ts";
 import type { AppError } from "@/lib/api/types.ts";
 import { useAuthStore } from "@/shared/store/auth_store.ts";

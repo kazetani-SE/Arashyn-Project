@@ -1,8 +1,6 @@
-import type {
-    Component,
-    grammar_detail_response,
-} from "@/shared/responses/grammar_detail_response.ts"
 import {MeaningItem} from "@/features/detail/components/MeaningItem.tsx";
+import type {grammar_detail_response} from "@/entities/grammar/grammar_types.ts";
+import type {Component} from "@/entities/component/component_types.ts";
 
 function renderPattern(components: Component[]) {
     return [...components]

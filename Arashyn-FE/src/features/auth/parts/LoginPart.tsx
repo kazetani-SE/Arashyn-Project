@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTE_PATHS } from "@/app/router/route.ts";
-import OAuthButtons from "@/features/login/components/OAuthButtons.tsx";
-import Divider from "@/features/login/components/Divider.tsx";
-import EmailInput from "@/features/login/components/EmailInput.tsx";
-import PasswordInput from "@/features/login/components/PasswordInput.tsx";
-import { useLogin } from "@/features/login/hook/use_login.ts";
+import OAuthButtons from "@/features/auth/components/OAuthButtons.tsx";
+import Divider from "@/features/auth/components/Divider.tsx";
+import EmailInput from "@/features/auth/components/EmailInput.tsx";
+import PasswordInput from "@/features/auth/components/PasswordInput.tsx";
+import { useLogin } from "@/features/auth/hook/use_login.ts";
 
 export default function LoginPart() {
     const [email, setEmail] = useState("");

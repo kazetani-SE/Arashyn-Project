@@ -4,7 +4,12 @@ import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarC
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarExtendRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarListRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarUpdateRequest;
-import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.*;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.ExistingGrammarResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarCreateResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarEditResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 

@@ -20,8 +20,8 @@ public class ExactlyOneOfFormOrKeywordValidator
 
     boolean hasForm = component.formId() != null;
     boolean hasKeyword =
-            component.keyWord() != null &&
-                    !component.keyWord().isBlank();
+            component.keyword() != null &&
+                    !component.keyword().isBlank();
 
     return hasForm ^ hasKeyword;
   }

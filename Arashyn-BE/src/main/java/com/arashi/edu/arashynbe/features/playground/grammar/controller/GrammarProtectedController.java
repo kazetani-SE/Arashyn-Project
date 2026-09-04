@@ -5,6 +5,7 @@ import com.arashi.edu.arashynbe.features.playground.filter.service.SystemFilterS
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarExtendRequest;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarUpdateRequest;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarCreateResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarEditResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarService;
 import jakarta.validation.Valid;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/grammar-protected")
+@RequestMapping("/protected/grammar")
 @RequiredArgsConstructor
 public class GrammarProtectedController {
 
@@ -23,7 +24,7 @@ public class GrammarProtectedController {
   private final SystemFilterService systemFilterService;
 
   @PostMapping("/create")
-  public ResponseEntity<String> create(
+  public ResponseEntity<GrammarCreateResponse> create(
           @Valid @RequestBody GrammarCreateRequest request
   ) {
     return ResponseEntity.ok(

@@ -38,4 +38,6 @@ public interface SystemFilterRepo extends JpaRepository<SystemFilter, UUID> {
     ORDER BY gf.grammar_id, sf.name
     """, nativeQuery = true)
   List<GrammarFilterRow> findAllGrammarFilters(List<UUID> grammarIds);
+
+  List<SystemFilter> findAllByLanguage(String language);
 }

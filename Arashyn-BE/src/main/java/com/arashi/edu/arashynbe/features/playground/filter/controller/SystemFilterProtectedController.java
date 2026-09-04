@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/system-filters")
+@RequestMapping("/protected/system-filters")
 @RequiredArgsConstructor
-public class SystemFilterController {
+public class SystemFilterProtectedController {
 
   private final SystemFilterService systemFilterService;
 

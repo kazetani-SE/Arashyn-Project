@@ -1,4 +1,4 @@
-import type { Example } from "../example/example_types";
+import type {Example, ExampleCreateRequest} from "../example/example_types";
 
 export type Meaning = {
     id: string;
@@ -6,3 +6,9 @@ export type Meaning = {
     groupKey: number;
     examples: Example[];
 };
+
+export type MeaningCreateRequest = {
+    content: string;
+    isPublic: boolean;
+    examples: ExampleCreateRequest[];
+}

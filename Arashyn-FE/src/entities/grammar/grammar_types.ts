@@ -1,6 +1,8 @@
-import type {ComponentGroup} from "@/entities/component/component_types.ts";
-import type {Note} from "@/entities/note/note_types.ts";
-import type {Filter} from "@/entities/filter/filter_stypes.ts";
+import type {ComponentCreateRequest, ComponentGroup} from "@/entities/component/component_types.ts";
+import type {NoteCreateRequest, Note} from "@/entities/note/note_types.ts";
+import type {Filter} from "@/entities/filter/filter_types.ts";
+import type {MeaningCreateRequest} from "@/entities/meaning/meaning_types.ts";
+import type {Language} from "@/shared/enum/language.ts";
 
 export type GrammarComponent = {
     groupKey: number;
@@ -17,7 +19,7 @@ export type GrammarFilter = {
     name: string
 }
 
-export type grammar_response = {
+export type GrammarResponse = {
     id: string
     title: string
     components: GrammarComponent[]
@@ -25,7 +27,7 @@ export type grammar_response = {
     filters: GrammarFilter[]
 }
 
-export type grammar_detail_response = {
+export type GrammarDetailResponse = {
     id: string;
     title: string;
     language: string;
@@ -36,3 +38,22 @@ export type grammar_detail_response = {
     notes: Note[];
     filters: Filter[];
 };
+
+export type GroupCreateRequest = {
+    groupKey: number;
+    components: ComponentCreateRequest[];
+    meanings: MeaningCreateRequest[];
+}
+
+export type GrammarCreateRequest = {
+    title: string;
+    language: Language;
+    isPublic: boolean;
+    groups: GroupCreateRequest[];
+    notes: NoteCreateRequest[];
+    filterIds: string[];
+}
+
+export type GrammarCreateResponse = {
+    id: string;
+}

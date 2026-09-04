@@ -81,9 +81,7 @@ public class GrammarModifyServiceImpl implements GrammarModifyService {
   public void updateGrammar(@Valid GrammarUpdateRequest request) {
     UUID oldGrammarId = request.oldGrammarID();
 
-    var newGrammarId = UUID.fromString(
-            grammarCreateService.createNewGrammar(request.newGrammar())
-    );
+    var newGrammarId = grammarCreateService.createNewGrammar(request.newGrammar()).id();
 
     meaningService.transferReference(
             new MeaningTransferRefRequest(

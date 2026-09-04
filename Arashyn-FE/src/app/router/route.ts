@@ -8,6 +8,7 @@ export const ROUTE_PATHS = {
     DASHBOARD: "/dashboard",
     COMMUNITY: "/community",
     SETTINGS: "/settings",
+    CREATE: "/create",
 
     ITEM_LIST: "/item_list/:type",
     SEARCH: "/search",

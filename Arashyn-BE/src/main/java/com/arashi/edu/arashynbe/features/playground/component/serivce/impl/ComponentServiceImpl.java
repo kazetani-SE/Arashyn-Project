@@ -35,8 +35,8 @@ public class ComponentServiceImpl implements ComponentService {
     for (ComponentCreateRequest request : requests) {
 
       boolean hasKeyword =
-              request.keyWord() != null &&
-                      !request.keyWord().isBlank();
+              request.keyword() != null &&
+                      !request.keyword().isBlank();
 
       boolean hasForm =
               request.formId() != null;
@@ -58,7 +58,7 @@ public class ComponentServiceImpl implements ComponentService {
               .grammar(grammar)
               .form(form)
               .order(request.order())
-              .keyword(hasKeyword ? request.keyWord().trim() : null)
+              .keyword(hasKeyword ? request.keyword().trim() : null)
               .optional(request.optional())
               .groupKey(groupKey.shortValue())
               .build();

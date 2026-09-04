@@ -216,6 +216,12 @@ public enum ErrorCode {
                 "Form not found."
   ),
 
+  INVALID_LANGUAGE(
+          HttpStatus.BAD_REQUEST,
+          "INVALID_LANGUAGE",
+          "Invalid language."
+  ),
+
   INVALID_COMPONENT_REFERENCE(
           HttpStatus.BAD_REQUEST,
         "INVALID_COMPONENT_REFERENCE",

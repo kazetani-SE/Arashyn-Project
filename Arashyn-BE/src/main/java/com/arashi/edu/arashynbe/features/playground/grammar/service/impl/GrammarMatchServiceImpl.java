@@ -129,7 +129,7 @@ public class GrammarMatchServiceImpl implements GrammarMatchService {
           List<ComponentCreateRequest> components
   ) {
     return components.stream()
-            .filter(component -> component.keyWord() != null)
+            .filter(component -> component.keyword() != null)
             .findFirst()
             .orElse(components.getFirst());
   }
@@ -138,9 +138,9 @@ public class GrammarMatchServiceImpl implements GrammarMatchService {
           ComponentCreateRequest anchor
   ) {
 
-    if (anchor.keyWord() != null) {
+    if (anchor.keyword() != null) {
       return componentRepo.findGrammarIdsByKeywordAndOrder(
-              anchor.keyWord(),
+              anchor.keyword(),
               anchor.order().shortValue()
       );
     }
@@ -243,8 +243,8 @@ public class GrammarMatchServiceImpl implements GrammarMatchService {
       return false;
     }
 
-    if (request.keyWord() != null) {
-      return request.keyWord().equals(candidate.getKeyword());
+    if (request.keyword() != null) {
+      return request.keyword().equals(candidate.getKeyword());
     }
 
     return request.formId().equals(candidate.getForm().getId());

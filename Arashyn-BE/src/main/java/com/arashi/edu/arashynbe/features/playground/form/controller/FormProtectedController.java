@@ -4,22 +4,23 @@ import com.arashi.edu.arashynbe.features.playground.form.dto.request.FormCreateR
 import com.arashi.edu.arashynbe.features.playground.form.service.FormService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/contributor/forms")
+@RequestMapping("/protected/forms")
 @RequiredArgsConstructor
-public class FormController {
+public class FormProtectedController {
 
   private final FormService formService;
 
   @PostMapping
-  public UUID create(
+  public ResponseEntity<UUID> create(
           @Valid @RequestBody FormCreateRequest request
   ) {
-    return formService.create(request);
+    return ResponseEntity.ok(formService.create(request));
   }
 
 }

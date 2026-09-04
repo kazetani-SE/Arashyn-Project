@@ -14,3 +14,10 @@ export type ComponentGroup = {
     components: Component[];
     meanings: Meaning[];
 };
+
+export type ComponentCreateRequest = {
+    order: number;
+    keyword: string | null;
+    formId: string | null;
+    optional: boolean;
+}

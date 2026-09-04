@@ -5,11 +5,7 @@ import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarE
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarListRequest;
 
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarUpdateRequest;
-import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.ExistingGrammarResponse;
-import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarDetailResponse;
-import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarEditResponse;
-import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarListResponse;
-import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarSimilarResponse;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.*;
 
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarCreateService;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarDeleteService;
@@ -45,7 +41,7 @@ public class GrammarServiceImpl implements GrammarService {
   private final int PAGE_SIZE = 20;
 
   @Override
-  public String createNewGrammar(GrammarCreateRequest request) {
+  public GrammarCreateResponse createNewGrammar(GrammarCreateRequest request) {
     return grammarCreateService.createNewGrammar(request);
   }
 

@@ -14,7 +14,7 @@ public record ComponentCreateRequest(
 
         UUID formId,
 
-        String keyWord,
+        String keyword,
 
         @NotNull
         boolean optional

@@ -21,7 +21,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 @RestController
-@RequestMapping("/grammar-public")
+@RequestMapping("/public/grammar")
 @RequiredArgsConstructor
 public class GrammarPublicController {
 

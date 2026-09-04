@@ -3,14 +3,14 @@ import type {Meaning} from "@/entities/meaning/meaning_types.ts";
 
 function ExampleItem({ example }: { example: Example }) {
     return (
-        <div className="text-sm">
+        <div className="text-base">
             <p className="text-neutral-200">{example.sentence}</p>
 
-            <p className="text-neutral-500">{example.translation}</p>
+            <p className="text-neutral-400">{example.translation}</p>
 
             {example.note && (
-                <p className="mt-0.5 text-xs italic text-neutral-600">
-                    {example.note}
+                <p className="mt-0.5 text-xs italic text-neutral-500">
+                    *{example.note}
                 </p>
             )}
         </div>
@@ -26,7 +26,7 @@ function MeaningItem({
 }) {
     return (
         <div className="rounded-xl border border-[#1e1b3a] bg-[#12101f]/50 p-5">
-            <div className="flex gap-2 text-sm">
+            <div className="flex gap-2 text-base">
                 <span className="shrink-0 font-medium text-[#a5adf0]">
                     {index + 1}.
                 </span>

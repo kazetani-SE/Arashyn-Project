@@ -1,6 +1,11 @@
 import { api } from "@/lib/api/request.ts";
 import type { PageResponse } from "@/lib/api/types.ts";
-import type {grammar_detail_response, grammar_response} from "@/entities/grammar/grammar_types.ts";
+import type {
+    GrammarCreateRequest,
+    GrammarCreateResponse,
+    GrammarDetailResponse,
+    GrammarResponse
+} from "@/entities/grammar/grammar_types.ts";
 
 export type GrammarListParams = {
     page?: number;
@@ -16,7 +21,7 @@ export const grammarService = {
     list: (params: GrammarListParams = {}) => {
         const { page = DEFAULT_PAGE, size = DEFAULT_SIZE, query, filters } = params;
 
-        return api.get<PageResponse<grammar_response>>("/grammar-public/item_list/grammar", {
+        return api.get<PageResponse<GrammarResponse>>("/public/grammar/item_list/grammar", {
             params: {
                 page,
                 size,
@@ -26,7 +31,11 @@ export const grammarService = {
         });
     },
 
-    /** GET /grammar-public/:grammarId */
+    /** GET /public/grammar/:grammarId */
     getDetail: (grammarId: string) =>
-        api.get<grammar_detail_response>(`/grammar-public/${grammarId}`),
+        api.get<GrammarDetailResponse>(`/public/grammar/${grammarId}`),
+
+    /** POST /protected/grammar/create */
+    create: (grammar: GrammarCreateRequest) =>
+        api.post<GrammarCreateResponse>("/protected/grammar/create", grammar),
 };

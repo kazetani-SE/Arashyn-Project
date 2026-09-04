@@ -1,7 +1,7 @@
 import * as React from "react"
-import type {grammar_detail_response} from "@/entities/grammar/grammar_types.ts";
+import type {GrammarDetailResponse} from "@/entities/grammar/grammar_types.ts";
 
-function transformDetail(data: grammar_detail_response) {
+function transformDetail(data: GrammarDetailResponse) {
     const groups = [...data.groups]
         .sort((a, b) => a.groupKey - b.groupKey)
         .map((group) => {
@@ -63,10 +63,10 @@ function transformDetail(data: grammar_detail_response) {
 
 export type DetailView = ReturnType<typeof transformDetail>
 
-export function useDetail(data: grammar_detail_response): DetailView {
+export function useDetail(data: GrammarDetailResponse): DetailView {
     return React.useMemo(() => transformDetail(data), [data])
 }
 
-export function useDetailList(list: grammar_detail_response[]): DetailView[] {
+export function useDetailList(list: GrammarDetailResponse[]): DetailView[] {
     return React.useMemo(() => list.map(transformDetail), [list])
 }

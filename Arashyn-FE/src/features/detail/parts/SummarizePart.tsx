@@ -2,12 +2,12 @@ import * as React from "react"
 import { Badge } from "@/components/ui/badge"
 import { Globe, Lock, User } from "lucide-react"
 import {VariantNav} from "@/features/detail/components/VariantNav.tsx";
-import type {grammar_detail_response} from "@/entities/grammar/grammar_types.ts";
+import type {GrammarDetailResponse} from "@/entities/grammar/grammar_types.ts";
 
 function SummarizePart({
                            data,
                        }: {
-    data: grammar_detail_response
+    data: GrammarDetailResponse
 }) {
     const [activeGroup, setActiveGroup] = React.useState<number>(
         data.groups[0]?.groupKey ?? 1

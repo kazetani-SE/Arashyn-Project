@@ -48,16 +48,13 @@ public class SecurityConfig {
                             "/v3/api-docs/**",
                             "/swagger-ui/**",
                             "/swagger-ui.html",
-                            "/grammar-public/**"
+                            "/public/**"
                     ).permitAll()
 
                     .requestMatchers("/admin/**")
                     .hasRole(ADMIN)
 
-                    .requestMatchers("/contributor/**")
-                    .hasAnyRole(CONTRIBUTOR,ADMIN)
-
-                    .requestMatchers("/system-filters/**")
+                    .requestMatchers("/protected/**")
                     .hasAnyRole(CONTRIBUTOR,ADMIN)
 
                     .requestMatchers("/email/**")

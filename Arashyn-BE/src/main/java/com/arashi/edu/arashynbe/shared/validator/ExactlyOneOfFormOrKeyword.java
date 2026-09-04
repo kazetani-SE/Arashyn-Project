@@ -12,7 +12,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ExactlyOneOfFormOrKeyword {
 
-  String message() default "Exactly one of formId or keyWord must be provided.";
+  String message() default "Exactly one of formId or keyword must be provided.";
 
   Class<?>[] groups() default {};
 

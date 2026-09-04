@@ -2,6 +2,7 @@ package com.arashi.edu.arashynbe.features.playground.form.service.impl;
 
 import com.arashi.edu.arashynbe.entity.Form;
 import com.arashi.edu.arashynbe.features.playground.form.dto.request.FormCreateRequest;
+import com.arashi.edu.arashynbe.features.playground.form.dto.response.ListFormResponse;
 import com.arashi.edu.arashynbe.features.playground.form.service.FormService;
 import com.arashi.edu.arashynbe.repository.FormRepo;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
@@ -39,5 +40,24 @@ public class FormServiceImpl implements FormService {
             .build();
 
     return formRepo.save(form).getId();
+  }
+
+  @Override
+  public ListFormResponse findByLanguage(String language) {
+    if (language == null || language.isBlank()) {
+      throw new ApiException(ErrorCode.INVALID_LANGUAGE);
+    }
+
+    var forms = formRepo.findByLanguage(language);
+
+    var responses = forms.stream()
+            .map(form -> new ListFormResponse.FormResponse(
+                    form.getId(),
+                    form.getName(),
+                    form.getType()
+            ))
+            .toList();
+
+    return new ListFormResponse(responses);
   }
 }

@@ -14,6 +14,7 @@ import DashboardPage from "@/features/dashboard/DashboardPage.tsx";
 import CommunityPage from "@/features/community/CommunityPage.tsx";
 import DetailPage from "@/features/detail/DetailPage.tsx";
 import ItemListPage from "@/features/popular/ItemListPage.tsx";
+import CreatePage from "@/features/create/CreatePage.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -73,6 +74,10 @@ export const router = createBrowserRouter([
             {
                 path: ROUTE_PATHS.DETAIL,
                 element: <DetailPage/>,
+            },
+            {
+                path: ROUTE_PATHS.CREATE,
+                element: <CreatePage/>,
             },
         ]
     },

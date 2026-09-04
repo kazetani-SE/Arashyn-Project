@@ -1,5 +1,5 @@
 import {MeaningItem} from "@/features/detail/components/MeaningItem.tsx";
-import type {grammar_detail_response} from "@/entities/grammar/grammar_types.ts";
+import type {GrammarDetailResponse} from "@/entities/grammar/grammar_types.ts";
 import type {Component} from "@/entities/component/component_types.ts";
 
 function renderPattern(components: Component[]) {
@@ -13,7 +13,7 @@ function renderPattern(components: Component[]) {
 function ContentPart({
                          data,
                      }: {
-    data: grammar_detail_response
+    data: GrammarDetailResponse
 }) {
     return (
         <main className="flex flex-col gap-14">

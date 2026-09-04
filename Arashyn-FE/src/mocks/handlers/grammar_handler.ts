@@ -1,7 +1,7 @@
 import { http } from "msw";
 import type { GrammarListResponse } from "@/mocks/types/response/grammar_list_response.ts";
 import { mockError, mockSuccess } from "@/mocks/utils.ts";
-import type { grammar_response, grammar_detail_response } from "@/entities/grammar/grammar_types.ts";
+import type { GrammarResponse, GrammarDetailResponse } from "@/entities/grammar/grammar_types.ts";
 import {grammar_detail_data, grammar_list_data} from "@/mocks/constant/grammar_mock_data.ts";
 
 const BASE_URL = import.meta.env.VITE_ARASHYN_API_BASE_URL ?? "http://localhost:8080";
@@ -19,7 +19,7 @@ export const grammar_handler = [
             ? filterParam.split(",").map((f) => f.trim().toLowerCase())
             : [];
 
-        let filtered: grammar_response[] = grammar_list_data;
+        let filtered: GrammarResponse[] = grammar_list_data;
 
         if (query) {
             filtered = filtered.filter(
@@ -65,6 +65,6 @@ export const grammar_handler = [
             });
         }
 
-        return mockSuccess<grammar_detail_response>(found, "Success", { delayMs: "realistic" });
+        return mockSuccess<GrammarDetailResponse>(found, "Success", { delayMs: "realistic" });
     }),
 ];

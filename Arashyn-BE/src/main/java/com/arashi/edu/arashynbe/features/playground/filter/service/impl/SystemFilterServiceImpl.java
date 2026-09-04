@@ -5,6 +5,7 @@ import com.arashi.edu.arashynbe.entity.Grammar;
 import com.arashi.edu.arashynbe.entity.SystemFilter;
 import com.arashi.edu.arashynbe.features.playground.filter.dto.request.AssignFilterRequest;
 import com.arashi.edu.arashynbe.features.playground.filter.dto.request.SystemFilterCreateRequest;
+import com.arashi.edu.arashynbe.features.playground.filter.dto.response.ListSystemFilterResponse;
 import com.arashi.edu.arashynbe.features.playground.filter.service.SystemFilterService;
 import com.arashi.edu.arashynbe.repository.GrammarRepo;
 import com.arashi.edu.arashynbe.repository.SystemFilterRepo;
@@ -94,6 +95,24 @@ public class SystemFilterServiceImpl implements SystemFilterService {
             grammar,
             request
     );
+  }
+
+  @Override
+  public ListSystemFilterResponse listSystemFiltersByLanguage(String language) {
+    if (language == null || language.isBlank()) {
+      throw new ApiException(ErrorCode.INVALID_LANGUAGE);
+    }
+
+    var systemFilters = systemFilterRepo.findAllByLanguage(language);
+
+    var responses = systemFilters.stream()
+            .map(systemFilter -> new ListSystemFilterResponse.SystemFilterResponse(
+                    systemFilter.getId(),
+                    systemFilter.getName()
+            ))
+            .toList();
+
+    return new ListSystemFilterResponse(responses);
   }
 
 }

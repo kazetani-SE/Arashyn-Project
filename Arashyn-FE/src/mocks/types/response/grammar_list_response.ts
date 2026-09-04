@@ -1,7 +1,7 @@
-import type {grammar_response} from "@/entities/grammar/grammar_types.ts";
+import type {GrammarResponse} from "@/entities/grammar/grammar_types.ts";
 
 export type GrammarListResponse = {
-    items: grammar_response[];
+    items: GrammarResponse[];
     page: number;
     size: number;
     totalPages: number;

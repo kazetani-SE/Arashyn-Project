@@ -7,6 +7,7 @@ import com.arashi.edu.arashynbe.features.playground.component.serivce.ComponentS
 import com.arashi.edu.arashynbe.features.playground.filter.dto.request.AssignFilterRequest;
 import com.arashi.edu.arashynbe.features.playground.filter.service.SystemFilterService;
 import com.arashi.edu.arashynbe.features.playground.grammar.dto.request.GrammarCreateRequest;
+import com.arashi.edu.arashynbe.features.playground.grammar.dto.response.GrammarCreateResponse;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarCreateService;
 import com.arashi.edu.arashynbe.features.playground.grammar.service.GrammarMatchService;
 import com.arashi.edu.arashynbe.features.playground.meaning.service.MeaningService;
@@ -35,7 +36,7 @@ public class GrammarCreateServiceImpl implements GrammarCreateService {
 
   @Override
   @Transactional
-  public String createNewGrammar(@Valid GrammarCreateRequest request) {
+  public GrammarCreateResponse createNewGrammar(@Valid GrammarCreateRequest request) {
 
     if (grammarMatchService.findExistingGrammar(request).grammarId().isPresent()) {
       throw new ApiException(ErrorCode.GRAMMAR_ALREADY_EXISTS);
@@ -75,7 +76,7 @@ public class GrammarCreateServiceImpl implements GrammarCreateService {
             request.notes()
     );
 
-    return grammar.getId().toString();
+    return new GrammarCreateResponse(grammar.getId());
   }
 
   private Account loadCurrentUser() {

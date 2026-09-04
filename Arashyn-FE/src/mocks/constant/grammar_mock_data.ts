@@ -1,9 +1,9 @@
 import type {
-    grammar_response,
-    grammar_detail_response,
+    GrammarResponse,
+    GrammarDetailResponse,
 } from "@/entities/grammar/grammar_types.ts";
 
-export const grammar_detail_data: grammar_detail_response[] = [
+export const grammar_detail_data: GrammarDetailResponse[] = [
     {
         id: "grammar-001",
         title: "～てはいけない",
@@ -648,8 +648,8 @@ export const grammar_detail_data: grammar_detail_response[] = [
  * Convert detail → list response.
  */
 function toGrammarSummary(
-    detail: grammar_detail_response,
-): grammar_response {
+    detail: GrammarDetailResponse,
+): GrammarResponse {
     return {
         id: detail.id,
         title: detail.title,
@@ -679,9 +679,9 @@ function toGrammarSummary(
  * List data is generated from the exact same detail data,
  * so every item in the list is guaranteed to have a detail.
  */
-export const grammar_list_data: grammar_response[] =
+export const grammar_list_data: GrammarResponse[] =
     grammar_detail_data.map(toGrammarSummary);
 
-export const grammar_mock_data: grammar_response =
+export const grammar_mock_data: GrammarResponse =
     grammar_list_data[0];
 

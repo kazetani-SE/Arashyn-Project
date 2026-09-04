@@ -1,6 +1,6 @@
-import type {grammar_response} from "@/entities/grammar/grammar_types.ts";
+import type {GrammarResponse} from "@/entities/grammar/grammar_types.ts";
 
-export function transformGrammar(data: grammar_response) {
+export function transformGrammar(data: GrammarResponse) {
     const grouped = new Map<number, typeof data.components>()
 
     for (const component of data.components) {

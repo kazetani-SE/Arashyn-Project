@@ -2,10 +2,10 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card.tsx";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import { useGrammarList } from "@/shared/hook/grammar_component_build.ts";
 import { SummarizeCard } from "@/components/item/SummarizeCard.tsx";
-import type {grammar_response} from "@/entities/grammar/grammar_types.ts";
+import type {GrammarResponse} from "@/entities/grammar/grammar_types.ts";
 
 type ItemGridProps = {
-    items: grammar_response[];
+    items: GrammarResponse[];
     isLoading?: boolean;
     isError?: boolean;
     /** Number of skeleton placeholders to show while loading. Defaults to the page size. */

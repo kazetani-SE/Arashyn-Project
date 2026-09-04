@@ -1,6 +1,6 @@
 import * as React from "react"
 import { useNavigate } from "react-router-dom"
-import { ROUTE_PATHS } from "@/app/router/route.ts"
+import {ROUTES} from "@/app/router/route.ts"
 import {
     Dialog,
     DialogContent,
@@ -28,6 +28,7 @@ type SummarizeCardClassNames = {
 }
 
 type SummarizeCardProps = React.ComponentProps<"div"> & {
+    grammarId: string
     title: React.ReactNode
     filters?: string[]
     patterns: SummarizePattern[]
@@ -42,6 +43,7 @@ function getFilterSizeClass(count: number) {
 }
 
 function SummarizeCard({
+                           grammarId,
                            title,
                            filters,
                            patterns,
@@ -63,7 +65,7 @@ function SummarizeCard({
 
     const onViewDetailHandler = () => {
         setOpen(false)
-        navigate(ROUTE_PATHS.DETAIL)
+        navigate(ROUTES.grammarDetail(grammarId))
     }
 
     return (

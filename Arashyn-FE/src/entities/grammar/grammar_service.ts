@@ -1,6 +1,6 @@
 import { api } from "@/lib/api/request.ts";
 import type { PageResponse } from "@/lib/api/types.ts";
-import type {grammar_response} from "@/entities/grammar/grammar_types.ts";
+import type {grammar_detail_response, grammar_response} from "@/entities/grammar/grammar_types.ts";
 
 export type GrammarListParams = {
     page?: number;
@@ -25,4 +25,8 @@ export const grammarService = {
             },
         });
     },
+
+    /** GET /grammar-public/:grammarId */
+    getDetail: (grammarId: string) =>
+        api.get<grammar_detail_response>(`/grammar-public/${grammarId}`),
 };

@@ -70,6 +70,7 @@ export default function ItemGrid({
                 <SummarizeCard
                     key={id}
                     className="h-full"
+                    grammarId={id}
                     title={title}
                     filters={filters}
                     patterns={patterns.map(({ groupKey, pattern }) => ({

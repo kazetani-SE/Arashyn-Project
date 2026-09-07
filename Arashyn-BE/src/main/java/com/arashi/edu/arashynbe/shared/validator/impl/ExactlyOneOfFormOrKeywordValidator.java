@@ -1,6 +1,6 @@
 package com.arashi.edu.arashynbe.shared.validator.impl;
 
-import com.arashi.edu.arashynbe.features.playground.component.dto.request.ComponentCreateRequest;
+import com.arashi.edu.arashynbe.features.system.component.dto.request.ComponentCreateRequest;
 import com.arashi.edu.arashynbe.shared.validator.ExactlyOneOfFormOrKeyword;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

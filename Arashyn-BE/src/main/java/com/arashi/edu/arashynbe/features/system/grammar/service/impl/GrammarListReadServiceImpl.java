@@ -1,0 +1,311 @@
+package com.arashi.edu.arashynbe.features.system.grammar.service.impl;
+
+import com.arashi.edu.arashynbe.entity.system.Grammar;
+import com.arashi.edu.arashynbe.entity.system.support.DeckGrammar;
+import com.arashi.edu.arashynbe.features.system.component.dto.response.GrammarComponentSummaryResponse;
+import com.arashi.edu.arashynbe.features.system.filter.dto.GrammarFilterRow;
+import com.arashi.edu.arashynbe.features.system.filter.dto.response.GrammarFilterResponse;
+import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarListRequest;
+import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarListResponse;
+import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarSummaryResponse;
+import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarListReadService;
+import com.arashi.edu.arashynbe.features.system.meaning.dto.response.GrammarMeaningSummaryResponse;
+import com.arashi.edu.arashynbe.repository.system.ComponentRepo;
+import com.arashi.edu.arashynbe.repository.system.GrammarRepo;
+import com.arashi.edu.arashynbe.repository.system.MeaningRepo;
+import com.arashi.edu.arashynbe.repository.system.SystemFilterRepo;
+import com.arashi.edu.arashynbe.repository.system.specification.GrammarSpecification;
+import com.arashi.edu.arashynbe.repository.system.support.DeckGrammarRepo;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
+
+@Service
+@RequiredArgsConstructor
+public class GrammarListReadServiceImpl implements GrammarListReadService {
+
+  private final GrammarRepo grammarRepo;
+  private final ComponentRepo componentRepo;
+  private final MeaningRepo meaningRepo;
+  private final SystemFilterRepo systemFilterRepo;
+  private final DeckGrammarRepo deckGrammarRepo;
+
+  @Override
+  public GrammarListResponse getPublicGrammars(
+          GrammarListRequest request,
+          Pageable pageable
+  ) {
+
+    Specification<Grammar> spec = GrammarSpecification.build(request);
+
+    Page<Grammar> grammarPage = grammarRepo.findAll(spec, pageable);
+
+    List<Grammar> grammars = grammarPage.getContent();
+
+    if (grammars.isEmpty()) {
+      return null;
+    }
+
+    List<UUID> grammarIds = grammars.stream()
+            .map(Grammar::getId)
+            .toList();
+
+    Map<UUID, List<GrammarComponentSummaryResponse>> componentMap =
+            buildComponentMap(grammarIds);
+
+    Map<UUID, List<GrammarMeaningSummaryResponse>> meaningMap =
+            buildMeaningMap(grammarIds);
+
+    Map<UUID, List<GrammarFilterResponse>> filterMap =
+            buildFilterMap(grammarIds);
+
+    List<GrammarSummaryResponse> responses =
+            grammars.stream()
+                    .map(grammar -> buildSummaryResponse(
+                            grammar,
+                            componentMap,
+                            meaningMap,
+                            filterMap
+                    ))
+                    .toList();
+
+    return new GrammarListResponse(
+            responses,
+            grammarPage.getNumber(),
+            grammarPage.getSize(),
+            grammarPage.getTotalPages(),
+            grammarPage.getTotalElements(),
+            grammarPage.hasNext(),
+            grammarPage.hasPrevious()
+    );
+  }
+
+  @Override
+  public GrammarListResponse getGrammars(
+          Pageable pageable
+  ) {
+    Page<Grammar> grammarPage =
+            grammarRepo.findMostPopularGrammars(pageable);
+
+    return buildGrammarListResponse(grammarPage);
+  }
+
+  @Override
+  public GrammarListResponse search(String query, List<String> filters, Pageable pageable) {
+    String normalizedQuery = query == null ? "" : query.trim();
+
+    List<UUID> filterIds = Optional.ofNullable(filters)
+            .orElseGet(List::of)
+            .stream()
+            .filter(Objects::nonNull)
+            .filter(Predicate.not(String::isBlank))
+            .map(UUID::fromString)
+            .distinct()
+            .toList();
+
+    Page<Grammar> grammarPage = filterIds.isEmpty()
+            ? grammarRepo.searchByTitle(normalizedQuery, pageable)
+            : grammarRepo.searchByTitleAndFilters(normalizedQuery, filterIds, filterIds.size(), pageable);
+
+    return buildGrammarListResponse(grammarPage);
+  }
+
+  @Override
+  public GrammarListResponse getByDeckId(UUID deckId) {
+
+    List<Grammar> grammars = deckGrammarRepo
+            .findByIdDeckId(deckId)
+            .stream()
+            .map(DeckGrammar::getGrammar)
+            .toList();
+
+    if (grammars.isEmpty()) {
+      return new GrammarListResponse(
+              List.of(),
+              0,
+              0,
+              0,
+              0L,
+              false,
+              false
+      );
+    }
+
+    List<UUID> grammarIds = grammars.stream()
+            .map(Grammar::getId)
+            .toList();
+
+    Map<UUID, List<GrammarComponentSummaryResponse>> componentMap =
+            buildComponentMap(grammarIds);
+
+    Map<UUID, List<GrammarMeaningSummaryResponse>> meaningMap =
+            buildMeaningMap(grammarIds);
+
+    Map<UUID, List<GrammarFilterResponse>> filterMap =
+            buildFilterMap(grammarIds);
+
+    List<GrammarSummaryResponse> responses = grammars.stream()
+            .map(grammar -> buildSummaryResponse(
+                    grammar,
+                    componentMap,
+                    meaningMap,
+                    filterMap
+            ))
+            .toList();
+
+    return new GrammarListResponse(
+            responses,
+            0,
+            responses.size(),
+            1,
+            Long.valueOf(responses.size()),
+            false,
+            false
+    );
+  }
+
+  private GrammarListResponse buildGrammarListResponse(
+          Page<Grammar> grammarPage
+  ) {
+
+    List<Grammar> grammars = grammarPage.getContent();
+
+    if (grammars.isEmpty()) {
+      return new GrammarListResponse(
+              List.of(),
+              grammarPage.getNumber(),
+              grammarPage.getSize(),
+              grammarPage.getTotalPages(),
+              grammarPage.getTotalElements(),
+              grammarPage.hasNext(),
+              grammarPage.hasPrevious()
+      );
+    }
+
+    List<UUID> grammarIds = grammars.stream()
+            .map(Grammar::getId)
+            .toList();
+
+    Map<UUID, List<GrammarComponentSummaryResponse>> componentMap =
+            buildComponentMap(grammarIds);
+
+    Map<UUID, List<GrammarMeaningSummaryResponse>> meaningMap =
+            buildMeaningMap(grammarIds);
+
+    Map<UUID, List<GrammarFilterResponse>> filterMap =
+            buildFilterMap(grammarIds);
+
+    List<GrammarSummaryResponse> responses =
+            grammars.stream()
+                    .map(grammar -> buildSummaryResponse(
+                            grammar,
+                            componentMap,
+                            meaningMap,
+                            filterMap
+                    ))
+                    .toList();
+
+    return new GrammarListResponse(
+            responses,
+            grammarPage.getNumber(),
+            grammarPage.getSize(),
+            grammarPage.getTotalPages(),
+            grammarPage.getTotalElements(),
+            grammarPage.hasNext(),
+            grammarPage.hasPrevious()
+    );
+  }
+
+  private Map<UUID, List<GrammarComponentSummaryResponse>> buildComponentMap(
+          List<UUID> grammarIds
+  ) {
+
+    return componentRepo
+            .findByGrammarIdInOrderByGrammarIdAscGroupKeyAscOrderAsc(
+                    grammarIds
+            )
+            .stream()
+            .collect(Collectors.groupingBy(
+                    component -> component.getGrammar().getId(),
+                    Collectors.mapping(
+                            component -> new GrammarComponentSummaryResponse(
+                                    component.getGroupKey(),
+                                    component.getOrder(),
+                                    component.getKeyword(),
+                                    component.getForm() == null
+                                            ? null
+                                            : component.getForm().getName()
+                            ),
+                            toList()
+                    )
+            ));
+  }
+
+  private Map<UUID, List<GrammarMeaningSummaryResponse>> buildMeaningMap(
+          List<UUID> grammarIds
+  ) {
+    return meaningRepo
+            .findAllByGrammarIdsAndGrammarOwner(grammarIds)
+            .stream()
+            .collect(Collectors.groupingBy(
+                    meaning -> meaning.getGrammar().getId(),
+                    Collectors.mapping(
+                            meaning -> new GrammarMeaningSummaryResponse(
+                                    meaning.getContent()
+                            ),
+                            toList()
+                    )
+            ));
+  }
+
+  private Map<UUID, List<GrammarFilterResponse>> buildFilterMap(
+          List<UUID> grammarIds
+  ) {
+
+    return systemFilterRepo.findAllGrammarFilters(grammarIds)
+            .stream()
+            .collect(Collectors.groupingBy(
+                    GrammarFilterRow::grammarId,
+                    Collectors.mapping(
+                            row -> new GrammarFilterResponse(
+                                    row.id(),
+                                    row.name()
+                            ),
+                            toList()
+                    )
+            ));
+  }
+
+  private GrammarSummaryResponse buildSummaryResponse(
+          Grammar grammar,
+          Map<UUID, List<GrammarComponentSummaryResponse>> componentMap,
+          Map<UUID, List<GrammarMeaningSummaryResponse>> meaningMap,
+          Map<UUID, List<GrammarFilterResponse>> filterMap
+  ) {
+
+    return new GrammarSummaryResponse(
+            grammar.getId(),
+            grammar.getTitle(),
+            componentMap.getOrDefault(
+                    grammar.getId(),
+                    List.of()
+            ),
+            meaningMap.getOrDefault(
+                    grammar.getId(),
+                    List.of()
+            ),
+            filterMap.getOrDefault(
+                    grammar.getId(),
+                    List.of()
+            )
+    );
+  }
+}

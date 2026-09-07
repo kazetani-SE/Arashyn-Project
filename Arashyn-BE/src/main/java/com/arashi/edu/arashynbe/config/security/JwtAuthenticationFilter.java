@@ -1,6 +1,6 @@
 package com.arashi.edu.arashynbe.config.security;
 
-import com.arashi.edu.arashynbe.repository.AccountRepo;
+import com.arashi.edu.arashynbe.repository.auth.AccountRepo;
 import com.arashi.edu.arashynbe.shared.enums.Role;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

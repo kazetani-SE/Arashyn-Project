@@ -175,7 +175,7 @@ public enum ErrorCode {
   GRAMMAR_NOT_FOUND(
           HttpStatus.NOT_FOUND,
           "GRAMMAR_NOT_FOUND",
-          "Grammar not found."
+          "One or more grammars were not found."
   ),
 
   MEANING_NOT_FOUND(
@@ -226,6 +226,45 @@ public enum ErrorCode {
           HttpStatus.BAD_REQUEST,
         "INVALID_COMPONENT_REFERENCE",
                 "Exactly one of keyword or formId must be provided."
+  ),
+
+  // ---------- Deck ----------
+  DECK_NOT_FOUND(
+          HttpStatus.NOT_FOUND,
+        "DECK_NOT_FOUND",
+                "Deck not found."
+  ),
+
+  DECK_CREATE_FAILED(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        "DECK_CREATE_FAILED",
+                "Failed to create deck."
+  ),
+
+  DECK_UPDATE_FAILED(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        "DECK_UPDATE_FAILED",
+                "Failed to update deck."
+  ),
+
+  DECK_DELETE_FAILED(
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        "DECK_DELETE_FAILED",
+                "Failed to delete deck."
+  ),
+
+  // ---------- Folder ----------
+  FOLDER_NOT_FOUND(
+          HttpStatus.NOT_FOUND,
+        "FOLDER_NOT_FOUND",
+                "Folder not found."
+  ),
+
+  // ---------- Deck Grammar ----------
+  GRAMMARS_NOT_FOUND(
+          HttpStatus.NOT_FOUND,
+        "GRAMMARS_NOT_FOUND",
+                "One or more grammars were not found."
   );
 
   private final HttpStatus status;

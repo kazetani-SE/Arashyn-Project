@@ -10,7 +10,7 @@ import com.arashi.edu.arashynbe.features.auth.service.AuthService;
 import com.arashi.edu.arashynbe.features.auth.service.OtpService;
 import com.arashi.edu.arashynbe.features.auth.service.RegistrationOtpService;
 import com.arashi.edu.arashynbe.features.email.service.EmailService;
-import com.arashi.edu.arashynbe.repository.AccountRepo;
+import com.arashi.edu.arashynbe.repository.auth.AccountRepo;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
 import com.fasterxml.jackson.core.JsonProcessingException;

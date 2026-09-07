@@ -1,0 +1,13 @@
+package com.arashi.edu.arashynbe.features.system.meaning.dto.request;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+
+import java.util.List;
+
+public record MeaningCreateRequest(
+
+        @NotEmpty
+        List<@Valid MeaningCreate> meanings
+) {
+}

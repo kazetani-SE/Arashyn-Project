@@ -1,15 +1,15 @@
 package com.arashi.edu.arashynbe.features.auth.service.impl;
 
-import com.arashi.edu.arashynbe.entity.Account;
-import com.arashi.edu.arashynbe.entity.AccountSession;
+import com.arashi.edu.arashynbe.entity.auth.Account;
+import com.arashi.edu.arashynbe.entity.auth.AccountSession;
 import com.arashi.edu.arashynbe.features.auth.client.SupabaseAuthClient;
 import com.arashi.edu.arashynbe.features.auth.dto.AuthResult;
 import com.arashi.edu.arashynbe.features.auth.dto.request.LoginRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.request.RegisterRequest;
 import com.arashi.edu.arashynbe.features.auth.dto.response.RegisterResponse;
 import com.arashi.edu.arashynbe.features.auth.service.AuthService;
-import com.arashi.edu.arashynbe.repository.AccountRepo;
-import com.arashi.edu.arashynbe.repository.AccountSessionRepo;
+import com.arashi.edu.arashynbe.repository.auth.AccountRepo;
+import com.arashi.edu.arashynbe.repository.auth.AccountSessionRepo;
 import com.arashi.edu.arashynbe.shared.enums.Role;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;

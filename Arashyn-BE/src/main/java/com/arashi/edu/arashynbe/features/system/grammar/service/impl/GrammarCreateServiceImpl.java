@@ -1,6 +1,5 @@
 package com.arashi.edu.arashynbe.features.system.grammar.service.impl;
 
-import com.arashi.edu.arashynbe.config.security.CurrentUser;
 import com.arashi.edu.arashynbe.entity.auth.Account;
 import com.arashi.edu.arashynbe.entity.system.Grammar;
 import com.arashi.edu.arashynbe.features.system.component.serivce.ComponentService;
@@ -14,6 +13,7 @@ import com.arashi.edu.arashynbe.features.system.meaning.service.MeaningService;
 import com.arashi.edu.arashynbe.features.system.note.service.NoteService;
 import com.arashi.edu.arashynbe.repository.auth.AccountRepo;
 import com.arashi.edu.arashynbe.repository.system.GrammarRepo;
+import com.arashi.edu.arashynbe.shared.currentaccount.CurrentAccountProvider;
 import com.arashi.edu.arashynbe.shared.enums.Language;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
@@ -34,6 +34,8 @@ public class GrammarCreateServiceImpl implements GrammarCreateService {
   private final SystemFilterService systemFilterService;
   private final GrammarMatchService grammarMatchService;
 
+  private final CurrentAccountProvider currentAccountProvider;
+
   @Override
   @Transactional
   public GrammarCreateResponse createNewGrammar(@Valid GrammarCreateRequest request) {
@@ -42,7 +44,7 @@ public class GrammarCreateServiceImpl implements GrammarCreateService {
       throw new ApiException(ErrorCode.GRAMMAR_ALREADY_EXISTS);
     }
 
-    Account owner = loadCurrentUser();
+    Account owner = currentAccountProvider.get();
 
     Grammar grammar = createGrammar(
             request.title(),
@@ -77,15 +79,6 @@ public class GrammarCreateServiceImpl implements GrammarCreateService {
     );
 
     return new GrammarCreateResponse(grammar.getId());
-  }
-
-  private Account loadCurrentUser() {
-
-    var userId = CurrentUser.getId();
-
-    return accountRepo.findById(userId)
-            .orElseThrow(() ->
-                    new ApiException(ErrorCode.USER_NOT_FOUND));
   }
 
   private Grammar createGrammar(

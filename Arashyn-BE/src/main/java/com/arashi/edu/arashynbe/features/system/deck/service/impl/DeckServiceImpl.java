@@ -1,6 +1,5 @@
 package com.arashi.edu.arashynbe.features.system.deck.service.impl;
 
-import com.arashi.edu.arashynbe.config.security.CurrentUser;
 import com.arashi.edu.arashynbe.entity.auth.Account;
 import com.arashi.edu.arashynbe.entity.system.Deck;
 import com.arashi.edu.arashynbe.entity.system.support.DeckGrammar;
@@ -19,13 +18,13 @@ import com.arashi.edu.arashynbe.features.system.folder.dto.response.FolderSummar
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarSummaryResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarListReadService;
-import com.arashi.edu.arashynbe.repository.auth.AccountRepo;
 import com.arashi.edu.arashynbe.repository.hub.UserDeckRepo;
 import com.arashi.edu.arashynbe.repository.system.DeckRepo;
 import com.arashi.edu.arashynbe.repository.system.FolderRepo;
 import com.arashi.edu.arashynbe.repository.system.GrammarRepo;
 import com.arashi.edu.arashynbe.repository.system.support.DeckGrammarRepo;
 import com.arashi.edu.arashynbe.repository.system.support.FolderDeckRepo;
+import com.arashi.edu.arashynbe.shared.currentaccount.CurrentAccountProvider;
 import com.arashi.edu.arashynbe.shared.enums.Language;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
@@ -50,15 +49,16 @@ public class DeckServiceImpl implements DeckService {
   private final GrammarRepo grammarRepo;
   private final FolderDeckRepo folderDeckRepo;
   private final DeckGrammarRepo deckGrammarRepo;
-  private final AccountRepo accountRepo;
   private final UserDeckRepo userDeckRepo;
 
   private final GrammarListReadService grammarListReadService;
+  private final CurrentAccountProvider currentAccountProvider;
 
   @Override
   public DeckIdResponse createDeck(DeckCreateRequest request) {
 
-    Account owner = loadCurrentUser();
+
+    Account owner = currentAccountProvider.get();
 
     Deck deck = new Deck();
 
@@ -279,14 +279,5 @@ public class DeckServiceImpl implements DeckService {
             deck.getCreatedAt(),
             deck.getUpdatedAt()
     );
-  }
-
-  private Account loadCurrentUser() {
-
-    var userId = CurrentUser.getId();
-
-    return accountRepo.findById(userId)
-            .orElseThrow(() ->
-                    new ApiException(ErrorCode.USER_NOT_FOUND));
   }
 }

@@ -2,6 +2,7 @@ package com.arashi.edu.arashynbe.features.hub.userdeck.dto.response;
 
 import com.arashi.edu.arashynbe.shared.enums.Language;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +20,9 @@ public record UserDeckListResponse(
 
           String description,
 
-          Language language
+          Language language,
+
+          OffsetDateTime lastOpenAt
 
   ){}
 

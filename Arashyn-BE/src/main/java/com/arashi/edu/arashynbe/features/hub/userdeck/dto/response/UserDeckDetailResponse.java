@@ -1,10 +1,9 @@
 package com.arashi.edu.arashynbe.features.hub.userdeck.dto.response;
 
-import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarSummaryResponse;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarListResponse;
 import com.arashi.edu.arashynbe.shared.enums.Language;
 
 import java.time.OffsetDateTime;
-import java.util.Set;
 import java.util.UUID;
 
 public record UserDeckDetailResponse(
@@ -19,7 +18,9 @@ public record UserDeckDetailResponse(
 
         Language language,
 
-        Set<GrammarSummaryResponse> grammars,
+        OffsetDateTime lastOpenAt,
+
+        UserGrammarListResponse grammars,
 
         OffsetDateTime createdAt,
 

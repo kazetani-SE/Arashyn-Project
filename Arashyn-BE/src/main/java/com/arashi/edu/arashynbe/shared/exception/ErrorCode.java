@@ -19,6 +19,12 @@ public enum ErrorCode {
           "Request validation failed."
   ),
 
+  INVALID_REQUEST(
+          HttpStatus.BAD_REQUEST,
+          "INVALID_REQUEST",
+          "Invalid request."
+  ),
+
   // ---------- Authentication ----------
   INVALID_CREDENTIALS(
           HttpStatus.UNAUTHORIZED,
@@ -265,6 +271,26 @@ public enum ErrorCode {
           HttpStatus.NOT_FOUND,
         "GRAMMARS_NOT_FOUND",
                 "One or more grammars were not found."
+  ),
+
+  // ---------- User Deck ----------
+  USER_DECK_NOT_FOUND(
+          HttpStatus.NOT_FOUND,
+          "USER_DECK_NOT_FOUND",
+          "User deck not found."
+  ),
+
+  USER_FOLDER_NOT_FOUND(
+          HttpStatus.NOT_FOUND,
+          "USER_FOLDER_NOT_FOUND",
+          "User folder not found."
+  ),
+
+  // ---------- User Grammar ----------
+  USER_GRAMMAR_NOT_FOUND(
+          HttpStatus.NOT_FOUND,
+          "USER_GRAMMAR_NOT_FOUND",
+          "User grammar not found."
   );
 
   private final HttpStatus status;

@@ -22,6 +22,7 @@ public class UserDeckController {
 
   private final UserDeckService userDeckService;
 
+  // C
   @PostMapping("/check_duplicate")
   public ResponseEntity<UserDeckDuplicateCheckResponse> checkDuplicate(@Valid @RequestBody UserDeckDuplicateCheckRequest request) {
     return ResponseEntity.ok(userDeckService.checkDuplicate(request));
@@ -32,17 +33,20 @@ public class UserDeckController {
     return ResponseEntity.ok(userDeckService.create(request));
   }
 
+  // U
   @PutMapping
   public ResponseEntity<UserDeckIdResponse> update(@Valid @RequestBody UserDeckUpdateRequest request){
     return ResponseEntity.ok(userDeckService.update(request));
   }
 
+  // D
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable UUID id){
     userDeckService.delete(id);
     return ResponseEntity.noContent().build();
   }
 
+  // R
   @GetMapping("/{id}")
   public ResponseEntity<UserDeckDetailResponse> detail(@PathVariable UUID id){
     return ResponseEntity.ok(userDeckService.findById(id));

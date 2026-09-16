@@ -1,5 +1,6 @@
 package com.arashi.edu.arashynbe.features.hub.userdeck.dto.request;
 
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateMultipleRequest;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
@@ -13,6 +14,8 @@ public record UserDeckCreateRequest(
 
         UUID userFolderId,
 
-        UUID sourceUserDeckId
+        UUID sourceUserDeckId,
+
+        UserGrammarCreateMultipleRequest userGrammars
 
 ) {}

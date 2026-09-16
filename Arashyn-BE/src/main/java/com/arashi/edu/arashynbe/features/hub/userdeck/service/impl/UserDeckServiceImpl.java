@@ -12,6 +12,9 @@ import com.arashi.edu.arashynbe.features.hub.userdeck.dto.response.UserDeckDupli
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.response.UserDeckIdResponse;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.response.UserDeckListResponse;
 import com.arashi.edu.arashynbe.features.hub.userdeck.service.UserDeckService;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateMultipleRequest;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateRequest;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.service.UserGrammarService;
 import com.arashi.edu.arashynbe.features.system.deck.dto.response.DeckDetailResponse;
 import com.arashi.edu.arashynbe.features.system.deck.service.DeckService;
 import com.arashi.edu.arashynbe.repository.hub.UserDeckRepo;
@@ -25,6 +28,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,6 +42,7 @@ public class UserDeckServiceImpl implements UserDeckService {
   private final UserFolderRepo userFolderRepo;
 
   private final DeckService deckService;
+  private final UserGrammarService userGrammarService;
 
   private final CurrentAccountProvider currentAccountProvider;
 
@@ -57,7 +62,7 @@ public class UserDeckServiceImpl implements UserDeckService {
                             : deck.getName()
             )
             .proficiency((short) 0)
-            .lastOpenAt(null);
+            .lastOpenAt(OffsetDateTime.now());
 
     if (request.sourceUserDeckId() != null) {
 
@@ -66,7 +71,7 @@ public class UserDeckServiceImpl implements UserDeckService {
                       request.sourceUserDeckId(),
                       user.getId()
               )
-              .orElseThrow(() -> new ApiException(ErrorCode.INTERNAL_SERVER_ERROR));
+              .orElseThrow(() -> new ApiException(ErrorCode.USER_DECK_NOT_FOUND));
 
       builder
               .proficiency(source.getProficiency())
@@ -82,12 +87,14 @@ public class UserDeckServiceImpl implements UserDeckService {
                       request.userFolderId(),
                       user.getId()
               )
-              .orElseThrow(() -> new ApiException(ErrorCode.INTERNAL_SERVER_ERROR));
+              .orElseThrow(() -> new ApiException(ErrorCode.USER_DECK_NOT_FOUND));
 
       userDeck.getUserFolders().add(folder);
     }
 
     UserDeck saved = userDeckRepo.save(userDeck);
+
+    cloneGrammarsFromDeck(saved.getId(), request.userGrammars());
 
     return new UserDeckIdResponse(saved.getId());
   }
@@ -120,7 +127,7 @@ public class UserDeckServiceImpl implements UserDeckService {
     Account user = currentAccountProvider.get();
 
     UserDeck userDeck = userDeckRepo.findByIdAndUserId(request.userDeckId(), user.getId())
-            .orElseThrow(() -> new ApiException(ErrorCode.INTERNAL_SERVER_ERROR));
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_DECK_NOT_FOUND));
 
     if (request.name() != null && !request.name().isBlank()) {
       userDeck.setName(request.name().trim());
@@ -135,7 +142,7 @@ public class UserDeckServiceImpl implements UserDeckService {
 
     if (currentFolderId == null) {
       UserFolder newFolder = userFolderRepo.findByIdAndUserId(newFolderId, user.getId())
-              .orElseThrow(() -> new ApiException(ErrorCode.INTERNAL_SERVER_ERROR));
+              .orElseThrow(() -> new ApiException(ErrorCode.USER_DECK_NOT_FOUND));
 
       userDeck.getUserFolders().add(newFolder);
       return new UserDeckIdResponse(userDeck.getId());
@@ -145,7 +152,7 @@ public class UserDeckServiceImpl implements UserDeckService {
             userDeck.getId(), user.getId(), currentFolderId);
 
     if (!exists) {
-      throw new ApiException(ErrorCode.INTERNAL_SERVER_ERROR);
+      throw new ApiException(ErrorCode.USER_DECK_NOT_FOUND);
     }
 
     if (newFolderId == null) {
@@ -158,7 +165,7 @@ public class UserDeckServiceImpl implements UserDeckService {
     }
 
     UserFolder newFolder = userFolderRepo.findByIdAndUserId(newFolderId, user.getId())
-            .orElseThrow(() -> new ApiException(ErrorCode.INTERNAL_SERVER_ERROR));
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_DECK_NOT_FOUND));
 
     userDeck.getUserFolders().removeIf(folder -> folder.getId().equals(currentFolderId));
     userDeck.getUserFolders().add(newFolder);
@@ -182,7 +189,8 @@ public class UserDeckServiceImpl implements UserDeckService {
                       userDeck.getId(),
                       name,
                       deck.getDescription(),
-                      Language.valueOf(deck.getLanguage())
+                      Language.valueOf(deck.getLanguage()),
+                      userDeck.getLastOpenAt()
               );
             })
             .toList();
@@ -191,12 +199,14 @@ public class UserDeckServiceImpl implements UserDeckService {
   }
 
   @Override
-  @Transactional(readOnly = true)
+  @Transactional
   public UserDeckDetailResponse findById(UUID id) {
     Account user = currentAccountProvider.get();
 
     UserDeck userDeck = userDeckRepo.findByIdAndUserId(id, user.getId())
-            .orElseThrow(() -> new ApiException(ErrorCode.INTERNAL_SERVER_ERROR));
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_DECK_NOT_FOUND));
+
+    userDeck.setLastOpenAt(OffsetDateTime.now());
 
     UUID deckId = userDeck.getDeck().getId();
     DeckDetailResponse deck = deckService.findDeckById(deckId);
@@ -207,7 +217,8 @@ public class UserDeckServiceImpl implements UserDeckService {
             userDeck.getName(),
             deck.description(),
             deck.language(),
-            deck.grammars(),
+            userDeck.getLastOpenAt(),
+            userGrammarService.findAllByUserDeckId(userDeck.getId()),
             userDeck.getCreatedAt(),
             userDeck.getUpdatedAt()
     );
@@ -218,8 +229,31 @@ public class UserDeckServiceImpl implements UserDeckService {
     Account user = currentAccountProvider.get();
 
     UserDeck userDeck = userDeckRepo.findByIdAndUserId(id, user.getId())
-            .orElseThrow(() -> new ApiException(ErrorCode.INTERNAL_SERVER_ERROR));
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_DECK_NOT_FOUND));
 
     userDeckRepo.delete(userDeck);
+
+    userGrammarService.deleteRedundant();
+  }
+
+  private void cloneGrammarsFromDeck(UUID userDeckId, UserGrammarCreateMultipleRequest userGrammarsRequest) {
+    if (userGrammarsRequest == null
+            || userGrammarsRequest.userGrammarCreateRequestsList() == null
+            || userGrammarsRequest.userGrammarCreateRequestsList().isEmpty()) {
+      return;
+    }
+
+    List<UserGrammarCreateRequest> requests = userGrammarsRequest.userGrammarCreateRequestsList().stream()
+            .map(req -> new UserGrammarCreateRequest(
+                    req.grammarId(),
+                    req.name(),
+                    userDeckId,
+                    req.sourceUserGrammarId()
+            ))
+            .toList();
+
+    userGrammarService.createMultiple(
+            new UserGrammarCreateMultipleRequest(requests)
+    );
   }
 }

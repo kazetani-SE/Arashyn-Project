@@ -1,7 +1,15 @@
 package com.arashi.edu.arashynbe.features.hub.usergrammar.service;
 
-import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.*;
-import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.*;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateMultipleRequest;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateRequest;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarDuplicateCheckMultipleRequest;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarDuplicateCheckRequest;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarUpdateRequest;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarDetailResponse;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarDuplicateCheckMultipleResponse;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarDuplicateCheckResponse;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarIdResponse;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarListResponse;
 
 import java.util.UUID;
 

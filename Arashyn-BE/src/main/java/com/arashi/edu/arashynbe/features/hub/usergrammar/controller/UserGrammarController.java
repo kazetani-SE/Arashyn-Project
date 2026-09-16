@@ -4,7 +4,11 @@ import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammar
 import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarDuplicateCheckMultipleRequest;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarDuplicateCheckRequest;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarUpdateRequest;
-import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.*;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarDetailResponse;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarDuplicateCheckMultipleResponse;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarDuplicateCheckResponse;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarIdResponse;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarListResponse;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.service.UserGrammarService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

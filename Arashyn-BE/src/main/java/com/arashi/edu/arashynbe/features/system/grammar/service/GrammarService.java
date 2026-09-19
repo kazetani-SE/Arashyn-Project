@@ -1,5 +1,6 @@
 package com.arashi.edu.arashynbe.features.system.grammar.service;
 
+import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarCreateMultipleRequest;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarExtendRequest;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarListRequest;
@@ -19,6 +20,8 @@ import java.util.UUID;
 public interface GrammarService {
 
   GrammarCreateResponse createNewGrammar(GrammarCreateRequest request);
+
+  void createMultipleGrammar(GrammarCreateMultipleRequest request);
 
   GrammarDetailResponse getDetail(UUID grammarId);
 

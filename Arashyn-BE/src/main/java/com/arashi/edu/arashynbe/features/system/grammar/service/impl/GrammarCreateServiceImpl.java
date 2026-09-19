@@ -5,6 +5,7 @@ import com.arashi.edu.arashynbe.entity.system.Grammar;
 import com.arashi.edu.arashynbe.features.system.component.serivce.ComponentService;
 import com.arashi.edu.arashynbe.features.system.filter.dto.request.AssignFilterRequest;
 import com.arashi.edu.arashynbe.features.system.filter.service.SystemFilterService;
+import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarCreateMultipleRequest;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarCreateResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarCreateService;
@@ -79,6 +80,14 @@ public class GrammarCreateServiceImpl implements GrammarCreateService {
     );
 
     return new GrammarCreateResponse(grammar.getId());
+  }
+
+  @Override
+  @Transactional
+  public void createMultipleGrammar(GrammarCreateMultipleRequest request) {
+    for (GrammarCreateRequest grammarRequest : request.createRequestList()) {
+      createNewGrammar(grammarRequest);
+    }
   }
 
   private Grammar createGrammar(

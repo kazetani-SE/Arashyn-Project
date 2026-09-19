@@ -1,5 +1,6 @@
 package com.arashi.edu.arashynbe.features.system.grammar.service.impl;
 
+import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarCreateMultipleRequest;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarExtendRequest;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarListRequest;
@@ -49,6 +50,12 @@ public class GrammarServiceImpl implements GrammarService {
   public GrammarCreateResponse createNewGrammar(GrammarCreateRequest request) {
     return grammarCreateService.createNewGrammar(request);
   }
+
+  @Override
+  public void createMultipleGrammar(GrammarCreateMultipleRequest request) {
+    grammarCreateService.createMultipleGrammar(request);
+  }
+
 
   @Override
   @Transactional(readOnly = true)

@@ -17,7 +17,10 @@ public class ApiResponseWrapperAdvice implements ResponseBodyAdvice<Object> {
   public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
     String declaringClass = returnType.getDeclaringClass().getPackageName();
 
-    return declaringClass.startsWith("com.arashi.edu.arashynbe");
+    return declaringClass.startsWith("com.arashi.edu.arashynbe")
+            && !declaringClass.startsWith(
+            "com.arashi.edu.arashynbe.features.transfer"
+    );
   }
 
   @Override

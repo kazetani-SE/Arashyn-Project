@@ -259,6 +259,7 @@ public class GrammarListReadServiceImpl implements GrammarListReadService {
                     meaning -> meaning.getGrammar().getId(),
                     Collectors.mapping(
                             meaning -> new GrammarMeaningSummaryResponse(
+                                    meaning.getGroupKey(),
                                     meaning.getContent()
                             ),
                             toList()

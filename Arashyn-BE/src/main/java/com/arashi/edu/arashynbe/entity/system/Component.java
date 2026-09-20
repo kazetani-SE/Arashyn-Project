@@ -43,4 +43,8 @@ public class Component {
 
   @Column(name = "group_key", nullable = false)
   private Short groupKey;
+
+  public boolean isKeyword(){
+    return this.keyword != null;
+  }
 }

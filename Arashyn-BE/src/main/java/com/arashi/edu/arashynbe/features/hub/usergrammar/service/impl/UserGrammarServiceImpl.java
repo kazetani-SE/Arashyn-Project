@@ -321,6 +321,7 @@ public class UserGrammarServiceImpl implements UserGrammarService {
               List<GrammarMeaningSummaryResponse> meanings = detail.groups().stream()
                       .flatMap(group -> group.meanings().stream())
                       .map(meaning -> new GrammarMeaningSummaryResponse(
+                              meaning.groupKey(),
                               meaning.content()
                       ))
                       .toList();

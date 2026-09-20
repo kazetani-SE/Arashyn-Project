@@ -11,7 +11,7 @@ import com.arashi.edu.arashynbe.features.system.note.dto.request.NoteCreateReque
 import com.arashi.edu.arashynbe.features.transfer.dto.IdLabel;
 import com.arashi.edu.arashynbe.features.transfer.dto.MeaningKey;
 import com.arashi.edu.arashynbe.features.transfer.dto.MeaningRow;
-import com.arashi.edu.arashynbe.features.transfer.dto.request.ExcelTemplateExportRequest;
+import com.arashi.edu.arashynbe.features.transfer.dto.request.TemplateExportRequest;
 import com.arashi.edu.arashynbe.features.transfer.service.ExcelService;
 import com.arashi.edu.arashynbe.shared.enums.Language;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,7 @@ public class ExcelServiceImpl implements ExcelService {
   private static final String EXCEL_TEMPLATE_PATH = "templates/excel/grammar_entry_template.xlsx";
 
   @Override
-  public byte[] exportTemplate(ExcelTemplateExportRequest request) throws IOException {
+  public byte[] exportTemplate(TemplateExportRequest request) throws IOException {
     String languageCode = request.language().getCode();
 
     List<IdLabel> forms = formService.findByLanguage(languageCode)

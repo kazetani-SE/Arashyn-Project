@@ -2,6 +2,7 @@ package com.arashi.edu.arashynbe.features.system.grammar.controller;
 
 import com.arashi.edu.arashynbe.features.system.filter.dto.request.AssignFilterRequest;
 import com.arashi.edu.arashynbe.features.system.filter.service.SystemFilterService;
+import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarCreateMultipleRequest;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarExtendRequest;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.request.GrammarUpdateRequest;
@@ -30,6 +31,15 @@ public class GrammarProtectedController {
     return ResponseEntity.ok(
               grammarService.createNewGrammar(request)
     );
+  }
+
+  @PostMapping("/create_multiple")
+  public ResponseEntity<Void> createMultiple(
+          @Valid @RequestBody GrammarCreateMultipleRequest request
+  ) {
+    grammarService.createMultipleGrammar(request);
+
+    return ResponseEntity.noContent().build();
   }
 
   @PostMapping("/{grammarId}/filters")

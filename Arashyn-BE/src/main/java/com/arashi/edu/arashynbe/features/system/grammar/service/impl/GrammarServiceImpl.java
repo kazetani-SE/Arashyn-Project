@@ -22,7 +22,6 @@ import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarService;
 
 import com.arashi.edu.arashynbe.shared.enums.GrammarSortBy;
 import com.arashi.edu.arashynbe.shared.enums.SortDirection;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -92,13 +91,13 @@ public class GrammarServiceImpl implements GrammarService {
 
   @Override
   public ExistingGrammarResponse findExistingGrammar(
-          @Valid GrammarCreateRequest request
+          GrammarCreateRequest request
   ){
     return grammarMatchService.findExistingGrammar(request);
   }
 
   @Override
-  public GrammarSimilarResponse findSimilarGrammar(@Valid GrammarCreateRequest request) {
+  public GrammarSimilarResponse findSimilarGrammar(GrammarCreateRequest request) {
     return grammarMatchService.findSimilarGrammar(request);
   }
 

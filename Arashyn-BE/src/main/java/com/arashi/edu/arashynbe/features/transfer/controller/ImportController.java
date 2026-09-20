@@ -2,6 +2,9 @@ package com.arashi.edu.arashynbe.features.transfer.controller;
 
 import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarService;
 import com.arashi.edu.arashynbe.features.transfer.service.ExcelService;
+import com.arashi.edu.arashynbe.shared.exception.ApiException;
+import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +22,7 @@ public class ImportController {
 
   private final ExcelService excelService;
   private final GrammarService grammarService;
+  private final Validator validator;
 
   @PostMapping(
           value = "/cvs",
@@ -26,9 +30,15 @@ public class ImportController {
   )
   public ResponseEntity<Void> exportTemplate(MultipartFile file) throws IOException {
 
-    var grammars = excelService.importData(file);
+    var request = excelService.importData(file);
 
-    grammarService.createMultipleGrammar(grammars);
+    var violations = validator.validate(request);
+
+    if (!violations.isEmpty()) {
+      throw new ApiException(ErrorCode.INVALID_REQUEST);
+    }
+
+    grammarService.createMultipleGrammar(request);
 
     return ResponseEntity.ok().build();
 

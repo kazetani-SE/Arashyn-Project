@@ -12,22 +12,21 @@ import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarCreateSer
 import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarMatchService;
 import com.arashi.edu.arashynbe.features.system.meaning.service.MeaningService;
 import com.arashi.edu.arashynbe.features.system.note.service.NoteService;
-import com.arashi.edu.arashynbe.repository.auth.AccountRepo;
 import com.arashi.edu.arashynbe.repository.system.GrammarRepo;
 import com.arashi.edu.arashynbe.shared.currentaccount.CurrentAccountProvider;
 import com.arashi.edu.arashynbe.shared.enums.Language;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service
 @RequiredArgsConstructor
+@Validated
 public class GrammarCreateServiceImpl implements GrammarCreateService {
 
-  private final AccountRepo accountRepo;
   private final GrammarRepo grammarRepo;
   private final ComponentService componentService;
   private final MeaningService meaningService;
@@ -39,7 +38,7 @@ public class GrammarCreateServiceImpl implements GrammarCreateService {
 
   @Override
   @Transactional
-  public GrammarCreateResponse createNewGrammar(@Valid GrammarCreateRequest request) {
+  public GrammarCreateResponse createNewGrammar(GrammarCreateRequest request) {
 
     if (grammarMatchService.findExistingGrammar(request).grammarId().isPresent()) {
       throw new ApiException(ErrorCode.GRAMMAR_ALREADY_EXISTS);

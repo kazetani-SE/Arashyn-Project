@@ -33,7 +33,7 @@ public class AnswerCryptoUtil {
       Cipher cipher = Cipher.getInstance(AES_ALGO);
       cipher.init(Cipher.ENCRYPT_MODE, buildKey(), new GCMParameterSpec(GCM_TAG_LENGTH_BITS, iv));
 
-      byte[] cipherText = cipher.doFinal(normalize(plainAnswer).getBytes(StandardCharsets.UTF_8));
+      byte[] cipherText = cipher.doFinal(plainAnswer.getBytes(StandardCharsets.UTF_8));
 
       return new String[]{
               Base64.getEncoder().encodeToString(iv),
@@ -55,7 +55,6 @@ public class AnswerCryptoUtil {
       byte[] plainBytes = cipher.doFinal(cipherText);
       return new String(plainBytes, StandardCharsets.UTF_8);
     } catch (Exception e) {
-      // token bị sửa/giả mạo -> GCM sẽ throw AEADBadTagException, coi như invalid
       throw new ApiException(ErrorCode.INVALID_ANSWER_TOKEN);
     }
   }

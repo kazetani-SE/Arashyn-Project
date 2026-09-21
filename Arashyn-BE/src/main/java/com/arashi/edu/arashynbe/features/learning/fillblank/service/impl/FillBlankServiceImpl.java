@@ -248,7 +248,7 @@ public class FillBlankServiceImpl implements FillBlankService {
     }
 
     String realAnswer = isKeyword ? component.keyword() : component.form();
-    String[] encrypted = answerCryptoUtil.encrypt(realAnswer); // [iv, token]
+    String[] encrypted = answerCryptoUtil.encrypt(realAnswer);
 
     List<String> choices = isKeyword ? List.of() : formChoicePool;
 

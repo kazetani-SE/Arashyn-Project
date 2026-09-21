@@ -1,8 +1,8 @@
 package com.arashi.edu.arashynbe.features.learning.fillblank.dto.request;
 
 import com.arashi.edu.arashynbe.shared.enums.Difficulty;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.util.UUID;
 
@@ -15,7 +15,7 @@ public record CreateFillBlankTestRequest(
         Difficulty difficulty,
 
         @NotNull
-        @Min(value = 5, message = "Number of questions must be at least 5")
+        @Positive
         Integer numOfQuestion,
 
         @NotNull

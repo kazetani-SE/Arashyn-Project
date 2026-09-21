@@ -200,7 +200,7 @@ public class UserDeckServiceImpl implements UserDeckService {
 
   @Override
   @Transactional
-  public UserDeckDetailResponse findById(UUID id) {
+  public UserDeckDetailResponse detailById(UUID id) {
     Account user = currentAccountProvider.get();
 
     UserDeck userDeck = userDeckRepo.findByIdAndUserId(id, user.getId())

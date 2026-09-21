@@ -49,7 +49,7 @@ public class UserDeckController {
   // R
   @GetMapping("/{id}")
   public ResponseEntity<UserDeckDetailResponse> detail(@PathVariable UUID id){
-    return ResponseEntity.ok(userDeckService.findById(id));
+    return ResponseEntity.ok(userDeckService.detailById(id));
   }
 
   @GetMapping()

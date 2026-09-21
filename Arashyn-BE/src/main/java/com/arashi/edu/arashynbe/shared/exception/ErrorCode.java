@@ -291,6 +291,50 @@ public enum ErrorCode {
           HttpStatus.NOT_FOUND,
           "USER_GRAMMAR_NOT_FOUND",
           "User grammar not found."
+  ),
+
+  // ---------- Fill Blank ----------
+  INVALID_FILL_BLANK_REQUEST(
+          HttpStatus.BAD_REQUEST,
+          "INVALID_FILL_BLANK_REQUEST",
+          "At least one option (hasForm or hasKeyword) must be selected."
+  ),
+
+  NOT_ENOUGH_GRAMMAR_FOR_TEST(
+          HttpStatus.BAD_REQUEST,
+          "NOT_ENOUGH_GRAMMAR_FOR_TEST",
+          "The selected deck does not have enough grammar items to create the test."
+  ),
+
+  GRAMMAR_COMPONENT_EMPTY(
+          HttpStatus.BAD_REQUEST,
+          "GRAMMAR_COMPONENT_EMPTY",
+          "Grammar component data is missing or incomplete."
+  ),
+
+  GRAMMAR_MEANING_NOT_FOUND(
+          HttpStatus.NOT_FOUND,
+          "GRAMMAR_MEANING_NOT_FOUND",
+          "Grammar meaning not found for the specified group key."
+  ),
+
+  NO_BLANK_CANDIDATE_AVAILABLE(
+          HttpStatus.BAD_REQUEST,
+          "NO_BLANK_CANDIDATE_AVAILABLE",
+          "No valid components available to create blank questions based on request criteria."
+  ),
+
+  SUBMIT_ANSWERS_EMPTY(
+          HttpStatus.BAD_REQUEST,
+          "SUBMIT_ANSWERS_EMPTY",
+          "Submitted answers list cannot be null or empty."
+  ),
+
+  // ---------- Learning ----------
+  INVALID_ANSWER_TOKEN(
+          HttpStatus.BAD_REQUEST,
+          "INVALID_ANSWER_TOKEN",
+          "Submitted answers have invalid token."
   );
 
   private final HttpStatus status;

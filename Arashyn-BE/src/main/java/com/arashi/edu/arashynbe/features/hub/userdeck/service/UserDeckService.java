@@ -20,7 +20,7 @@ public interface UserDeckService {
 
   UserDeckListResponse findAll();
 
-  UserDeckDetailResponse findById(UUID id);
+  UserDeckDetailResponse detailById(UUID id);
 
   void delete(UUID id);
 }

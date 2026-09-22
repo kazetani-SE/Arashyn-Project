@@ -16,6 +16,7 @@ import com.arashi.edu.arashynbe.repository.system.MeaningRepo;
 import com.arashi.edu.arashynbe.repository.system.SystemFilterRepo;
 import com.arashi.edu.arashynbe.repository.system.specification.GrammarSpecification;
 import com.arashi.edu.arashynbe.repository.system.support.DeckGrammarRepo;
+import com.arashi.edu.arashynbe.shared.enums.Language;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -90,19 +91,36 @@ public class GrammarListReadServiceImpl implements GrammarListReadService {
 
   @Override
   public GrammarListResponse getGrammars(
+          Language language,
           Pageable pageable
   ) {
     Page<Grammar> grammarPage =
-            grammarRepo.findMostPopularGrammars(pageable);
+            grammarRepo.findMostPopularGrammars(language.getCode(),pageable);
 
     return buildGrammarListResponse(grammarPage);
   }
 
   @Override
-  public GrammarListResponse search(String query, List<String> filters, Pageable pageable) {
+  public GrammarListResponse search(String query, List<String> filters, List<String> forms, boolean isKeyword, Language language, Pageable pageable) {
     String normalizedQuery = query == null ? "" : query.trim();
 
-    List<UUID> filterIds = Optional.ofNullable(filters)
+    List<UUID> filterIds = toUuidList(filters);
+    List<UUID> formIds = toUuidList(forms);
+
+    Page<Grammar> grammarPage = grammarRepo.searchGrammars(
+            normalizedQuery,
+            language.getCode(),
+            filterIds,
+            formIds,
+            isKeyword,
+            pageable
+    );
+
+    return buildGrammarListResponse(grammarPage);
+  }
+
+  private List<UUID> toUuidList(List<String> ids) {
+    return Optional.ofNullable(ids)
             .orElseGet(List::of)
             .stream()
             .filter(Objects::nonNull)
@@ -110,12 +128,6 @@ public class GrammarListReadServiceImpl implements GrammarListReadService {
             .map(UUID::fromString)
             .distinct()
             .toList();
-
-    Page<Grammar> grammarPage = filterIds.isEmpty()
-            ? grammarRepo.searchByTitle(normalizedQuery, pageable)
-            : grammarRepo.searchByTitleAndFilters(normalizedQuery, filterIds, filterIds.size(), pageable);
-
-    return buildGrammarListResponse(grammarPage);
   }
 
   @Override

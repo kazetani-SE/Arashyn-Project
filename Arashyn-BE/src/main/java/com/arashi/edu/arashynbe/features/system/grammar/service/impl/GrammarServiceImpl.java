@@ -21,6 +21,7 @@ import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarReadServi
 import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarService;
 
 import com.arashi.edu.arashynbe.shared.enums.GrammarSortBy;
+import com.arashi.edu.arashynbe.shared.enums.Language;
 import com.arashi.edu.arashynbe.shared.enums.SortDirection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -128,13 +129,13 @@ public class GrammarServiceImpl implements GrammarService {
   }
 
   @Override
-  public GrammarListResponse getGrammars(Pageable pageable) {
-    return grammarListReadService.getGrammars(pageable);
+  public GrammarListResponse getGrammars(Language language, Pageable pageable) {
+    return grammarListReadService.getGrammars(language, pageable);
   }
 
   @Override
-  public GrammarListResponse search(String query, List<String> filters, Pageable pageable) {
-    return grammarListReadService.search(query, filters, pageable);
+  public GrammarListResponse search(String query, List<String> filters, List<String> forms, boolean isKeyword, Language language, Pageable pageable) {
+    return grammarListReadService.search(query, filters, forms, isKeyword, language, pageable);
   }
 
 }

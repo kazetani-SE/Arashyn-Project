@@ -11,6 +11,7 @@ import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarDeta
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarSimilarResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarEditResponse;
+import com.arashi.edu.arashynbe.shared.enums.Language;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 
@@ -48,11 +49,14 @@ public interface GrammarService {
 
   void updateGrammar(GrammarUpdateRequest request);
 
-  GrammarListResponse getGrammars(Pageable pageable  );
+  GrammarListResponse getGrammars(Language language, Pageable pageable  );
 
   GrammarListResponse search(
           String query,
           List<String> filters,
+          List<String> forms,
+          boolean isKeyword,
+          Language language,
           Pageable pageable
   );
 }

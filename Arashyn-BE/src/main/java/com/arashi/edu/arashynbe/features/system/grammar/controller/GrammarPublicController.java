@@ -7,6 +7,7 @@ import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarDeta
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarSimilarResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarService;
+import com.arashi.edu.arashynbe.shared.enums.Language;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -43,6 +44,7 @@ public class GrammarPublicController {
   @GetMapping("/item_list/grammar")
   public ResponseEntity<GrammarListResponse> getItems(
           @RequestParam(defaultValue = "0") int page,
+          @RequestParam(defaultValue = "VI") String language,
           @RequestParam(defaultValue = PAGE_SIZE) int size,
           @RequestParam(defaultValue = "created_at") String sort,
           @RequestParam(defaultValue = "desc") String direction
@@ -56,8 +58,10 @@ public class GrammarPublicController {
             )
     );
 
+    var lang = Language.valueOf(language);
+
     return ResponseEntity.ok(
-            grammarService.getGrammars(pageable)
+            grammarService.getGrammars(lang, pageable)
       );
   }
 
@@ -65,8 +69,11 @@ public class GrammarPublicController {
   public GrammarListResponse search(
           @RequestParam(defaultValue = "") String query,
           @RequestParam(required = false) String filters,
+          @RequestParam(required = false) String forms,
+          @RequestParam(defaultValue = "true") boolean isKeyword,
           @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "20") int size
+          @RequestParam(defaultValue = "20") int size,
+          @RequestParam(defaultValue = "VI") String language
   ) {
     List<String> filterIds = (filters == null || filters.isBlank())
             ? List.of()
@@ -75,7 +82,16 @@ public class GrammarPublicController {
             .filter(Predicate.not(String::isBlank))
             .toList();
 
-    return grammarService.search(query, filterIds, PageRequest.of(page, size));
+    List<String> formIds = (forms == null || forms.isBlank())
+            ? List.of()
+            : Arrays.stream(forms.split(","))
+            .map(String::trim)
+            .filter(Predicate.not(String::isBlank))
+            .toList();
+
+    var lang = Language.fromCode(language);
+
+    return grammarService.search(query, filterIds, formIds, isKeyword, lang, PageRequest.of(page, size));
   }
 
   @GetMapping("/{grammarId}")

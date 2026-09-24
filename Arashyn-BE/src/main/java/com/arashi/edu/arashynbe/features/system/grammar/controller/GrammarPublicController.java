@@ -72,7 +72,7 @@ public class GrammarPublicController {
           @RequestParam(required = false) String forms,
           @RequestParam(defaultValue = "true") boolean isKeyword,
           @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "20") int size,
+          @RequestParam(defaultValue = PAGE_SIZE) int size,
           @RequestParam(defaultValue = "VI") String language
   ) {
     List<String> filterIds = (filters == null || filters.isBlank())

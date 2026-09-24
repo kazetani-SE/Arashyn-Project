@@ -23,6 +23,7 @@ import com.arashi.edu.arashynbe.repository.hub.UserDeckRepo;
 import com.arashi.edu.arashynbe.repository.hub.UserGrammarRepo;
 import com.arashi.edu.arashynbe.repository.system.GrammarRepo;
 import com.arashi.edu.arashynbe.shared.currentaccount.CurrentAccountProvider;
+import com.arashi.edu.arashynbe.shared.enums.Proficiency;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -203,7 +204,7 @@ public class UserGrammarServiceImpl implements UserGrammarService {
             detail.groups(),
             detail.notes(),
             detail.filters(),
-            userGrammar.getProficiency(),
+            Proficiency.fromValue(userGrammar.getProficiency()),
             userGrammar.getLastReviewAt()
     );
   }
@@ -265,7 +266,7 @@ public class UserGrammarServiceImpl implements UserGrammarService {
                             ? request.name().trim()
                             : grammar.getTitle()
             )
-            .proficiency((short) 0)
+            .proficiency((short)Proficiency.minValue())
             .lastReviewAt(null);
 
     if (request.sourceUserGrammarId() != null) {
@@ -332,7 +333,7 @@ public class UserGrammarServiceImpl implements UserGrammarService {
                       components,
                       meanings,
                       detail.filters(),
-                      userGrammar.getProficiency(),
+                      Proficiency.fromValue(userGrammar.getProficiency()),
                       userGrammar.getLastReviewAt()
               );
             })

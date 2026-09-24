@@ -10,7 +10,10 @@ import com.arashi.edu.arashynbe.features.learning.fillblank.dto.response.CreateF
 import com.arashi.edu.arashynbe.features.learning.fillblank.dto.response.CreateFillBlankResponse.Question.QuestionComponent;
 import com.arashi.edu.arashynbe.features.learning.fillblank.dto.response.SubmitFillBlankResponse;
 import com.arashi.edu.arashynbe.features.learning.fillblank.service.FillBlankService;
+import com.arashi.edu.arashynbe.features.learning.proficiency.service.ProficiencyService;
 import com.arashi.edu.arashynbe.features.learning.util.AnswerCryptoUtil;
+import com.arashi.edu.arashynbe.features.learning.util.dto.AnswerPayload;
+import com.arashi.edu.arashynbe.features.learning.util.dto.EncryptedAnswer;
 import com.arashi.edu.arashynbe.features.system.component.dto.response.GrammarComponentSummaryResponse;
 import com.arashi.edu.arashynbe.features.system.form.dto.response.ListFormResponse;
 import com.arashi.edu.arashynbe.features.system.form.service.FormService;
@@ -25,9 +28,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +44,8 @@ public class FillBlankServiceImpl implements FillBlankService {
 
   private final UserDeckService userDeckService;
   private final FormService formService;
+  private final ProficiencyService proficiencyService;
+
   private final AnswerCryptoUtil answerCryptoUtil;
 
   private record GrammarGroupPair(UserGrammarSummarisedResponse grammar, Short groupKey) {}
@@ -93,6 +101,10 @@ public class FillBlankServiceImpl implements FillBlankService {
     List<SubmitFillBlankResponse.AnswerResult> results = new ArrayList<>();
     int correctCount = 0;
 
+    // Gom kết quả từng blank theo userGrammarId, vì 1 grammar (1 group) có thể
+    // có nhiều blank nhưng chỉ nên cập nhật proficiency 1 lần cho grammar đó.
+    Map<UUID, List<AnswerCryptoUtil.VerifyResult>> resultsByGrammar = new LinkedHashMap<>();
+
     for (SubmitFillBlankRequest.SubmitAnswer answer : request.answers()) {
       AnswerCryptoUtil.VerifyResult result = answerCryptoUtil.verifyAndReveal(
               answer.iv(),
@@ -104,10 +116,28 @@ public class FillBlankServiceImpl implements FillBlankService {
         correctCount++;
       }
 
+      resultsByGrammar
+              .computeIfAbsent(result.userGrammarId(), k -> new ArrayList<>())
+              .add(result);
+
       results.add(new SubmitFillBlankResponse.AnswerResult(answer.iv(), result.correct(), result.correctAnswer()));
     }
 
+    updateProficiencyForResults(resultsByGrammar);
+
     return new SubmitFillBlankResponse(results, correctCount, request.answers().size());
+  }
+
+  private void updateProficiencyForResults(Map<UUID, List<AnswerCryptoUtil.VerifyResult>> resultsByGrammar) {
+    for (Map.Entry<UUID, List<AnswerCryptoUtil.VerifyResult>> entry : resultsByGrammar.entrySet()) {
+      UUID userGrammarId = entry.getKey();
+      List<AnswerCryptoUtil.VerifyResult> grammarResults = entry.getValue();
+
+      boolean allCorrect = grammarResults.stream().allMatch(AnswerCryptoUtil.VerifyResult::correct);
+
+      int changes = allCorrect ? 1 : -1;
+      proficiencyService.update(userGrammarId, changes);
+    }
   }
 
   private int resolveBlankCount(Difficulty difficulty) {
@@ -218,7 +248,12 @@ public class FillBlankServiceImpl implements FillBlankService {
 
     List<QuestionComponent> questionComponents = new ArrayList<>();
     for (GrammarComponentSummaryResponse component : groupComponents) {
-      questionComponents.add(toQuestionComponent(component, blankedOrders.contains(component.order()), formChoicePool));
+      questionComponents.add(toQuestionComponent(
+              component,
+              blankedOrders.contains(component.order()),
+              formChoicePool,
+              grammar.id()
+      ));
     }
 
     String meaning = grammar.meanings().stream()
@@ -238,7 +273,8 @@ public class FillBlankServiceImpl implements FillBlankService {
   private QuestionComponent toQuestionComponent(
           GrammarComponentSummaryResponse component,
           boolean isBlanked,
-          List<String> formChoicePool
+          List<String> formChoicePool,
+          UUID userGrammarId
   ) {
     boolean isKeyword = component.keyword() != null;
 
@@ -248,10 +284,10 @@ public class FillBlankServiceImpl implements FillBlankService {
     }
 
     String realAnswer = isKeyword ? component.keyword() : component.form();
-    String[] encrypted = answerCryptoUtil.encrypt(realAnswer);
+    EncryptedAnswer encrypted = answerCryptoUtil.encrypt(new AnswerPayload(userGrammarId, realAnswer));
 
     List<String> choices = isKeyword ? List.of() : formChoicePool;
 
-    return new QuestionComponent("", encrypted[1], encrypted[0], choices, component.order());
+    return new QuestionComponent("", encrypted.cipherText(), encrypted.iv(), choices, component.order());
   }
 }

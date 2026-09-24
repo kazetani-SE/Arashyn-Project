@@ -22,6 +22,7 @@ import com.arashi.edu.arashynbe.repository.hub.UserFolderRepo;
 import com.arashi.edu.arashynbe.repository.system.DeckRepo;
 import com.arashi.edu.arashynbe.shared.currentaccount.CurrentAccountProvider;
 import com.arashi.edu.arashynbe.shared.enums.Language;
+import com.arashi.edu.arashynbe.shared.enums.Proficiency;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +62,7 @@ public class UserDeckServiceImpl implements UserDeckService {
                             ? request.name().trim()
                             : deck.getName()
             )
-            .proficiency((short) 0)
+            .proficiency((short) Proficiency.minValue())
             .lastOpenAt(OffsetDateTime.now());
 
     if (request.sourceUserDeckId() != null) {

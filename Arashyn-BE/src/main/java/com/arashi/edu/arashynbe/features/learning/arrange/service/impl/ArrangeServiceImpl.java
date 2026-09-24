@@ -11,7 +11,10 @@ import com.arashi.edu.arashynbe.features.learning.arrange.dto.response.CreateArr
 import com.arashi.edu.arashynbe.features.learning.arrange.dto.response.CreateArrangeResponse.PoolItem;
 import com.arashi.edu.arashynbe.features.learning.arrange.dto.response.SubmitArrangeResponse;
 import com.arashi.edu.arashynbe.features.learning.arrange.service.ArrangeService;
+import com.arashi.edu.arashynbe.features.learning.proficiency.service.ProficiencyService;
 import com.arashi.edu.arashynbe.features.learning.util.AnswerCryptoUtil;
+import com.arashi.edu.arashynbe.features.learning.util.dto.AnswerPayload;
+import com.arashi.edu.arashynbe.features.learning.util.dto.EncryptedAnswer;
 import com.arashi.edu.arashynbe.features.system.component.dto.response.GrammarComponentSummaryResponse;
 import com.arashi.edu.arashynbe.features.system.meaning.dto.response.GrammarMeaningSummaryResponse;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
@@ -34,6 +37,8 @@ import java.util.UUID;
 public class ArrangeServiceImpl implements ArrangeService {
 
   private final UserDeckService userDeckService;
+  private final ProficiencyService proficiencyService;
+
   private final AnswerCryptoUtil answerCryptoUtil;
 
   private record GrammarGroupPair(UserGrammarSummarisedResponse grammar, Short groupKey) {}
@@ -99,6 +104,8 @@ public class ArrangeServiceImpl implements ArrangeService {
     List<SubmitArrangeResponse.AnswerResult> results = new ArrayList<>();
     int correctCount = 0;
 
+    Map<UUID, List<AnswerCryptoUtil.VerifyResult>> resultsByGrammar = new LinkedHashMap<>();
+
     for (SubmitArrangeRequest.SubmitAnswer answer : request.answers()) {
       AnswerCryptoUtil.VerifyResult result = answerCryptoUtil.verifyAndReveal(
               answer.iv(),
@@ -110,10 +117,27 @@ public class ArrangeServiceImpl implements ArrangeService {
         correctCount++;
       }
 
+      resultsByGrammar
+              .computeIfAbsent(result.userGrammarId(), k -> new ArrayList<>())
+              .add(result);
+
       results.add(new SubmitArrangeResponse.AnswerResult(answer.iv(), result.correct(), result.correctAnswer()));
     }
 
+    updateProficiencyForResults(resultsByGrammar);
+
     return new SubmitArrangeResponse(results, correctCount, request.answers().size());
+  }
+
+  private void updateProficiencyForResults(Map<UUID, List<AnswerCryptoUtil.VerifyResult>> resultsByGrammar) {
+    for (Map.Entry<UUID, List<AnswerCryptoUtil.VerifyResult>> entry : resultsByGrammar.entrySet()) {
+      UUID userGrammarId = entry.getKey();
+      List<AnswerCryptoUtil.VerifyResult> grammarResults = entry.getValue();
+
+      boolean allCorrect = grammarResults.stream().allMatch(AnswerCryptoUtil.VerifyResult::correct);
+      int changes = allCorrect ? 1 : -1;
+      proficiencyService.update(userGrammarId, changes);
+    }
   }
 
   private void registerPoolItem(GrammarComponentSummaryResponse component, Map<String, String> contentToItemId) {
@@ -168,8 +192,10 @@ public class ArrangeServiceImpl implements ArrangeService {
       boolean isKeyword = component.keyword() != null;
       String realAnswer = isKeyword ? component.keyword() : component.form();
 
-      String[] encrypted = answerCryptoUtil.encrypt(realAnswer); // [iv, token]
-      blanks.add(new BlankComponent(encrypted[1], encrypted[0], component.order()));
+      EncryptedAnswer encrypted = answerCryptoUtil.encrypt(
+              new AnswerPayload(pair.grammar().id(), realAnswer)
+      );
+      blanks.add(new BlankComponent(encrypted.cipherText(), encrypted.iv(), component.order()));
     }
 
     String meaning = grammar.meanings().stream()

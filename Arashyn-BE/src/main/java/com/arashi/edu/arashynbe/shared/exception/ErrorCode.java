@@ -335,6 +335,12 @@ public enum ErrorCode {
           HttpStatus.BAD_REQUEST,
           "INVALID_ANSWER_TOKEN",
           "Submitted answers have invalid token."
+  ),
+
+  INVALID_CHANGE_VALUE(
+          HttpStatus.BAD_REQUEST,
+          "INVALID_CHANGE_VALUE",
+          "Change value must be 1 or -1."
   );
 
   private final HttpStatus status;

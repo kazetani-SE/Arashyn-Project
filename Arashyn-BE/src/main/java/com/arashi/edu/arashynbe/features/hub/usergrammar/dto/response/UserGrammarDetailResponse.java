@@ -4,6 +4,7 @@ import com.arashi.edu.arashynbe.features.system.filter.dto.response.GrammarFilte
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarDetailResponse;
 import com.arashi.edu.arashynbe.features.system.note.dto.response.GrammarNoteResponse;
 import com.arashi.edu.arashynbe.shared.enums.Language;
+import com.arashi.edu.arashynbe.shared.enums.Proficiency;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -25,7 +26,7 @@ public record UserGrammarDetailResponse(
 
         List<GrammarFilterResponse> filters,
 
-        Short proficiency,
+        Proficiency proficiency,
 
         OffsetDateTime lastReviewAt
 

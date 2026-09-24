@@ -3,6 +3,7 @@ package com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response;
 import com.arashi.edu.arashynbe.features.system.component.dto.response.GrammarComponentSummaryResponse;
 import com.arashi.edu.arashynbe.features.system.filter.dto.response.GrammarFilterResponse;
 import com.arashi.edu.arashynbe.features.system.meaning.dto.response.GrammarMeaningSummaryResponse;
+import com.arashi.edu.arashynbe.shared.enums.Proficiency;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -27,7 +28,7 @@ public record UserGrammarListResponse(
 
           List<GrammarFilterResponse> filters,
 
-          Short proficiency,
+          Proficiency proficiency,
 
           OffsetDateTime lastReviewAt
 

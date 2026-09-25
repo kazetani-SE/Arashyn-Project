@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface DeckRepo extends JpaRepository<Deck, UUID> {
@@ -18,6 +19,8 @@ public interface DeckRepo extends JpaRepository<Deck, UUID> {
           d.isPublic = false
       WHERE d.id = :deckId
       """)
-  int softDelete(UUID deckId);
+  void softDelete(UUID deckId);
+
+  List<Deck> findAllByIsPublicTrue();
 
 }

@@ -4,6 +4,8 @@ import com.arashi.edu.arashynbe.entity.auth.Account;
 import com.arashi.edu.arashynbe.entity.hub.UserDeck;
 import com.arashi.edu.arashynbe.entity.hub.UserFolder;
 import com.arashi.edu.arashynbe.entity.system.Deck;
+import com.arashi.edu.arashynbe.entity.system.Folder;
+import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckCloneRequest;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckCreateRequest;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckDuplicateCheckRequest;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckUpdateRequest;
@@ -15,6 +17,7 @@ import com.arashi.edu.arashynbe.features.hub.userdeck.service.UserDeckService;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateMultipleRequest;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.service.UserGrammarService;
+import com.arashi.edu.arashynbe.features.system.deck.dto.request.DeckCreateRequest;
 import com.arashi.edu.arashynbe.features.system.deck.dto.response.DeckDetailResponse;
 import com.arashi.edu.arashynbe.features.system.deck.service.DeckService;
 import com.arashi.edu.arashynbe.repository.hub.UserDeckRepo;
@@ -49,6 +52,55 @@ public class UserDeckServiceImpl implements UserDeckService {
 
   @Override
   public UserDeckIdResponse create(UserDeckCreateRequest request) {
+    Account user = currentAccountProvider.get();
+
+    UserFolder userFolder = null;
+    UUID systemFolderId = null;
+
+    if (request.userFolderId() != null) {
+      userFolder = userFolderRepo
+              .findByIdAndUserId(request.userFolderId(), user.getId())
+              .orElseThrow(() -> new ApiException(ErrorCode.USER_DECK_NOT_FOUND));
+
+      Folder systemFolder = userFolder.getFolder();
+      if (systemFolder != null && systemFolder.getIsPublic()) {
+        systemFolderId = systemFolder.getId();
+      }
+    }
+
+    DeckCreateRequest deckCreateRequest = new DeckCreateRequest(
+            request.name(),
+            request.description(),
+            request.language(),
+            request.isPublic(),
+            systemFolderId,
+            null
+    );
+
+    var deckId = deckService.createDeck(deckCreateRequest);
+
+    UserDeck.UserDeckBuilder builder = UserDeck.builder()
+            .user(user)
+            .name(request.name().trim())
+            .deck(deckService.findDeckById(deckId.id()) != null
+                    ? deckRepo.findById(deckId.id()).orElseThrow(() -> new ApiException(ErrorCode.DECK_NOT_FOUND))
+                    : null)
+            .proficiency((short) Proficiency.minValue())
+            .lastOpenAt(OffsetDateTime.now());
+
+    UserDeck userDeck = builder.build();
+
+    if (userFolder != null) {
+      userDeck.getUserFolders().add(userFolder);
+    }
+
+    UserDeck saved = userDeckRepo.save(userDeck);
+
+    return new UserDeckIdResponse(saved.getId());
+  }
+
+  @Override
+  public UserDeckIdResponse clone(UserDeckCloneRequest request) {
     Account user = currentAccountProvider.get();
 
     Deck deck = deckRepo.findById(request.deckId())

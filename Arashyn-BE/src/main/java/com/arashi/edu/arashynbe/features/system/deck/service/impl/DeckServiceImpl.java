@@ -54,6 +54,8 @@ public class DeckServiceImpl implements DeckService {
   private final GrammarListReadService grammarListReadService;
   private final CurrentAccountProvider currentAccountProvider;
 
+  private final OwnerShip ownerShip;
+
   @Override
   public DeckIdResponse createDeck(DeckCreateRequest request) {
 
@@ -141,7 +143,7 @@ public class DeckServiceImpl implements DeckService {
   @Transactional(readOnly = true)
   public DeckListResponse listDecks() {
 
-    List<DeckListResponse.DeckSummariseResponse> decks = deckRepo.findAll()
+    List<DeckListResponse.DeckSummariseResponse> decks = deckRepo.findAllByIsPublicTrue()
             .stream()
             .map(this::toSummariseResponse)
             .toList();
@@ -168,16 +170,13 @@ public class DeckServiceImpl implements DeckService {
 
   @Override
   public void deleteDeck(UUID id) {
-
-    OwnerShip ownerShip = new OwnerShip();
-
     Deck deck = ownerShip.requireOwnership(
             id,
             deckRepo,
             ErrorCode.DECK_NOT_FOUND
     );
 
-    deckRepo.deleteById(deck.getId());
+    deckRepo.softDelete(deck.getId());
   }
 
   private void attachFolder(Deck deck, UUID folderId) {

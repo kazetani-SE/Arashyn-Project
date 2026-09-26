@@ -1,21 +1,27 @@
 package com.arashi.edu.arashynbe.features.hub.userdeck.dto.request;
 
-import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateMultipleRequest;
+import com.arashi.edu.arashynbe.shared.enums.Language;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.util.UUID;
 
 public record UserDeckCreateRequest(
 
-        @NotNull
-        UUID deckId,
-
+        @NotBlank
         String name,
 
-        UUID userFolderId,
+        @Size(max = 250)
+        String description,
 
-        UUID sourceUserDeckId,
+        @NotNull
+        Language language,
 
-        UserGrammarCreateMultipleRequest userGrammars
+        @NotNull
+        Boolean isPublic,
 
-) {}
+        UUID userFolderId
+
+) {
+}

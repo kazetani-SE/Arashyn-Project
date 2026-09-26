@@ -1,5 +1,6 @@
 package com.arashi.edu.arashynbe.features.hub.userdeck.service;
 
+import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckCloneRequest;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckCreateRequest;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckDuplicateCheckRequest;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckUpdateRequest;
@@ -13,6 +14,8 @@ import java.util.UUID;
 public interface UserDeckService {
 
   UserDeckIdResponse create(UserDeckCreateRequest request);
+
+  UserDeckIdResponse clone(UserDeckCloneRequest request);
 
   UserDeckDuplicateCheckResponse checkDuplicate(UserDeckDuplicateCheckRequest request);
 

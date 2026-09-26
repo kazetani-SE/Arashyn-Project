@@ -6,6 +6,7 @@ import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarDeleteSer
 import com.arashi.edu.arashynbe.repository.system.GrammarRepo;
 import com.arashi.edu.arashynbe.shared.exception.ApiException;
 import com.arashi.edu.arashynbe.shared.exception.ErrorCode;
+import com.arashi.edu.arashynbe.shared.ownership.OwnerShip;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,24 +19,18 @@ public class GrammarDeleteServiceImpl implements GrammarDeleteService {
 
   private final GrammarRepo grammarRepo;
 
+  private final OwnerShip ownerShip;
+
   @Override
   @Transactional
   public void deleteGrammar(UUID grammarId) {
+    Grammar grammar = ownerShip.requireOwnership(
+            grammarId,
+            grammarRepo,
+            ErrorCode.GRAMMAR_NOT_FOUND
+    );
 
-    UUID currentUserId = CurrentUser.getId();
-
-    Grammar grammar = grammarRepo.findById(grammarId)
-            .orElseThrow(() -> new ApiException(ErrorCode.GRAMMAR_NOT_FOUND));
-
-    if (grammar.getOwner() == null) {
-      throw new ApiException(ErrorCode.GRAMMAR_NOT_FOUND);
-    }
-
-    if (!grammar.getOwner().getId().equals(currentUserId)) {
-      throw new ApiException(ErrorCode.FORBIDDEN);
-    }
-
-    int deleted = grammarRepo.softDelete(grammarId);
+    int deleted = grammarRepo.softDelete(grammar.getId());
     if (deleted == 0) {
       throw new ApiException(
               ErrorCode.GRAMMAR_DELETE_FAILED

@@ -1,5 +1,6 @@
 package com.arashi.edu.arashynbe.features.hub.userdeck.controller;
 
+import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckCloneRequest;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckCreateRequest;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckDuplicateCheckRequest;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckUpdateRequest;
@@ -29,8 +30,13 @@ public class UserDeckController {
   }
 
   @PostMapping
-  public ResponseEntity<UserDeckIdResponse> create(@Valid @RequestBody UserDeckCreateRequest request){
+  public ResponseEntity<UserDeckIdResponse> create(@Valid @RequestBody UserDeckCreateRequest request) {
     return ResponseEntity.ok(userDeckService.create(request));
+  }
+
+  @PostMapping("/clone")
+  public ResponseEntity<UserDeckIdResponse> clone(@Valid @RequestBody UserDeckCloneRequest request){
+    return ResponseEntity.ok(userDeckService.clone(request));
   }
 
   // U

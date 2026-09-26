@@ -85,9 +85,6 @@ public class DeckServiceImpl implements DeckService {
 
   @Override
   public DeckIdResponse updateDeck(DeckUpdateRequest request) {
-
-    OwnerShip ownerShip = new OwnerShip();
-
     Deck deck = ownerShip.requireOwnership(
             request.id(),
             deckRepo,
@@ -137,6 +134,30 @@ public class DeckServiceImpl implements DeckService {
     }
 
     return new DeckIdResponse(deck.getId());
+  }
+
+  @Override
+  @Transactional
+  public void addGrammarToDeck(UUID deckId, UUID grammarId) {
+    DeckGrammarId id = new DeckGrammarId(deckId, grammarId);
+
+    if (deckGrammarRepo.existsById(id)) {
+      return;
+    }
+
+    Deck deck = deckRepo.findById(deckId)
+            .orElseThrow(() -> new ApiException(ErrorCode.DECK_NOT_FOUND));
+
+    Grammar grammar = grammarRepo.findById(grammarId)
+            .orElseThrow(() -> new ApiException(ErrorCode.GRAMMAR_NOT_FOUND));
+
+    DeckGrammar deckGrammar = DeckGrammar.builder()
+            .id(id)
+            .deck(deck)
+            .grammar(grammar)
+            .build();
+
+    deckGrammarRepo.save(deckGrammar);
   }
 
   @Override

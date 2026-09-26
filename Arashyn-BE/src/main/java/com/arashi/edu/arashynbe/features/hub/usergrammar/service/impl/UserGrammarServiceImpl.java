@@ -3,6 +3,7 @@ package com.arashi.edu.arashynbe.features.hub.usergrammar.service.impl;
 import com.arashi.edu.arashynbe.entity.auth.Account;
 import com.arashi.edu.arashynbe.entity.hub.UserDeck;
 import com.arashi.edu.arashynbe.entity.hub.UserGrammar;
+import com.arashi.edu.arashynbe.entity.system.Deck;
 import com.arashi.edu.arashynbe.entity.system.Grammar;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateMultipleRequest;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateRequest;
@@ -16,6 +17,7 @@ import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGramma
 import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarListResponse;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.service.UserGrammarService;
 import com.arashi.edu.arashynbe.features.system.component.dto.response.GrammarComponentSummaryResponse;
+import com.arashi.edu.arashynbe.features.system.deck.service.DeckService;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarDetailResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarReadService;
 import com.arashi.edu.arashynbe.features.system.meaning.dto.response.GrammarMeaningSummaryResponse;
@@ -44,6 +46,7 @@ public class UserGrammarServiceImpl implements UserGrammarService {
   private final UserDeckRepo userDeckRepo;
 
   private final GrammarReadService grammarReadService;
+  private final DeckService deckService;
 
   private final CurrentAccountProvider currentAccountProvider;
 
@@ -250,6 +253,8 @@ public class UserGrammarServiceImpl implements UserGrammarService {
 
         userDeck.getUserGrammars().add(source);
         userDeckRepo.save(userDeck);
+
+        syncToSystemDeckIfPublic(userDeck, source.getGrammar().getId());
       }
 
       return source;
@@ -266,7 +271,7 @@ public class UserGrammarServiceImpl implements UserGrammarService {
                             ? request.name().trim()
                             : grammar.getTitle()
             )
-            .proficiency((short)Proficiency.minValue())
+            .proficiency((short) Proficiency.minValue())
             .lastReviewAt(null);
 
     if (request.sourceUserGrammarId() != null) {
@@ -296,9 +301,19 @@ public class UserGrammarServiceImpl implements UserGrammarService {
 
       userDeck.getUserGrammars().add(userGrammar);
       userDeckRepo.save(userDeck);
+
+      syncToSystemDeckIfPublic(userDeck, grammar.getId());
     }
 
     return userGrammar;
+  }
+
+  private void syncToSystemDeckIfPublic(UserDeck userDeck, UUID grammarId) {
+    Deck systemDeck = userDeck.getDeck();
+
+    if (systemDeck != null && Boolean.TRUE.equals(systemDeck.getIsPublic())) {
+      deckService.addGrammarToDeck(systemDeck.getId(), grammarId);
+    }
   }
 
   private UserGrammarListResponse toListResponse(List<UserGrammar> userGrammars) {

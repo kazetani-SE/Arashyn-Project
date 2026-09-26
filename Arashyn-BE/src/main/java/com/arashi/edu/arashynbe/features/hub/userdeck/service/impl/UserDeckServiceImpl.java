@@ -79,12 +79,13 @@ public class UserDeckServiceImpl implements UserDeckService {
 
     var deckId = deckService.createDeck(deckCreateRequest);
 
+    Deck systemDeck = deckRepo.findById(deckId.id())
+            .orElseThrow(() -> new ApiException(ErrorCode.DECK_NOT_FOUND));
+
     UserDeck.UserDeckBuilder builder = UserDeck.builder()
             .user(user)
             .name(request.name().trim())
-            .deck(deckService.findDeckById(deckId.id()) != null
-                    ? deckRepo.findById(deckId.id()).orElseThrow(() -> new ApiException(ErrorCode.DECK_NOT_FOUND))
-                    : null)
+            .deck(systemDeck)
             .proficiency((short) Proficiency.minValue())
             .lastOpenAt(OffsetDateTime.now());
 

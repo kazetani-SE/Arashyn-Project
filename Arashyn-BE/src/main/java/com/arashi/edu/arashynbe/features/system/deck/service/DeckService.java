@@ -14,6 +14,8 @@ public interface DeckService {
 
   DeckIdResponse updateDeck(DeckUpdateRequest request);
 
+  void addGrammarToDeck(UUID deckId, UUID grammarId);
+
   DeckListResponse listDecks();
 
   DeckDetailResponse findDeckById(UUID id);

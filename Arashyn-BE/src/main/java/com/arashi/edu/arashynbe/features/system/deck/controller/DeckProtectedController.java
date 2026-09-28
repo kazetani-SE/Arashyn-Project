@@ -43,7 +43,7 @@ public class DeckProtectedController {
   }
 
   @DeleteMapping("/{deck_id}")
-  public  ResponseEntity<Void> deleteDeck(@PathVariable UUID deck_id) {
+  public ResponseEntity<Void> deleteDeck(@PathVariable UUID deck_id) {
 
     deckService.deleteDeck(deck_id);
 

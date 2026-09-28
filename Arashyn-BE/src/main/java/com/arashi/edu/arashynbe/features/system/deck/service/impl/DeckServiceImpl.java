@@ -14,7 +14,7 @@ import com.arashi.edu.arashynbe.features.system.deck.dto.response.DeckDetailResp
 import com.arashi.edu.arashynbe.features.system.deck.dto.response.DeckIdResponse;
 import com.arashi.edu.arashynbe.features.system.deck.dto.response.DeckListResponse;
 import com.arashi.edu.arashynbe.features.system.deck.service.DeckService;
-import com.arashi.edu.arashynbe.features.system.folder.dto.response.FolderSummaryResponse;
+import com.arashi.edu.arashynbe.features.system.folder.dto.response.FolderListResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarSummaryResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarListReadService;
@@ -264,13 +264,16 @@ public class DeckServiceImpl implements DeckService {
 
   private DeckDetailResponse toDetailResponse(Deck deck) {
 
-    Set<FolderSummaryResponse> folders = folderDeckRepo
+    Set<FolderListResponse.FolderSummariseResponse> folders = folderDeckRepo
             .findByIdDeckId(deck.getId())
             .stream()
             .map(FolderDeck::getFolder)
-            .map(folder -> new FolderSummaryResponse(
+            .map(folder -> new FolderListResponse.FolderSummariseResponse(
                     folder.getId(),
                     folder.getName(),
+                    folder.getOwner() != null
+                            ? folder.getOwner().getId()
+                            : null,
                     folder.getOwner() != null
                             ? folder.getOwner().getUsername()
                             : null

@@ -10,4 +10,6 @@ public interface UserFolderRepo extends JpaRepository<UserFolder, UUID> {
 
   Optional<UserFolder> findByIdAndUserId(UUID id, UUID userId);
 
+  boolean existsByFolderId(UUID folderId);
+
 }

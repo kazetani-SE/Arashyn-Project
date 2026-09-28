@@ -1,6 +1,6 @@
 package com.arashi.edu.arashynbe.features.system.deck.dto.response;
 
-import com.arashi.edu.arashynbe.features.system.folder.dto.response.FolderSummaryResponse;
+import com.arashi.edu.arashynbe.features.system.folder.dto.response.FolderListResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarSummaryResponse;
 import com.arashi.edu.arashynbe.shared.enums.Language;
 
@@ -22,7 +22,7 @@ public record DeckDetailResponse(
 
         Boolean isPublic,
 
-        Set<FolderSummaryResponse> folders,
+        Set<FolderListResponse.FolderSummariseResponse> folders,
 
         Set<GrammarSummaryResponse> grammars,
 

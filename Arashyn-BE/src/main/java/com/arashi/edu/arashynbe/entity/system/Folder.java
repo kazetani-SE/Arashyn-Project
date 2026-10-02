@@ -23,7 +23,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Folder implements OwnedEntity{
+public class Folder implements OwnedEntity {
 
   @Id
   @UuidGenerator
@@ -39,6 +39,10 @@ public class Folder implements OwnedEntity{
 
   @Column(name = "is_public", nullable = false)
   private Boolean isPublic;
+
+  @Column(name = "children_version", nullable = false)
+  @Builder.Default
+  private Integer childrenVersion = 0;
 
   @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY)
   @Builder.Default

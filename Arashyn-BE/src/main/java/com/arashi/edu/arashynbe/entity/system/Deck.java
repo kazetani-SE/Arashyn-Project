@@ -43,6 +43,10 @@ public class Deck implements OwnedEntity {
   @Column(name = "is_public", nullable = false)
   private Boolean isPublic;
 
+  @Column(name = "children_version", nullable = false)
+  @Builder.Default
+  private Integer childrenVersion = 0;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private OffsetDateTime createdAt;
 

@@ -21,7 +21,9 @@ public record DeckListResponse(
 
           Language language,
 
-          UUID ownerId
+          UUID ownerId,
+
+          String ownerName
 
   ){}
 

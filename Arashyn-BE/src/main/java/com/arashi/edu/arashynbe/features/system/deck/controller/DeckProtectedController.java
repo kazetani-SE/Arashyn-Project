@@ -1,7 +1,9 @@
 package com.arashi.edu.arashynbe.features.system.deck.controller;
 
+import com.arashi.edu.arashynbe.features.system.deck.dto.request.DeckAssignGrammarRequest;
 import com.arashi.edu.arashynbe.features.system.deck.dto.request.DeckCreateRequest;
 import com.arashi.edu.arashynbe.features.system.deck.dto.request.DeckUpdateRequest;
+import com.arashi.edu.arashynbe.features.system.deck.dto.response.DeckCheckUpdateResponse;
 import com.arashi.edu.arashynbe.features.system.deck.dto.response.DeckIdResponse;
 import com.arashi.edu.arashynbe.features.system.deck.service.DeckService;
 import jakarta.validation.Valid;
@@ -25,21 +27,7 @@ public class DeckProtectedController {
 
   @PostMapping("/update")
   public ResponseEntity<DeckIdResponse> updateDeck(@Valid @RequestBody DeckUpdateRequest request) {
-
-    if(!deckService.hasReferences(request.id())) {
-      return ResponseEntity.ok(deckService.updateDeck(request));
-    }
-
-    var newRequest = new DeckCreateRequest(
-            request.name(),
-            request.description(),
-            request.language(),
-            request.isPublic(),
-            request.folderId(),
-            request.grammarIds()
-    );
-
-    return ResponseEntity.ok(deckService.createDeck(newRequest));
+    return ResponseEntity.ok(deckService.updateDeck(request));
   }
 
   @DeleteMapping("/{deck_id}")
@@ -48,5 +36,15 @@ public class DeckProtectedController {
     deckService.deleteDeck(deck_id);
 
     return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/check-update/{user_deck_id}")
+  public  ResponseEntity<DeckCheckUpdateResponse> checkDeckUpdate(@PathVariable UUID user_deck_id) {
+    return ResponseEntity.ok(deckService.checkDeckUpdate(user_deck_id));
+  }
+
+  @PostMapping("/assign")
+  public ResponseEntity<DeckIdResponse> assignDeck(@Valid @RequestBody DeckAssignGrammarRequest request) {
+    return ResponseEntity.ok(deckService.assignGrammars(request));
   }
 }

@@ -1,7 +1,6 @@
 package com.arashi.edu.arashynbe.entity.hub;
 
 import com.arashi.edu.arashynbe.entity.auth.Account;
-import com.arashi.edu.arashynbe.entity.system.Folder;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,10 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(
-        name = "user_folder",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"folder_id", "user_id"})
-)
+@Table(name = "user_folder")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,9 +28,8 @@ public class UserFolder {
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "folder_id", nullable = false)
-  private Folder folder;
+  @Column(name = "folder_id")
+  private UUID folderId;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "user_id", nullable = false)
@@ -42,6 +37,10 @@ public class UserFolder {
 
   @Column(name = "name", length = 50, nullable = false)
   private String name;
+
+  @Column(name = "synced_version", nullable = false)
+  @Builder.Default
+  private Integer syncedVersion = 0;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(

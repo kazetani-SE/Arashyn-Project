@@ -1,7 +1,6 @@
 package com.arashi.edu.arashynbe.entity.hub;
 
 import com.arashi.edu.arashynbe.entity.auth.Account;
-import com.arashi.edu.arashynbe.entity.system.Deck;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,10 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(
-        name = "user_deck",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"deck_id", "user_id"})
-)
+@Table(name = "user_deck")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,9 +28,8 @@ public class UserDeck {
   @Column(name = "id", updatable = false, nullable = false)
   private UUID id;
 
-  @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "deck_id", nullable = false)
-  private Deck deck;
+  @Column(name = "deck_id")
+  private UUID deckId;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "user_id", nullable = false)
@@ -43,11 +38,21 @@ public class UserDeck {
   @Column(name = "name", length = 200, nullable = false)
   private String name;
 
+  @Column(name = "description", length = 250)
+  private String description;
+
+  @Column(name = "language", length = 5)
+  private String language;
+
   @Column(name = "proficiency", nullable = false)
   private Short proficiency;
 
   @Column(name = "last_open_at")
   private OffsetDateTime lastOpenAt;
+
+  @Column(name = "synced_version", nullable = false)
+  @Builder.Default
+  private Integer syncedVersion = 0;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(

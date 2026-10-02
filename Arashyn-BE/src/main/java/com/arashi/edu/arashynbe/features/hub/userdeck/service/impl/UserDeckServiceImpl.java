@@ -4,7 +4,6 @@ import com.arashi.edu.arashynbe.entity.auth.Account;
 import com.arashi.edu.arashynbe.entity.hub.UserDeck;
 import com.arashi.edu.arashynbe.entity.hub.UserFolder;
 import com.arashi.edu.arashynbe.entity.system.Deck;
-import com.arashi.edu.arashynbe.entity.system.Folder;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckCloneRequest;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckCreateRequest;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.request.UserDeckDuplicateCheckRequest;
@@ -18,7 +17,6 @@ import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammar
 import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateRequest;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.service.UserGrammarService;
 import com.arashi.edu.arashynbe.features.system.deck.dto.request.DeckCreateRequest;
-import com.arashi.edu.arashynbe.features.system.deck.dto.response.DeckDetailResponse;
 import com.arashi.edu.arashynbe.features.system.deck.service.DeckService;
 import com.arashi.edu.arashynbe.repository.hub.UserDeckRepo;
 import com.arashi.edu.arashynbe.repository.hub.UserFolderRepo;
@@ -62,10 +60,7 @@ public class UserDeckServiceImpl implements UserDeckService {
               .findByIdAndUserId(request.userFolderId(), user.getId())
               .orElseThrow(() -> new ApiException(ErrorCode.USER_DECK_NOT_FOUND));
 
-      Folder systemFolder = userFolder.getFolder();
-      if (systemFolder != null && systemFolder.getIsPublic()) {
-        systemFolderId = systemFolder.getId();
-      }
+      systemFolderId = userFolder.getFolderId();
     }
 
     DeckCreateRequest deckCreateRequest = new DeckCreateRequest(
@@ -85,7 +80,7 @@ public class UserDeckServiceImpl implements UserDeckService {
     UserDeck.UserDeckBuilder builder = UserDeck.builder()
             .user(user)
             .name(request.name().trim())
-            .deck(systemDeck)
+            .deckId(systemDeck.getId())
             .proficiency((short) Proficiency.minValue())
             .lastOpenAt(OffsetDateTime.now());
 
@@ -108,7 +103,7 @@ public class UserDeckServiceImpl implements UserDeckService {
             .orElseThrow(() -> new ApiException(ErrorCode.DECK_NOT_FOUND));
 
     UserDeck.UserDeckBuilder builder = UserDeck.builder()
-            .deck(deck)
+            .deckId(deck.getId())
             .user(user)
             .name(
                     request.name() != null && !request.name().isBlank()
@@ -236,14 +231,11 @@ public class UserDeckServiceImpl implements UserDeckService {
 
     List<UserDeckListResponse.UserDeckSummariseResponse> result = userDecks.stream()
             .map(userDeck -> {
-              Deck deck = userDeck.getDeck();
-              String name = userDeck.getName() != null ? userDeck.getName() : deck.getName();
-
               return new UserDeckListResponse.UserDeckSummariseResponse(
                       userDeck.getId(),
-                      name,
-                      deck.getDescription(),
-                      Language.valueOf(deck.getLanguage()),
+                      userDeck.getName(),
+                      userDeck.getDescription(),
+                      Language.valueOf(userDeck.getLanguage()),
                       userDeck.getLastOpenAt()
               );
             })
@@ -262,15 +254,12 @@ public class UserDeckServiceImpl implements UserDeckService {
 
     userDeck.setLastOpenAt(OffsetDateTime.now());
 
-    UUID deckId = userDeck.getDeck().getId();
-    DeckDetailResponse deck = deckService.findDeckById(deckId);
-
     return new UserDeckDetailResponse(
             userDeck.getId(),
-            deck.id(),
+            userDeck.getDeckId(),
             userDeck.getName(),
-            deck.description(),
-            deck.language(),
+            userDeck.getDescription(),
+            Language.valueOf(userDeck.getLanguage()),
             userDeck.getLastOpenAt(),
             userGrammarService.findAllByUserDeckId(userDeck.getId()),
             userDeck.getCreatedAt(),

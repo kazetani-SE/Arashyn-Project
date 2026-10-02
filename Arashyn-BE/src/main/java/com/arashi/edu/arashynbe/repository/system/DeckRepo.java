@@ -4,7 +4,6 @@ import com.arashi.edu.arashynbe.entity.system.Deck;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,7 +11,6 @@ import java.util.UUID;
 public interface DeckRepo extends JpaRepository<Deck, UUID> {
 
   @Modifying
-  @Transactional
   @Query("""
       UPDATE Deck d
       SET d.owner = null,
@@ -21,6 +19,10 @@ public interface DeckRepo extends JpaRepository<Deck, UUID> {
       """)
   void softDelete(UUID deckId);
 
-  List<Deck> findAllByIsPublicTrue();
-
+  @Query("""
+      select d from Deck d
+      join fetch d.owner
+      where d.isPublic = true
+      """)
+  List<Deck> findAllPublicWithOwner();
 }

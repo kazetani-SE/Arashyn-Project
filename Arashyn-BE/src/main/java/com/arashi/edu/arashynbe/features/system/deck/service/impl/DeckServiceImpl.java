@@ -1,6 +1,8 @@
 package com.arashi.edu.arashynbe.features.system.deck.service.impl;
 
+import com.arashi.edu.arashynbe.config.security.CurrentUser;
 import com.arashi.edu.arashynbe.entity.auth.Account;
+import com.arashi.edu.arashynbe.entity.hub.UserDeck;
 import com.arashi.edu.arashynbe.entity.system.Deck;
 import com.arashi.edu.arashynbe.entity.system.support.DeckGrammar;
 import com.arashi.edu.arashynbe.entity.system.support.DeckGrammarId;
@@ -8,17 +10,20 @@ import com.arashi.edu.arashynbe.entity.system.Folder;
 import com.arashi.edu.arashynbe.entity.system.support.FolderDeck;
 import com.arashi.edu.arashynbe.entity.system.support.FolderDeckId;
 import com.arashi.edu.arashynbe.entity.system.Grammar;
+import com.arashi.edu.arashynbe.features.system.deck.dto.request.DeckAssignGrammarRequest;
 import com.arashi.edu.arashynbe.features.system.deck.dto.request.DeckCreateRequest;
 import com.arashi.edu.arashynbe.features.system.deck.dto.request.DeckUpdateRequest;
 import com.arashi.edu.arashynbe.features.system.deck.dto.response.DeckDetailResponse;
 import com.arashi.edu.arashynbe.features.system.deck.dto.response.DeckIdResponse;
 import com.arashi.edu.arashynbe.features.system.deck.dto.response.DeckListResponse;
+import com.arashi.edu.arashynbe.features.system.deck.dto.response.DeckCheckUpdateResponse;
 import com.arashi.edu.arashynbe.features.system.deck.service.DeckService;
 import com.arashi.edu.arashynbe.features.system.folder.dto.response.FolderListResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarSummaryResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarListReadService;
 import com.arashi.edu.arashynbe.repository.hub.UserDeckRepo;
+import com.arashi.edu.arashynbe.repository.hub.support.UserDeckSyncBaseRepo;
 import com.arashi.edu.arashynbe.repository.system.DeckRepo;
 import com.arashi.edu.arashynbe.repository.system.FolderRepo;
 import com.arashi.edu.arashynbe.repository.system.GrammarRepo;
@@ -50,6 +55,7 @@ public class DeckServiceImpl implements DeckService {
   private final FolderDeckRepo folderDeckRepo;
   private final DeckGrammarRepo deckGrammarRepo;
   private final UserDeckRepo userDeckRepo;
+  private final UserDeckSyncBaseRepo userDeckSyncBaseRepo;
 
   private final GrammarListReadService grammarListReadService;
   private final CurrentAccountProvider currentAccountProvider;
@@ -58,12 +64,9 @@ public class DeckServiceImpl implements DeckService {
 
   @Override
   public DeckIdResponse createDeck(DeckCreateRequest request) {
-
-
     Account owner = currentAccountProvider.get();
 
     Deck deck = new Deck();
-
     deck.setName(request.name());
     deck.setDescription(request.description());
     deck.setLanguage(request.language().name());
@@ -75,7 +78,6 @@ public class DeckServiceImpl implements DeckService {
     if (request.folderId() != null) {
       attachFolder(deck, request.folderId());
     }
-
     if (request.grammarIds() != null && !request.grammarIds().isEmpty()) {
       attachGrammars(deck, request.grammarIds());
     }
@@ -85,86 +87,27 @@ public class DeckServiceImpl implements DeckService {
 
   @Override
   public DeckIdResponse updateDeck(DeckUpdateRequest request) {
-    Deck deck = ownerShip.requireOwnership(
-            request.id(),
-            deckRepo,
-            ErrorCode.DECK_NOT_FOUND
-    );
+    Deck deck = ownerShip.requireOwnership(request.id(), deckRepo, ErrorCode.DECK_NOT_FOUND);
 
-    deck.setName(request.name());
-    deck.setDescription(request.description());
-    deck.setLanguage(request.language().name());
-
+    if (request.name() != null && !request.name().isBlank()) {
+      deck.setName(request.name());
+    }
+    if (request.description() != null && !request.description().isBlank()) {
+      deck.setDescription(request.description());
+    }
     if (request.isPublic() != null) {
       deck.setIsPublic(request.isPublic());
     }
 
-    /*
-     * folderIds is a single UUID.
-     *
-     * null:
-     *     keep current folder relationships.
-     *
-     * non-null:
-     *     replace current folder relationships with the specified folder.
-     */
-    if (request.folderId() != null) {
-      folderDeckRepo.deleteByIdDeckId(deck.getId());
-      attachFolder(deck, request.folderId());
-    }
-
-    /*
-     * grammarIds is a Set.
-     *
-     * null:
-     *     keep current grammar relationships.
-     *
-     * empty:
-     *     remove all grammar relationships.
-     *
-     * non-empty:
-     *     replace current grammar relationships.
-     */
-    if (request.grammarIds() != null) {
-      deckGrammarRepo.deleteByIdDeckId(deck.getId());
-
-      if (!request.grammarIds().isEmpty()) {
-        attachGrammars(deck, request.grammarIds());
-      }
-    }
+    changeFolder(deck, request.oldFolderId(), request.newFolderId());
 
     return new DeckIdResponse(deck.getId());
   }
 
   @Override
-  @Transactional
-  public void addGrammarToDeck(UUID deckId, UUID grammarId) {
-    DeckGrammarId id = new DeckGrammarId(deckId, grammarId);
-
-    if (deckGrammarRepo.existsById(id)) {
-      return;
-    }
-
-    Deck deck = deckRepo.findById(deckId)
-            .orElseThrow(() -> new ApiException(ErrorCode.DECK_NOT_FOUND));
-
-    Grammar grammar = grammarRepo.findById(grammarId)
-            .orElseThrow(() -> new ApiException(ErrorCode.GRAMMAR_NOT_FOUND));
-
-    DeckGrammar deckGrammar = DeckGrammar.builder()
-            .id(id)
-            .deck(deck)
-            .grammar(grammar)
-            .build();
-
-    deckGrammarRepo.save(deckGrammar);
-  }
-
-  @Override
   @Transactional(readOnly = true)
   public DeckListResponse listDecks() {
-
-    List<DeckListResponse.DeckSummariseResponse> decks = deckRepo.findAllByIsPublicTrue()
+    List<DeckListResponse.DeckSummariseResponse> decks = deckRepo.findAllPublicWithOwner()
             .stream()
             .map(this::toSummariseResponse)
             .toList();
@@ -175,11 +118,10 @@ public class DeckServiceImpl implements DeckService {
   @Override
   @Transactional(readOnly = true)
   public DeckDetailResponse findDeckById(UUID id) {
-
     Deck deck = deckRepo.findById(id)
-            .orElseThrow(() ->
-                    new ApiException(ErrorCode.DECK_NOT_FOUND)
-            );
+            .filter(d -> Boolean.TRUE.equals(d.getIsPublic())
+                    || (d.getOwner() != null && d.getOwner().getId().equals(CurrentUser.getId())))
+            .orElseThrow(() -> new ApiException(ErrorCode.DECK_NOT_FOUND));
 
     return toDetailResponse(deck);
   }
@@ -191,29 +133,97 @@ public class DeckServiceImpl implements DeckService {
 
   @Override
   public void deleteDeck(UUID id) {
-    Deck deck = ownerShip.requireOwnership(
-            id,
-            deckRepo,
-            ErrorCode.DECK_NOT_FOUND
-    );
+    Deck deck = ownerShip.requireOwnership(id, deckRepo, ErrorCode.DECK_NOT_FOUND);
+    deckRepo.delete(deck);
+  }
 
-    deckRepo.softDelete(deck.getId());
+  @Override
+  @Transactional(readOnly = true)
+  public DeckCheckUpdateResponse checkDeckUpdate(UUID userDeckId) {
+    UserDeck userDeck = userDeckRepo.findById(userDeckId)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_DECK_NOT_FOUND));
+
+    UUID sourceId = userDeck.getDeckId();
+    if (sourceId == null) {
+      return new DeckCheckUpdateResponse(false, Set.of(), Set.of());
+    }
+
+    Deck source = deckRepo.findById(sourceId).orElse(null);
+    if (source == null) {
+      return new DeckCheckUpdateResponse(false, Set.of(), Set.of());
+    }
+
+    if (source.getChildrenVersion() == userDeck.getSyncedVersion()) {
+      return new DeckCheckUpdateResponse(false, Set.of(), Set.of());
+    }
+
+    Set<UUID> currentSource = deckGrammarRepo.findGrammarIdsByDeckId(sourceId);
+    Set<UUID> base = new HashSet<>(userDeckSyncBaseRepo.findGrammarIdsByUserDeckId(userDeckId));
+
+    Set<UUID> added = new HashSet<>(currentSource);
+    added.removeAll(base);
+
+    Set<UUID> removed = new HashSet<>(base);
+    removed.removeAll(currentSource);
+
+    return new DeckCheckUpdateResponse(!added.isEmpty() || !removed.isEmpty(), added, removed);
+  }
+
+  @Override
+  public DeckIdResponse assignGrammars(DeckAssignGrammarRequest request) {
+    Deck deck = ownerShip.requireOwnership(request.deckId(), deckRepo, ErrorCode.DECK_NOT_FOUND);
+
+    Set<UUID> currentGrammarIds = deckGrammarRepo.findGrammarIdsByDeckId(deck.getId());
+
+    Set<UUID> toAdd = new HashSet<>(request.grammarIds());
+    toAdd.removeAll(currentGrammarIds);
+
+    Set<UUID> toRemove = new HashSet<>(request.grammarIds());
+    toRemove.retainAll(currentGrammarIds);
+
+    if (!toRemove.isEmpty()) {
+      deckGrammarRepo.deleteByIdDeckIdAndIdGrammarIdIn(deck.getId(), toRemove);
+    }
+
+    if (!toAdd.isEmpty()) {
+      attachGrammars(deck, toAdd);
+    }
+
+    return new DeckIdResponse(deck.getId());
   }
 
   private void attachFolder(Deck deck, UUID folderId) {
 
-    Folder folder = folderRepo.findById(folderId)
-            .orElseThrow(() ->
-                    new ApiException(ErrorCode.FOLDER_NOT_FOUND)
-            );
+    Folder folder = ownerShip.requireOwnership(folderId, folderRepo, ErrorCode.FOLDER_NOT_FOUND);
 
-    FolderDeck folderDeck = FolderDeck.builder()
+    folderDeckRepo.save(FolderDeck.builder()
             .id(new FolderDeckId(folder.getId(), deck.getId()))
             .folder(folder)
             .deck(deck)
-            .build();
+            .build());
+  }
 
-    folderDeckRepo.save(folderDeck);
+  private void changeFolder(Deck deck, UUID oldFolderId, UUID newFolderId) {
+    if (oldFolderId == null && newFolderId == null) return;
+    if (oldFolderId != null && oldFolderId.equals(newFolderId)) return;
+
+    UUID deckId = deck.getId();
+
+    Folder newFolder = null;
+    if (newFolderId != null) {
+      newFolder = ownerShip.requireOwnership(newFolderId, folderRepo, ErrorCode.FOLDER_NOT_FOUND);
+      if (folderDeckRepo.existsByIdFolderIdAndIdDeckId(newFolderId, deckId)) {
+        throw new ApiException(ErrorCode.INVALID_REQUEST);
+      }
+    }
+
+    if (oldFolderId != null && folderDeckRepo.deleteLink(oldFolderId, deckId) == 0) {
+      throw new ApiException(ErrorCode.INVALID_REQUEST);
+    }
+
+    if (newFolder != null) {
+      attachFolder(deck, newFolderId);
+    }
   }
 
   private void attachGrammars(Deck deck, Set<UUID> grammarIds) {
@@ -246,19 +256,16 @@ public class DeckServiceImpl implements DeckService {
     return grammars;
   }
 
-  private DeckListResponse.DeckSummariseResponse toSummariseResponse(
-          Deck deck
-  ) {
-    UUID ownerId = deck.getOwner() != null
-            ? deck.getOwner().getId()
-            : null;
+  private DeckListResponse.DeckSummariseResponse toSummariseResponse(Deck deck) {
+    var owner = deck.getOwner();
 
     return new DeckListResponse.DeckSummariseResponse(
             deck.getId(),
             deck.getName(),
             deck.getDescription(),
             Language.valueOf(deck.getLanguage()),
-            ownerId
+            owner.getId(),
+            owner.getUsername()
     );
   }
 

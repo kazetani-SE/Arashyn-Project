@@ -2,6 +2,9 @@ package com.arashi.edu.arashynbe.features.system.folder.service.impl;
 
 import com.arashi.edu.arashynbe.config.security.CurrentUser;
 import com.arashi.edu.arashynbe.entity.auth.Account;
+import com.arashi.edu.arashynbe.entity.hub.UserFolder;
+import com.arashi.edu.arashynbe.entity.hub.support.UserFolderSyncBase;
+import com.arashi.edu.arashynbe.entity.hub.support.UserFolderSyncBaseId;
 import com.arashi.edu.arashynbe.entity.system.Deck;
 import com.arashi.edu.arashynbe.entity.system.Folder;
 import com.arashi.edu.arashynbe.entity.system.support.FolderDeck;
@@ -10,11 +13,13 @@ import com.arashi.edu.arashynbe.entity.system.support.FolderHierarchyId;
 import com.arashi.edu.arashynbe.features.system.deck.dto.response.DeckListResponse;
 import com.arashi.edu.arashynbe.features.system.folder.dto.request.FolderCreateRequest;
 import com.arashi.edu.arashynbe.features.system.folder.dto.request.FolderUpdateRequest;
+import com.arashi.edu.arashynbe.features.system.folder.dto.response.FolderCheckUpdateResponse;
 import com.arashi.edu.arashynbe.features.system.folder.dto.response.FolderDetailResponse;
 import com.arashi.edu.arashynbe.features.system.folder.dto.response.FolderIdResponse;
 import com.arashi.edu.arashynbe.features.system.folder.dto.response.FolderListResponse;
 import com.arashi.edu.arashynbe.features.system.folder.service.FolderService;
 import com.arashi.edu.arashynbe.repository.hub.UserFolderRepo;
+import com.arashi.edu.arashynbe.repository.hub.support.UserFolderSyncBaseRepo;
 import com.arashi.edu.arashynbe.repository.system.FolderRepo;
 import com.arashi.edu.arashynbe.repository.system.support.FolderDeckRepo;
 import com.arashi.edu.arashynbe.repository.system.support.FolderHierarchyRepo;
@@ -28,6 +33,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -42,6 +48,7 @@ public class FolderServiceImpl implements FolderService {
   private final FolderDeckRepo folderDeckRepo;
   private final UserFolderRepo userFolderRepo;
   private final FolderHierarchyRepo folderHierarchyRepo;
+  private final UserFolderSyncBaseRepo userFolderSyncBaseRepo;
 
   private final CurrentAccountProvider currentAccountProvider;
 
@@ -96,7 +103,7 @@ public class FolderServiceImpl implements FolderService {
   @Override
   @Transactional(readOnly = true)
   public FolderDetailResponse findFolderById(UUID id) {
-    Folder folder = folderRepo.findByIdAndOwnerIsNotNull(id)
+    Folder folder = folderRepo.findById(id)
             .filter(this::canView)
             .orElseThrow(() -> new ApiException(ErrorCode.FOLDER_NOT_FOUND));
 
@@ -110,23 +117,68 @@ public class FolderServiceImpl implements FolderService {
 
   @Override
   public void deleteFolder(UUID id) {
-    Folder folder = ownerShip.requireOwnership(
-            id,
-            folderRepo,
-            ErrorCode.FOLDER_NOT_FOUND
-    );
+    Folder folder = ownerShip.requireOwnership(id, folderRepo, ErrorCode.FOLDER_NOT_FOUND);
+    folderRepo.delete(folder);
+  }
 
-    folderRepo.softDelete(folder.getId());
+  @Override
+  @Transactional(readOnly = true)
+  public FolderCheckUpdateResponse checkFolderUpdate(UUID userFolderId) {
+    UserFolder userFolder = userFolderRepo.findById(userFolderId)
+            .orElseThrow(() -> new ApiException(ErrorCode.USER_FOLDER_NOT_FOUND));
+
+    UUID sourceId = userFolder.getFolderId();
+    if (sourceId == null) {
+      return new FolderCheckUpdateResponse(false, Set.of(), Set.of(), Set.of(), Set.of());
+    }
+
+    Folder source = folderRepo.findById(sourceId).orElse(null);
+    if (source == null || source.getChildrenVersion() == userFolder.getSyncedVersion()) {
+      return new FolderCheckUpdateResponse(false, Set.of(), Set.of(), Set.of(), Set.of());
+    }
+
+    Set<UUID> currentFolders = folderHierarchyRepo.findChildFolderIds(sourceId);
+    Set<UUID> currentDecks = folderDeckRepo.findDeckIdsByFolderId(sourceId);
+
+    List<UserFolderSyncBase> baseRows = userFolderSyncBaseRepo.findByUserFolderId(userFolderId);
+
+    Set<UUID> baseFolders = baseRows.stream()
+            .map(UserFolderSyncBase::getId)
+            .filter(id -> "folder".equals(id.getChildKind()))
+            .map(UserFolderSyncBaseId::getChildId)
+            .collect(Collectors.toSet());
+
+    Set<UUID> baseDecks = baseRows.stream()
+            .map(UserFolderSyncBase::getId)
+            .filter(id -> "deck".equals(id.getChildKind()))
+            .map(UserFolderSyncBaseId::getChildId)
+            .collect(Collectors.toSet());
+
+    // Calculate differences inline
+    Set<UUID> addedFolders = new HashSet<>(currentFolders);
+    addedFolders.removeAll(baseFolders);
+
+    Set<UUID> removedFolders = new HashSet<>(baseFolders);
+    removedFolders.removeAll(currentFolders);
+
+    Set<UUID> addedDecks = new HashSet<>(currentDecks);
+    addedDecks.removeAll(baseDecks);
+
+    Set<UUID> removedDecks = new HashSet<>(baseDecks);
+    removedDecks.removeAll(currentDecks);
+
+    boolean hasUpdate = !addedFolders.isEmpty() || !removedFolders.isEmpty()
+            || !addedDecks.isEmpty() || !removedDecks.isEmpty();
+
+    return new FolderCheckUpdateResponse(hasUpdate, addedFolders, addedDecks, removedFolders, removedDecks);
   }
 
   private FolderListResponse.FolderSummariseResponse toSummariseResponse(Folder folder) {
     var owner = folder.getOwner();
-
     return new FolderListResponse.FolderSummariseResponse(
-            folder.getId(),
-            folder.getName(),
-            owner.getId(),
-            owner.getUsername()
+            folder.getId(), folder.getName(),
+            owner != null ? owner.getId() : null,
+            owner != null ? owner.getUsername() : null
     );
   }
 
@@ -171,7 +223,8 @@ public class FolderServiceImpl implements FolderService {
             deck.getName(),
             deck.getDescription(),
             parseLanguage(deck.getLanguage()),
-            deck.getOwner() != null ? deck.getOwner().getId() : null
+            deck.getOwner() != null ? deck.getOwner().getId() : null,
+            deck.getOwner() != null ? deck.getOwner().getUsername() : ""
     );
   }
 
@@ -223,7 +276,7 @@ public class FolderServiceImpl implements FolderService {
   }
 
   private boolean canView(Folder folder) {
-    return Boolean.TRUE.equals(folder.getIsPublic())
-            || folder.getOwner().getId().equals(CurrentUser.getId());
+    if (Boolean.TRUE.equals(folder.getIsPublic())) return true;
+    return folder.getOwner() != null && folder.getOwner().getId().equals(CurrentUser.getId());
   }
 }

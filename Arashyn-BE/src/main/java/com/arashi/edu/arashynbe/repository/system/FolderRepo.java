@@ -2,9 +2,7 @@ package com.arashi.edu.arashynbe.repository.system;
 
 import com.arashi.edu.arashynbe.entity.system.Folder;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,16 +13,6 @@ public interface FolderRepo extends JpaRepository<Folder, UUID> {
   List<Folder> findAllByIsPublicTrue();
 
   Optional<Folder> findByIdAndOwnerIsNotNull(UUID id);
-
-  @Modifying
-  @Transactional
-  @Query("""
-      UPDATE Folder f
-      SET f.owner = null,
-          f.isPublic = false
-      WHERE f.id = :folderId
-      """)
-  void softDelete(UUID folderId);
 
   @Query("""
     select c from Folder c

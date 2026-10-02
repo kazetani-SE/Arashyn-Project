@@ -3,7 +3,6 @@ package com.arashi.edu.arashynbe.features.hub.usergrammar.service.impl;
 import com.arashi.edu.arashynbe.entity.auth.Account;
 import com.arashi.edu.arashynbe.entity.hub.UserDeck;
 import com.arashi.edu.arashynbe.entity.hub.UserGrammar;
-import com.arashi.edu.arashynbe.entity.system.Deck;
 import com.arashi.edu.arashynbe.entity.system.Grammar;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateMultipleRequest;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateRequest;
@@ -253,8 +252,6 @@ public class UserGrammarServiceImpl implements UserGrammarService {
 
         userDeck.getUserGrammars().add(source);
         userDeckRepo.save(userDeck);
-
-        syncToSystemDeckIfPublic(userDeck, source.getGrammar().getId());
       }
 
       return source;
@@ -275,7 +272,6 @@ public class UserGrammarServiceImpl implements UserGrammarService {
             .lastReviewAt(null);
 
     if (request.sourceUserGrammarId() != null) {
-
       UserGrammar source = userGrammarRepo
               .findByIdAndUserId(
                       request.sourceUserGrammarId(),
@@ -291,7 +287,6 @@ public class UserGrammarServiceImpl implements UserGrammarService {
     UserGrammar userGrammar = userGrammarRepo.save(builder.build());
 
     if (request.userDeckId() != null) {
-
       UserDeck userDeck = userDeckRepo
               .findByIdAndUserId(
                       request.userDeckId(),
@@ -301,19 +296,9 @@ public class UserGrammarServiceImpl implements UserGrammarService {
 
       userDeck.getUserGrammars().add(userGrammar);
       userDeckRepo.save(userDeck);
-
-      syncToSystemDeckIfPublic(userDeck, grammar.getId());
     }
 
     return userGrammar;
-  }
-
-  private void syncToSystemDeckIfPublic(UserDeck userDeck, UUID grammarId) {
-    Deck systemDeck = userDeck.getDeck();
-
-    if (systemDeck != null && Boolean.TRUE.equals(systemDeck.getIsPublic())) {
-      deckService.addGrammarToDeck(systemDeck.getId(), grammarId);
-    }
   }
 
   private UserGrammarListResponse toListResponse(List<UserGrammar> userGrammars) {

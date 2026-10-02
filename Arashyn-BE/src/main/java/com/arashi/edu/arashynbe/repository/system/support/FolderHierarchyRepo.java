@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Set;
 import java.util.UUID;
 
 public interface FolderHierarchyRepo extends JpaRepository<FolderHierarchy,  FolderHierarchyId> {
@@ -28,4 +29,6 @@ public interface FolderHierarchyRepo extends JpaRepository<FolderHierarchy,  Fol
       """)
   boolean isDescendant(UUID folderId, UUID candidateId);
 
+  @Query("select fh.id.childId from FolderHierarchy fh where fh.id.parentId = :folderId")
+  Set<UUID> findChildFolderIds(UUID folderId);
 }

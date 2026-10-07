@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button.tsx";
 import { Card, CardContent, CardHeader } from "@/components/ui/card.tsx";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
-import { useGrammarList } from "@/shared/hook/grammar_component_build.ts";
+import {useGrammarSummaryList} from "@/shared/hook/grammar_component_build.ts";
 import { SummarizeCard } from "@/components/item/SummarizeCard.tsx";
 import type { LucideIcon } from "lucide-react";
 import {useItemList} from "@/features/popular/hook/use_item_list.ts";
@@ -34,7 +34,7 @@ export default function TrendingSection({
     });
 
     // Maps raw grammar_response[] -> display shape ({ id, title, patterns, meanings, filters }).
-    const items = useGrammarList(data?.items ?? []);
+    const items = useGrammarSummaryList(data?.items ?? []);
 
     return (
         <section className="space-y-4">

@@ -126,7 +126,7 @@ function SummarizeCard({
                     {firstPattern && (
                         <div className="flex max-w-full flex-col items-center gap-2">
                             <span
-                                className="whitespace-nowrap text-xl font-medium tracking-tight
+                                className="line-clamp-3 max-w-full whitespace-pre-line break-words text-center text-lg font-medium tracking-tight
                                 transition-all duration-200
                                 group-hover:scale-105 group-hover:text-[#818cf8]"
                             >
@@ -188,7 +188,7 @@ function SummarizeCard({
                                             {index + 1}
                                         </span>
                                     )}
-                                    <span className="text-2xl font-medium tracking-tight text-[#818cf8]">
+                                    <span className="max-w-full break-words text-center text-2xl font-medium tracking-tight text-[#818cf8]">
                                         {content}
                                     </span>
                                 </div>

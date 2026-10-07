@@ -1,34 +1,31 @@
-import type {GrammarResponse} from "@/entities/grammar/grammar_types.ts";
+import type { GrammarDetailResponse } from "@/lib/api/generated";
 
-export function transformGrammar(data: GrammarResponse) {
-    const grouped = new Map<number, typeof data.components>()
-
-    for (const component of data.components) {
-        const group = grouped.get(component.groupKey) ?? []
-        group.push(component)
-        grouped.set(component.groupKey, group)
-    }
-
-    const groups = Array.from(grouped.entries())
-        .sort(([a], [b]) => a - b)
-        .map(([groupKey, components]) => ({
-            groupKey,
-            components: [...components].sort((a, b) => a.order - b.order),
-        }))
+export function transformGrammar(data: GrammarDetailResponse) {
+    const groups = [...(data.groups ?? [])]
+        .sort((a, b) => a.groupKey - b.groupKey)
+        .map((group) => ({
+            groupKey: group.groupKey,
+            components: [...group.components].sort((a, b) => a.order - b.order),
+            meanings: group.meanings ?? [],
+        }));
 
     const patterns = groups.map(({ groupKey, components }) => ({
         groupKey,
         pattern: components
-            .map((component) => component.form ?? component.keyword)
+            .map((component) => component.formId ?? component.keyword)
             .filter((value): value is string => Boolean(value))
             .join(" + "),
-    }))
+    }));
 
-    const meanings = data.meanings.map((meaning) => meaning.content)
-    const filters = data.filters.map((filter) => filter.name)
+    const meanings = groups.flatMap((group) =>
+        group.meanings.map((meaning) => meaning.content),
+    );
+    const filters = (data.filters ?? [])
+        .map((filter) => filter.name)
+        .filter((name): name is string => Boolean(name));
 
     return {
-        id: data.id,
+        id: data.id ?? "",
         title: data.title,
         groups,
         patterns,
@@ -36,7 +33,7 @@ export function transformGrammar(data: GrammarResponse) {
         meanings,
         filters,
         data,
-    }
+    };
 }
 
-export type GrammarView = ReturnType<typeof transformGrammar>
+export type GrammarView = ReturnType<typeof transformGrammar>;

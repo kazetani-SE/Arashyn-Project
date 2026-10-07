@@ -27,7 +27,7 @@ public class AccountSession {
   @Column(name = "refresh_token", nullable = false)
   private String refreshToken;
 
-  @Column(name = "created_at", nullable = false, updatable = false)
+  @Column(name = "created_at", nullable = false)
   private Instant createdAt;
 
   @Column(name = "updated_at", nullable = false)

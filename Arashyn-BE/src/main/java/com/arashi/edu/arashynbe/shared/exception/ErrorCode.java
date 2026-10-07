@@ -280,17 +280,24 @@ public enum ErrorCode {
           "User deck not found."
   ),
 
+  // ---------- User Grammar ----------
+  USER_GRAMMAR_NOT_FOUND(
+          HttpStatus.NOT_FOUND,
+          "USER_GRAMMAR_NOT_FOUND",
+          "User grammar not found."
+  ),
+
+  // ---------- User Folder ----------
   USER_FOLDER_NOT_FOUND(
           HttpStatus.NOT_FOUND,
           "USER_FOLDER_NOT_FOUND",
           "User folder not found."
   ),
 
-  // ---------- User Grammar ----------
-  USER_GRAMMAR_NOT_FOUND(
+  USER_FOLDER_INVALID_HIERARCHY(
           HttpStatus.NOT_FOUND,
-          "USER_GRAMMAR_NOT_FOUND",
-          "User grammar not found."
+          "USER_FOLDER_INVALID_HIERARCHY",
+          "User folder invalid hierarchy."
   ),
 
   // ---------- Fill Blank ----------

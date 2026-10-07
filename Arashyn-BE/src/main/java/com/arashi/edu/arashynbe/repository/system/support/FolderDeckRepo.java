@@ -14,6 +14,8 @@ public interface FolderDeckRepo extends JpaRepository<FolderDeck, FolderDeckId> 
 
   List<FolderDeck> findByIdDeckId(UUID deckId);
 
+  List<FolderDeck> findByFolderId(UUID folderId);
+
   @Query("""
     select fd from FolderDeck fd
     join fetch fd.deck d

@@ -76,8 +76,8 @@ public class GrammarReadServiceImpl implements GrammarReadService {
             grammar.getTitle(),
             Language.valueOf(grammar.getLanguage()),
             grammar.getIsPublic(),
-            grammar.getOwner().getId(),
-            grammar.getOwner().getUsername(),
+            grammar.getOwner() != null ? grammar.getOwner().getId() : null,
+            grammar.getOwner() != null ? grammar.getOwner().getUsername() : "empty",
             buildGroups(
                     components,
                     meanings

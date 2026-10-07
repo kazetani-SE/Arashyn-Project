@@ -63,6 +63,7 @@ public class AuthServiceImpl implements AuthService {
             .orElse(AccountSession.builder().account(account).build());
 
     session.setRefreshToken(response.refreshToken());
+    session.setCreatedAt(Instant.now());
     accountSessionRepo.save(session);
 
     return new AuthResult(account.getUsername(), account.getAvatar(),

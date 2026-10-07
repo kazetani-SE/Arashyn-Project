@@ -23,4 +23,6 @@ public interface UserDeckRepo extends JpaRepository<UserDeck, UUID> {
   boolean existsByIdAndUserIdAndUserFoldersId( UUID id, UUID userId, UUID userFolderId );
 
   boolean existsByIdAndUserIdAndUserGrammarsId(UUID id, UUID userId, UUID userGrammarsId);
+
+  List<UserDeck> findAllByUserFoldersIdAndUserId(UUID folderId, UUID userId);
 }

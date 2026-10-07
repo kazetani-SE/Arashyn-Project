@@ -1,9 +1,11 @@
-import type {Component, ComponentGroup} from "@/entities/component/component_types.ts";
+import type { Group } from "@/lib/api/generated"
 
-function renderPattern(components: Component[]) {
+type GroupComponent = Group["components"][number]
+
+function renderPattern(components: GroupComponent[]) {
     return [...components]
         .sort((a, b) => a.order - b.order)
-        .map((c) => c.keyword ?? c.form ?? "")
+        .map((c) => c.keyword ?? c.formId ?? "")
         .filter(Boolean)
         .join(" ")
 }
@@ -13,7 +15,7 @@ function VariantNav({
                         activeGroup,
                         onSelect,
                     }: {
-    groups: ComponentGroup[]
+    groups: Group[]
     activeGroup: number
     onSelect: (groupKey: number) => void
 }) {

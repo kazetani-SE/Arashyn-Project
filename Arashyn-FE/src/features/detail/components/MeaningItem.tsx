@@ -1,7 +1,9 @@
-import type {Example} from "@/entities/example/example_types.ts";
-import type {Meaning} from "@/entities/meaning/meaning_types.ts";
+import type { MeaningCreateBase } from "@/lib/api/generated"
 
-function ExampleItem({ example }: { example: Example }) {
+type MeaningData = MeaningCreateBase
+type ExampleData = NonNullable<MeaningData["examples"]>[number]
+
+function ExampleItem({ example }: { example: ExampleData }) {
     return (
         <div className="text-base">
             <p className="text-neutral-200">{example.sentence}</p>
@@ -21,9 +23,11 @@ function MeaningItem({
                          meaning,
                          index,
                      }: {
-    meaning: Meaning
+    meaning: MeaningData
     index: number
 }) {
+    const examples = meaning.examples ?? []
+
     return (
         <div className="rounded-xl border border-[#1e1b3a] bg-[#12101f]/50 p-5">
             <div className="flex gap-2 text-base">
@@ -36,10 +40,10 @@ function MeaningItem({
                 </span>
             </div>
 
-            {meaning.examples.length > 0 && (
+            {examples.length > 0 && (
                 <div className="mt-4 flex flex-col gap-3 border-t border-[#1e1b3a] pt-4">
-                    {meaning.examples.map((example) => (
-                        <ExampleItem key={example.id} example={example} />
+                    {examples.map((example, i) => (
+                        <ExampleItem key={i} example={example} />
                     ))}
                 </div>
             )}

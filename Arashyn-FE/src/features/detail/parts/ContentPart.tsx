@@ -1,23 +1,23 @@
-import {MeaningItem} from "@/features/detail/components/MeaningItem.tsx";
-import type {GrammarDetailResponse} from "@/entities/grammar/grammar_types.ts";
-import type {Component} from "@/entities/component/component_types.ts";
+import { MeaningItem } from "@/features/detail/components/MeaningItem.tsx";
+import type { GrammarDetailResponse, Group } from "@/lib/api/generated";
 
-function renderPattern(components: Component[]) {
+type GroupComponent = Group["components"][number];
+
+function renderPattern(components: GroupComponent[]) {
     return [...components]
         .sort((a, b) => a.order - b.order)
-        .map((c) => c.keyword ?? c.form ?? "")
+        .map((c) => c.keyword ?? c.formId ?? "")
         .filter(Boolean)
         .join(" ")
 }
 
-function ContentPart({
-                         data,
-                     }: {
-    data: GrammarDetailResponse
-}) {
+function ContentPart({ data }: { data: GrammarDetailResponse }) {
+    const groups = data.groups ?? []
+    const notes = data.notes ?? []
+
     return (
         <main className="flex flex-col gap-14">
-            {data.groups.map((group) => (
+            {groups.map((group) => (
                 <div
                     key={group.groupKey}
                     id={`group-${group.groupKey}`}
@@ -30,24 +30,22 @@ function ContentPart({
                     </div>
 
                     <div className="flex flex-col gap-6">
-                        {group.meanings.map((meaning, index) => (
-                            <MeaningItem key={meaning.id} meaning={meaning} index={index} />
+                        {(group.meanings ?? []).map((meaning, index) => (
+                            <MeaningItem key={index} meaning={meaning} index={index} />
                         ))}
                     </div>
                 </div>
             ))}
 
-            {data.notes.length > 0 && (
+            {notes.length > 0 && (
                 <div className="border-t border-[#1e1b3a] pt-6">
                     <h2 className="mb-3 text-sm font-medium uppercase tracking-wide text-neutral-400">
                         Notes
                     </h2>
 
                     <div className="flex flex-col gap-1.5 text-sm text-neutral-300/80">
-                        {data.notes.map((note) => (
-                            <p key={note.id}>
-                                {note.content}
-                            </p>
+                        {notes.map((note, index) => (
+                            <p key={note.id ?? index}>{note.content}</p>
                         ))}
                     </div>
                 </div>

@@ -1,16 +1,15 @@
 import * as React from "react"
 import { Badge } from "@/components/ui/badge"
 import { Globe, Lock, User } from "lucide-react"
-import {VariantNav} from "@/features/detail/components/VariantNav.tsx";
-import type {GrammarDetailResponse} from "@/entities/grammar/grammar_types.ts";
+import { VariantNav } from "@/features/detail/components/VariantNav.tsx";
+import type { GrammarDetailResponse } from "@/lib/api/generated";
 
-function SummarizePart({
-                           data,
-                       }: {
-    data: GrammarDetailResponse
-}) {
+function SummarizePart({ data }: { data: GrammarDetailResponse }) {
+    const groups = data.groups ?? []
+    const filters = data.filters ?? []
+
     const [activeGroup, setActiveGroup] = React.useState<number>(
-        data.groups[0]?.groupKey ?? 1
+        groups[0]?.groupKey ?? 1
     )
 
     const scrollTo = (groupKey: number) => {
@@ -51,11 +50,11 @@ function SummarizePart({
                 {data.ownerName}
             </div>
 
-            {data.filters.length > 0 && (
+            {filters.length > 0 && (
                 <div className="mb-6 flex flex-wrap gap-1.5">
-                    {data.filters.map((filter) => (
+                    {filters.map((filter, i) => (
                         <span
-                            key={filter.name}
+                            key={filter.id ?? filter.name ?? i}
                             className="rounded-full bg-[#1e1b3a] px-2 py-0.5 text-[11px] font-medium text-[#a5adf0]"
                         >
                             {filter.name}
@@ -65,7 +64,7 @@ function SummarizePart({
             )}
 
             <VariantNav
-                groups={data.groups}
+                groups={groups}
                 activeGroup={activeGroup}
                 onSelect={scrollTo}
             />

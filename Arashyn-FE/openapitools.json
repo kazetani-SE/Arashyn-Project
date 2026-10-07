@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
+  "spaces": 2,
+  "generator-cli": {
+    "version": "7.26.0",
+    "generators": {
+      "arashyn-api": {
+        "generatorName": "typescript-axios",
+        "inputSpec": "http://localhost:8080/v3/api-docs",
+        "output": "src/lib/api/generated",
+        "skipValidateSpec": true,
+        "additionalProperties": {
+          "withSeparateModelsAndApi": true,
+          "apiPackage": "apis",
+          "modelPackage": "models",
+          "useSingleRequestParameter": true,
+          "withInterfaces": true,
+          "stringEnums": true,
+          "supportsES6": true,
+          "npmName": "arashyn-api",
+          "npmVersion": "1.0.0"
+        }
+      }
+    }
+  }
+}

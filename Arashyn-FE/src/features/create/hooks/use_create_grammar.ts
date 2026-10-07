@@ -1,6 +1,5 @@
 import * as React from "react"
 import { useNavigate } from "react-router-dom"
-import { grammarService } from "@/entities/grammar/grammar_service.ts"
 import {
     type GrammarFormValues,
     type GroupFormValue,
@@ -10,6 +9,7 @@ import {
 } from "@/entities/grammar/grammar_form_types.ts"
 import {ROUTES} from "@/app/router/route.ts"
 import {Language} from "@/shared/enum/language.ts";
+import {grammarProtectedService} from "@/entities/grammar/gammar_protected_service.ts";
 
 export function useCreateGrammar(language: Language) {
     const [values, setValues] = React.useState<GrammarFormValues>(emptyGrammarFormValues())
@@ -35,18 +35,23 @@ export function useCreateGrammar(language: Language) {
 
     const updateNote = (index: number, next: NoteFormValue) => {
         setValues((prev) => {
-            const notes = [...prev.notes]
+            const notes = [...(prev.notes ?? [])]
             notes[index] = next
             return { ...prev, notes }
         })
     }
+
     const addNote = () =>
         setValues((prev) => ({
             ...prev,
-            notes: [...prev.notes, { content: "", isPublic: true, groupKey: prev.groups[0]?.groupKey ?? 1 }],
+            notes: [
+                ...(prev.notes ?? []),
+                { content: "", isPublic: true, groupKey: prev.groups[0]?.groupKey ?? 1 },
+            ],
         }))
+
     const removeNote = (index: number) =>
-        setValues((prev) => ({ ...prev, notes: prev.notes.filter((_, i) => i !== index) }))
+        setValues((prev) => ({ ...prev, notes: (prev.notes ?? []).filter((_, i) => i !== index) }))
 
     const updateFilterIds = (filterIds: string[]) =>
         setValues((prev) => ({ ...prev, filterIds }))
@@ -59,9 +64,9 @@ export function useCreateGrammar(language: Language) {
 
         try {
             setSubmitting(true)
-            const res = await grammarService.create(values)
+            const res = await grammarProtectedService.create(values)
             reset()
-            navigate(ROUTES.grammarDetail(res.id))
+            navigate(ROUTES.grammarDetail(res.id ? res.id : ""))
         } catch (err) {
             console.error("[CREATE_GRAMMAR_ERROR]", err)
             setError("Failed to create grammar. Please try again.")

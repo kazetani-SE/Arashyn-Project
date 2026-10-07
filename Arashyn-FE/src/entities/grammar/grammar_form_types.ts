@@ -1,31 +1,29 @@
-import type {ExampleCreateRequest} from "@/entities/example/example_types.ts";
-import type {MeaningCreateRequest} from "@/entities/meaning/meaning_types.ts";
-import type {ComponentCreateRequest} from "@/entities/component/component_types.ts";
-import type {GrammarCreateRequest, GroupCreateRequest} from "@/entities/grammar/grammar_types.ts";
-import type {NoteCreateRequest} from "@/entities/note/note_types.ts";
+import {
+    GrammarCreateRequestLanguageEnum,
+    type ComponentCreateRequest,
+    type GrammarCreateRequest,
+    type Group,
+    type MeaningCreateBase,
+    type NoteCreateRequest,
+} from "@/lib/api/generated";
 
-export type ExampleFormValue = ExampleCreateRequest
-
-export type MeaningFormValue = MeaningCreateRequest
-
-export type ComponentFormValue = ComponentCreateRequest
-
-export type GroupFormValue = GroupCreateRequest
-
-export type NoteFormValue = NoteCreateRequest
-
-export type GrammarFormValues = GrammarCreateRequest
+export type GrammarFormValues = GrammarCreateRequest;
+export type GroupFormValue = Group;
+export type ComponentFormValue = ComponentCreateRequest;
+export type MeaningFormValue = MeaningCreateBase;
+export type NoteFormValue = NoteCreateRequest;
+export type ExampleFormValue = NonNullable<MeaningFormValue["examples"]>[number];
 
 export function emptyExample(): ExampleFormValue {
-    return { sentence: "", translation: "", note: "", isPublic: true }
+    return { sentence: "", translation: "", note: "", isPublic: true };
 }
 
 export function emptyMeaning(): MeaningFormValue {
-    return { content: "", isPublic: true, examples: [] }
+    return { content: "", isPublic: true, examples: [] };
 }
 
 export function emptyComponent(order: number): ComponentFormValue {
-    return { order, formId: "", keyword: "", optional: false }
+    return { order, formId: "", keyword: "", optional: false };
 }
 
 export function emptyGroup(groupKey: number): GroupFormValue {
@@ -33,16 +31,16 @@ export function emptyGroup(groupKey: number): GroupFormValue {
         groupKey,
         components: [emptyComponent(1)],
         meanings: [emptyMeaning()],
-    }
+    };
 }
 
 export function emptyGrammarFormValues(): GrammarFormValues {
     return {
         title: "",
-        language: "VI",
+        language: GrammarCreateRequestLanguageEnum.Vi,
         isPublic: true,
         groups: [emptyGroup(1)],
         notes: [],
         filterIds: [],
-    }
+    };
 }

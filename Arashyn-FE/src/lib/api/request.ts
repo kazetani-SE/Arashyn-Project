@@ -1,41 +1,38 @@
-// lib/api/request.ts
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
-import { apiClient } from "@/lib/api/client.ts";
-import type { ApiResponse } from "@/lib/api/types.ts";
+import { apiClient } from "@/lib/api/http_client.ts";
 
 type RequestConfig = Omit<AxiosRequestConfig, "params"> & {
     params?: Record<string, string | number | boolean | undefined>;
 };
 
 /**
- * Unwrap response.data.data.
- * Some endpoints return 202/204 WITHOUT a body (ResponseEntity<Void>) —
- * in those cases, response.data will be "" or undefined, not ApiResponse<T>.
- * For these scenarios, return undefined instead of trying to read .data, which causes errors.
+ * Interceptor của apiClient đã bóc { data, message, status },
+ * nên response.data đã là body thật.
+ * Endpoint 202/204 không có body trả "" hoặc undefined -> chuẩn hóa thành undefined.
  */
-function unwrap<T>(response: AxiosResponse<ApiResponse<T> | "" | undefined>): T {
+function unwrap<T>(response: AxiosResponse<T | "" | undefined | null>): T {
     const body = response.data;
 
     if (body === undefined || body === "" || body === null) {
         return undefined as T;
     }
 
-    return (body as ApiResponse<T>).data;
+    return body as T;
 }
 
 export const api = {
     get: async <T>(url: string, config?: RequestConfig): Promise<T> =>
-        unwrap(await apiClient.get<ApiResponse<T>>(url, config)),
+        unwrap(await apiClient.get<T>(url, config)),
 
     post: async <T>(url: string, body?: unknown, config?: RequestConfig): Promise<T> =>
-        unwrap(await apiClient.post<ApiResponse<T>>(url, body, config)),
+        unwrap(await apiClient.post<T>(url, body, config)),
 
     put: async <T>(url: string, body?: unknown, config?: RequestConfig): Promise<T> =>
-        unwrap(await apiClient.put<ApiResponse<T>>(url, body, config)),
+        unwrap(await apiClient.put<T>(url, body, config)),
 
     patch: async <T>(url: string, body?: unknown, config?: RequestConfig): Promise<T> =>
-        unwrap(await apiClient.patch<ApiResponse<T>>(url, body, config)),
+        unwrap(await apiClient.patch<T>(url, body, config)),
 
     delete: async <T>(url: string, config?: RequestConfig): Promise<T> =>
-        unwrap(await apiClient.delete<ApiResponse<T>>(url, config)),
+        unwrap(await apiClient.delete<T>(url, config)),
 };

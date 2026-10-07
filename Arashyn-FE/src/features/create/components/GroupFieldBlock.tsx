@@ -27,6 +27,8 @@ export default function GroupFieldBlock({
                              onChange,
                              onRemove,
                          }: GroupFieldBlockProps) {
+    const meanings = group.meanings ?? [];
+    
     const updateComponent = (i: number, next: ComponentFormValue) => {
         const components = [...group.components];
         components[i] = next;
@@ -53,25 +55,25 @@ export default function GroupFieldBlock({
         });
 
     const updateMeaning = (i: number, next: MeaningFormValue) => {
-        const meanings = [...group.meanings];
-        meanings[i] = next;
+        const nextMeanings = [...meanings];
+        nextMeanings[i] = next;
 
         onChange({
             ...group,
-            meanings,
+            meanings: nextMeanings,
         });
     };
 
     const addMeaning = () =>
         onChange({
             ...group,
-            meanings: [...group.meanings, emptyMeaning()],
+            meanings: [...meanings, emptyMeaning()],
         });
 
     const removeMeaning = (i: number) =>
         onChange({
             ...group,
-            meanings: group.meanings.filter((_, idx) => idx !== i),
+            meanings: meanings.filter((_, idx) => idx !== i),
         });
 
     return (
@@ -120,13 +122,13 @@ export default function GroupFieldBlock({
                             <div className="min-w-0 flex-1">
                                 <FormPicker
                                     language={language}
-                                    formId={component.formId}
-                                    keyword={component.keyword}
+                                    formId={component.formId ?? null}
+                                    keyword={component.keyword ?? null}
                                     onChange={({ formId, keyword }) =>
                                         updateComponent(i, {
                                             ...component,
-                                            formId,
-                                            keyword: keyword,
+                                            formId: formId ?? undefined,
+                                            keyword: keyword ?? undefined,
                                         })
                                     }
                                 />
@@ -172,13 +174,13 @@ export default function GroupFieldBlock({
                     </Button>
                 </div>
 
-                {group.meanings.map((meaning, mi) => (
+                {meanings.map((meaning, mi) => (
                     <MeaningFieldBlock
                         key={mi}
                         meaning={meaning}
                         onChange={(next) => updateMeaning(mi, next)}
                         onRemove={
-                            group.meanings.length > 1 ? () => removeMeaning(mi) : undefined
+                            meanings.length > 1 ? () => removeMeaning(mi) : undefined
                         }
                     />
                 ))}

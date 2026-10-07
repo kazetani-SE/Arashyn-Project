@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card.tsx";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
-import { useGrammarList } from "@/shared/hook/grammar_component_build.ts";
 import { SummarizeCard } from "@/components/item/SummarizeCard.tsx";
-import type {GrammarResponse} from "@/entities/grammar/grammar_types.ts";
+import type {GrammarSummaryResponse} from "@/lib/api/generated";
+import {useGrammarSummaryList} from "@/shared/hook/grammar_component_build.ts";
 
 type ItemGridProps = {
-    items: GrammarResponse[];
+    items: GrammarSummaryResponse[];
     isLoading?: boolean;
     isError?: boolean;
     /** Number of skeleton placeholders to show while loading. Defaults to the page size. */
@@ -20,7 +20,7 @@ export default function ItemGrid({
                                      isError = false,
                                      itemCount = ITEMS_SIZE,
                                  }: ItemGridProps) {
-    const grammarItems = useGrammarList(items);
+    const grammarItems = useGrammarSummaryList(items);
 
     if (isLoading) {
         return (

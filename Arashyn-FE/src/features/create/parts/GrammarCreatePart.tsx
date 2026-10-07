@@ -33,6 +33,9 @@ function GrammarCreatePart() {
         handleSubmit,
     } = useCreateGrammar(language_chosen)
 
+    const notes = values.notes ?? []
+    const filterIds = values.filterIds ?? []
+
     return (
         <form onSubmit={handleSubmit} className="flex flex-col gap-10">
             <section className="flex flex-col gap-4 rounded-xl border border-[#1e1b3a] bg-[#12101f]/40 p-5">
@@ -48,7 +51,7 @@ function GrammarCreatePart() {
 
                 <FilterSelector
                     language={language}
-                    selectedIds={values.filterIds}
+                    selectedIds={filterIds}
                     onChange={updateFilterIds}
                 />
             </section>
@@ -80,7 +83,7 @@ function GrammarCreatePart() {
                     </Button>
                 </div>
 
-                {values.notes.map((note, index) => (
+                {notes.map((note, index) => (
                     <div key={index} className="flex items-start gap-2">
                         <Select
                             value={String(note.groupKey)}

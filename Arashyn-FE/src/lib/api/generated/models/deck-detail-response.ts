@@ -26,6 +26,7 @@ export interface DeckDetailResponse {
     'description'?: string;
     'language'?: DeckDetailResponseLanguageEnum;
     'ownerId'?: string;
+    'ownerName'?: string;
     'isPublic'?: boolean;
     'folders'?: Set<FolderSummariseResponse>;
     'grammars'?: Set<GrammarSummaryResponse>;

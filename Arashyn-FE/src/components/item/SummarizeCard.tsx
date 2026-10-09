@@ -1,6 +1,4 @@
 import * as React from "react"
-import { useNavigate } from "react-router-dom"
-import {ROUTES} from "@/app/router/route.ts"
 import {
     Dialog,
     DialogContent,
@@ -28,12 +26,12 @@ type SummarizeCardClassNames = {
 }
 
 type SummarizeCardProps = React.ComponentProps<"div"> & {
-    grammarId: string
     title: React.ReactNode
     filters?: string[]
     patterns: SummarizePattern[]
     meanings: React.ReactNode[]
     classNames?: SummarizeCardClassNames
+    onViewDetail?: () => void
 }
 
 function getFilterSizeClass(count: number) {
@@ -43,17 +41,16 @@ function getFilterSizeClass(count: number) {
 }
 
 function SummarizeCard({
-                           grammarId,
                            title,
                            filters,
                            patterns,
                            meanings,
                            className,
                            classNames,
+                           onViewDetail,
                            ...props
                        }: SummarizeCardProps) {
 
-    const navigate = useNavigate()
     const [open, setOpen] = React.useState(false)
 
     const firstPattern = patterns[0]
@@ -65,7 +62,7 @@ function SummarizeCard({
 
     const onViewDetailHandler = () => {
         setOpen(false)
-        navigate(ROUTES.grammarDetail(grammarId))
+        if (onViewDetail) return onViewDetail()
     }
 
     return (

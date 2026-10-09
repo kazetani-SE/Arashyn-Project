@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **id** | **string** |  | [optional] [default to undefined]
 **name** | **string** |  | [optional] [default to undefined]
 **ownerId** | **string** |  | [optional] [default to undefined]
+**ownerName** | **string** |  | [optional] [default to undefined]
 **isPublic** | **boolean** |  | [optional] [default to undefined]
 **decks** | [**Set&lt;DeckSummariseResponse&gt;**](DeckSummariseResponse.md) |  | [optional] [default to undefined]
 **childFolders** | [**Set&lt;FolderSummariseResponse&gt;**](FolderSummariseResponse.md) |  | [optional] [default to undefined]
@@ -24,6 +25,7 @@ const instance: FolderDetailResponse = {
     id,
     name,
     ownerId,
+    ownerName,
     isPublic,
     decks,
     childFolders,

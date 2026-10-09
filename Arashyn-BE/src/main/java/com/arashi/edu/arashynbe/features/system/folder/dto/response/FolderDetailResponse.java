@@ -14,6 +14,8 @@ public record FolderDetailResponse(
 
         UUID ownerId,
 
+        String ownerName,
+
         Boolean isPublic,
 
         Set<DeckListResponse.DeckSummariseResponse> decks,

@@ -15,6 +15,7 @@ import CommunityPage from "@/features/community/CommunityPage.tsx";
 import DetailPage from "@/features/detail/DetailPage.tsx";
 import ItemListPage from "@/features/popular/ItemListPage.tsx";
 import CreatePage from "@/features/create/CreatePage.tsx";
+import ContainerDetailPage from "@/features/container/ContainerDetailPage.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -74,6 +75,14 @@ export const router = createBrowserRouter([
             {
                 path: ROUTE_PATHS.DETAIL,
                 element: <DetailPage/>,
+            },
+            {
+                path: ROUTE_PATHS.DECK_DETAIL,
+                element: <ContainerDetailPage type="deck" />,
+            },
+            {
+                path: ROUTE_PATHS.FOLDER_DETAIL,
+                element: <ContainerDetailPage type="folder" />,
             },
             {
                 path: ROUTE_PATHS.CREATE,

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button.tsx";
 import { ArrowLeft } from "lucide-react";
 import {
@@ -9,7 +9,7 @@ import {
     SelectValue,
 } from "@/components/ui/select.tsx";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import {type AllType, isBrowsableType} from "@/features/popular/constants/all_type.ts";
+import {type AllType, type BrowsableType, isBrowsableType} from "@/features/popular/constants/all_type.ts";
 import { CATEGORIES } from "@/features/popular/constants/categories.ts";
 import { ROUTE_PATHS } from "@/app/router/route.ts";
 import { SORT_OPTIONS } from "@/features/popular/constants/sort.ts";
@@ -17,6 +17,7 @@ import { FeatureBackground } from "@/components/background/FeatureBackground.tsx
 import { useSetBreadcrumb } from "@/layout/topbar/hooks/useSetBreadcrumb.ts";
 import ItemGrid from "@/features/popular/components/ItemGrid.tsx";
 import {useItemList} from "@/features/popular/hook/use_item_list.ts";
+import {useLanguageStore} from "@/shared/store/language_store.ts";
 
 const DEFAULT_PAGE = 0;
 const DEFAULT_SIZE = 21;
@@ -40,17 +41,19 @@ export default function ItemListPage() {
     const sortOptions = isValid && type ? SORT_OPTIONS[type] : [];
     const query = searchParams.get("query");
 
-    const breadcrumbKey = isViaPath ? `item_list:${type}` : `search:${type}`;
-
     const breadcrumbHref = isViaPath
         ? location.pathname
         : `${location.pathname}${location.search}`;
 
-    useSetBreadcrumb(
-        config ? config.title : "Discover",
-        breadcrumbHref,
-        breadcrumbKey
-    );
+    const breadcrumbTitle = isViaPath
+        ? config?.title
+        : query
+            ? `Search: ${query}`
+            : config?.title;
+
+    const breadcrumbId = isViaPath ? type ?? undefined : `search:${query ?? ""}`;
+
+    useSetBreadcrumb(breadcrumbTitle, breadcrumbHref, breadcrumbId);
 
     useEffect(() => {
         if (!isValid) {
@@ -63,18 +66,32 @@ export default function ItemListPage() {
     const page = Number(searchParams.get("page") ?? DEFAULT_PAGE);
     const size = Number(searchParams.get("size") ?? DEFAULT_SIZE);
 
-    const {
-        data,
-        isLoading,
-        isError,
-    } = useItemList({
-        // Falls back to "grammar" only to keep the hook call unconditional
-        // (hooks can't be called conditionally); `enabled` inside the hook
-        // guards deck/folder from actually firing until they're wired up.
-        type: isValid && type && isBrowsableType(type) ? type : "grammar",
+    const language = useLanguageStore((s) => s.language) || undefined;
+
+    const isFirstRun = useRef(true);
+    useEffect(() => {
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
+        setSearchParams(
+            (prev) => {
+                prev.set("page", String(DEFAULT_PAGE));
+                return prev;
+            },
+            { replace: true }
+        );
+    }, [language, setSearchParams]);
+
+    const browsableType: BrowsableType =
+        isValid && type && isBrowsableType(type) ? type : "grammar";
+
+    const { data, isLoading, isError } = useItemList({
+        type: browsableType,
         page,
         size,
         query,
+        language,
     });
 
     if (!isValid || !type || !config) return null;
@@ -135,7 +152,7 @@ export default function ItemListPage() {
                 </div>
             </div>
 
-            <ItemGrid items={data?.items ?? []} isLoading={isLoading} isError={isError} />
+            <ItemGrid type={browsableType} items={data?.items ?? []} isLoading={isLoading} isError={isError} />
         </div>
     );
 }

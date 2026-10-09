@@ -14,6 +14,8 @@ export const ROUTE_PATHS = {
     SEARCH: "/search",
 
     DETAIL: "/detail/:grammarId",
+    DECK_DETAIL: "/deck/:id",
+    FOLDER_DETAIL: "/folder/:id",
 } as const;
 
 export const ROUTES = {
@@ -48,4 +50,6 @@ export const ROUTES = {
     },
 
     grammarDetail: (grammarId: string) => `/detail/${grammarId}`,
+    deckDetail: (deckId: string) => `/deck/${deckId}`,
+    folderDetail: (folderId: string) => `/folder/${folderId}`,
 } as const;

@@ -9,17 +9,20 @@ import { Button } from "@/components/ui/button.tsx";
 import { Skeleton } from "@/components/ui/skeleton.tsx";
 import { useEffect } from "react";
 import {useGrammarDetail} from "@/features/detail/hook/use_grammar_detail.ts";
+import {useBreadcrumbStore} from "@/shared/store/breadcrumb_store.ts";
 
 export default function DetailPage() {
     const { grammarId } = useParams<{ grammarId: string }>();
     const navigate = useNavigate();
 
-    useSetBreadcrumb(
-        "Detail",
-        grammarId ? ROUTES.grammarDetail(grammarId) : ROUTE_PATHS.DETAIL
-    );
-
     const { data, isLoading, error } = useGrammarDetail(grammarId);
+
+     useSetBreadcrumb(
+        data?.id === grammarId ? data?.title : undefined,
+        grammarId ? ROUTES.grammarDetail(grammarId) : ROUTE_PATHS.DETAIL,
+        grammarId
+    );
+    useBreadcrumbStore((s) => s.pushOrJump);
 
     console.log("[DETAIL]", {
         grammarId,

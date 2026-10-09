@@ -6,6 +6,12 @@ import { SummarizeCard } from "@/components/item/SummarizeCard.tsx";
 import type { LucideIcon } from "lucide-react";
 import {useItemList} from "@/features/popular/hook/use_item_list.ts";
 import type {BrowsableType} from "@/features/popular/constants/all_type.ts";
+import {useNavigate} from "react-router-dom";
+import {ROUTES} from "@/app/router/route.ts";
+import {useLanguageStore} from "@/shared/store/language_store.ts";
+import type { DeckSummariseResponse, FolderListResponse } from "@/lib/api/generated";
+
+type FolderItem = NonNullable<FolderListResponse["items"]>[number];
 
 type DiscoverSectionProps = {
     type: BrowsableType;
@@ -17,6 +23,8 @@ type DiscoverSectionProps = {
 
 const TRENDING_SIZE = 6;
 
+const EMPTY: never[] = [];
+
 export default function TrendingSection({
                                             type,
                                             title,
@@ -24,17 +32,49 @@ export default function TrendingSection({
                                             iconClassName,
                                             onViewAll,
                                         }: DiscoverSectionProps) {
-    // Real call (through MSW mock for now). Only "grammar" is wired up on
-    // the backend/mock side — for "deck"/"folder", useItemList's `enabled`
-    // guard keeps this from firing, so it'll just render "No results found".
+    const navigate = useNavigate();
+
+    const grammarDetail = (itemId: string) => {
+        navigate(ROUTES.grammarDetail(itemId));
+    };
+
+    const deckDetail = (itemId: string) => {
+        navigate(ROUTES.deckDetail(itemId));
+    };
+
+    const folderDetail = (itemId: string) => {
+        navigate(ROUTES.folderDetail(itemId));
+    };
+
+    const language = useLanguageStore((s) => s.language) || undefined;
+
     const { data, isLoading, isError } = useItemList({
         type,
         page: 0,
         size: TRENDING_SIZE,
+        language,
     });
 
-    // Maps raw grammar_response[] -> display shape ({ id, title, patterns, meanings, filters }).
-    const items = useGrammarSummaryList(data?.items ?? []);
+    const rawItems = data?.items ?? EMPTY;
+
+    const grammarItems = useGrammarSummaryList(
+        type === "grammar"
+            ? (rawItems as Parameters<typeof useGrammarSummaryList>[0])
+            : EMPTY
+    );
+
+    const deckItems =
+        type === "deck" ? (rawItems as DeckSummariseResponse[]) : EMPTY;
+
+    const folderItems =
+        type === "folder" ? (rawItems as FolderItem[]) : EMPTY;
+
+    const itemCount =
+        type === "grammar"
+            ? grammarItems.length
+            : type === "deck"
+                ? deckItems.length
+                : folderItems.length;
 
     return (
         <section className="space-y-4">
@@ -77,19 +117,20 @@ export default function TrendingSection({
                     </p>
                 )}
 
-                {!isLoading && !isError && items.length === 0 && (
+                {!isLoading && !isError && itemCount === 0 && (
                     <p className="col-span-full py-8 text-center text-muted-foreground">
                         No results found.
                     </p>
                 )}
 
+                {/* Grammar */}
                 {!isLoading &&
                     !isError &&
-                    items.map(({ id, title: itemTitle, patterns, meanings, filters }) => (
+                    type === "grammar" &&
+                    grammarItems.map(({ id, title: itemTitle, patterns, meanings, filters }) => (
                         <SummarizeCard
                             key={id}
                             className="h-full"
-                            grammarId={id}
                             title={itemTitle}
                             filters={filters}
                             patterns={patterns.map(({ groupKey, pattern }) => ({
@@ -97,8 +138,47 @@ export default function TrendingSection({
                                 content: pattern,
                             }))}
                             meanings={meanings}
+                            onViewDetail={() => grammarDetail(id)}
                         />
                     ))}
+
+                {!isLoading &&
+                    !isError &&
+                    type === "deck" &&
+                    deckItems.map((deck) => {
+                        const id = deck.id ?? "";
+
+                        return (
+                            <SummarizeCard
+                                key={id}
+                                className="h-full"
+                                title={""}
+                                filters={deck.language ? [deck.language] : []}
+                                patterns={[{ key: id, content: deck.name }]}
+                                meanings={deck.description ? [deck.description] : []}
+                                onViewDetail={() => deckDetail(id)}
+                            />
+                        );
+                    })}
+
+                {!isLoading &&
+                    !isError &&
+                    type === "folder" &&
+                    folderItems.map((folder) => {
+                        const id = folder.id ?? "";
+
+                        return (
+                            <SummarizeCard
+                                key={id}
+                                className="h-full"
+                                title={""}
+                                filters={[]}
+                                patterns={[{ key: id, content: folder.name }]}
+                                meanings={[]}
+                                onViewDetail={() => folderDetail(id)}
+                            />
+                        );
+                    })}
             </div>
         </section>
     );

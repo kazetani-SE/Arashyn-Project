@@ -293,16 +293,17 @@ public class DeckServiceImpl implements DeckService {
     Set<GrammarSummaryResponse> grammars =
             new HashSet<>(grammarList.items());
 
-    UUID ownerId = deck.getOwner() != null
-            ? deck.getOwner().getId()
-            : null;
-
     return new DeckDetailResponse(
             deck.getId(),
             deck.getName(),
             deck.getDescription(),
             Language.valueOf(deck.getLanguage()),
-            ownerId,
+            deck.getOwner() != null
+                    ? deck.getOwner().getId()
+                    : null,
+            deck.getOwner() != null
+                    ? deck.getOwner().getUsername()
+                    : "",
             deck.getIsPublic(),
             folders,
             grammars,

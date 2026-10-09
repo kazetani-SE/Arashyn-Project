@@ -207,7 +207,8 @@ public class FolderServiceImpl implements FolderService {
     return new FolderDetailResponse(
             folder.getId(),
             folder.getName(),
-            folder.getOwner().getId(),
+            folder.getOwner() != null ? folder.getOwner().getId() : null,
+            folder.getOwner() != null ? folder.getOwner().getUsername() : "",
             folder.getIsPublic(),
             decks,
             childFolders,

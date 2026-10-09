@@ -58,7 +58,7 @@ public class GrammarPublicController {
             )
     );
 
-    var lang = Language.valueOf(language);
+    var lang = Language.fromCode(language);
 
     return ResponseEntity.ok(
             grammarService.getGrammars(lang, pageable)

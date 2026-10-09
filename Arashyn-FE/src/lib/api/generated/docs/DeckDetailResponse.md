@@ -10,6 +10,7 @@ Name | Type | Description | Notes
 **description** | **string** |  | [optional] [default to undefined]
 **language** | **string** |  | [optional] [default to undefined]
 **ownerId** | **string** |  | [optional] [default to undefined]
+**ownerName** | **string** |  | [optional] [default to undefined]
 **isPublic** | **boolean** |  | [optional] [default to undefined]
 **folders** | [**Set&lt;FolderSummariseResponse&gt;**](FolderSummariseResponse.md) |  | [optional] [default to undefined]
 **grammars** | [**Set&lt;GrammarSummaryResponse&gt;**](GrammarSummaryResponse.md) |  | [optional] [default to undefined]
@@ -27,6 +28,7 @@ const instance: DeckDetailResponse = {
     description,
     language,
     ownerId,
+    ownerName,
     isPublic,
     folders,
     grammars,

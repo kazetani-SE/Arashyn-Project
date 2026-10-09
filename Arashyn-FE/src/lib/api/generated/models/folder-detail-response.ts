@@ -24,6 +24,7 @@ export interface FolderDetailResponse {
     'id'?: string;
     'name'?: string;
     'ownerId'?: string;
+    'ownerName'?: string;
     'isPublic'?: boolean;
     'decks'?: Set<DeckSummariseResponse>;
     'childFolders'?: Set<FolderSummariseResponse>;

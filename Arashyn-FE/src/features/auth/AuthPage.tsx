@@ -1,8 +1,16 @@
 import LeftPart from "@/features/auth/parts/LeftPart.tsx";
-import {Outlet} from "react-router-dom";
+import {Navigate, Outlet} from "react-router-dom";
+import {useAuthStore} from "@/shared/store/auth_store.ts";
+import {ROUTE_PATHS} from "@/app/router/route.ts";
 
 
 export default function AuthPage() {
+    const isLoggedIn = useAuthStore((s) => !!s.accessToken);
+
+    if (isLoggedIn) {
+        return <Navigate to={ROUTE_PATHS.DISCOVER} replace />;
+    }
+
     return (
         <div className="relative min-h-screen overflow-x-hidden">
             <PageBackground/>

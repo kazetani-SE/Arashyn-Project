@@ -1,10 +1,11 @@
 import { useEffect } from "react";
-import { useBreadcrumbContext } from "@/layout/topbar/contexts/useBreadcrumbContext.ts";
+import {useBreadcrumbStore} from "@/shared/store/breadcrumb_store.ts";
 
-export function useSetBreadcrumb(title: string, href: string, key?: string) {
-    const { pushOrJump } = useBreadcrumbContext();
+export function useSetBreadcrumb(title: string | undefined, href: string, key?: string) {
+    const pushOrJump = useBreadcrumbStore((s) => s.pushOrJump);
 
     useEffect(() => {
+        if (!title) return;
         pushOrJump({ title, href, key });
     }, [title, href, key, pushOrJump]);
 }

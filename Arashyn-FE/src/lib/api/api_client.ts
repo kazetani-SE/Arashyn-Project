@@ -1,7 +1,14 @@
 import { apiClient } from "./http_client.ts";
-import {Configuration, GrammarProtectedControllerApi, GrammarPublicControllerApi} from "./generated";
+import {
+    Configuration,
+    DeckPublicControllerApi, FolderPublicControllerApi,
+    GrammarProtectedControllerApi,
+    GrammarPublicControllerApi
+} from "./generated";
 
 const config = new Configuration();
 
 export const grammarPublicApi = new GrammarPublicControllerApi(config, undefined, apiClient);
 export const grammarProtectedApi = new GrammarProtectedControllerApi(config, undefined, apiClient);
+export const deckPublicApi = new DeckPublicControllerApi(config, undefined, apiClient);
+export const folderPublicApi = new FolderPublicControllerApi(config, undefined, apiClient);

@@ -9,6 +9,7 @@ export const ROUTE_PATHS = {
     COMMUNITY: "/community",
     SETTINGS: "/settings",
     CREATE: "/create",
+    HUB: "/hub",
 
     ITEM_LIST: "/item_list/:type",
     SEARCH: "/search",
@@ -16,6 +17,10 @@ export const ROUTE_PATHS = {
     DETAIL: "/detail/:grammarId",
     DECK_DETAIL: "/deck/:id",
     FOLDER_DETAIL: "/folder/:id",
+
+    USER_GRAMMAR_DETAIL: "/hub/grammar/:id",
+    USER_DECK_DETAIL: "/hub/deck/:id",
+    USER_FOLDER_DETAIL: "/hub/folder/:id",
 } as const;
 
 export const ROUTES = {
@@ -52,4 +57,8 @@ export const ROUTES = {
     grammarDetail: (grammarId: string) => `/detail/${grammarId}`,
     deckDetail: (deckId: string) => `/deck/${deckId}`,
     folderDetail: (folderId: string) => `/folder/${folderId}`,
+
+    userGrammarDetail: (id: string) => `/hub/grammar/${id}`,
+    userDeckDetail: (id: string) => `/hub/deck/${id}`,
+    userFolderDetail: (id: string) => `/hub/folder/${id}`,
 } as const;

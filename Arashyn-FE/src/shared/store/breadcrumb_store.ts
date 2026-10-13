@@ -1,9 +1,13 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { MENUS } from "@/layout/sidebar/constants/menuItem_constant.ts";
-import type { BreadcrumbItem } from "@/layout/topbar/types/breadcum_types.ts";
+import type {BreadcrumbItem} from "@/layout/topbar/types/breadcum_types.ts";
+import {ROUTE_PATHS} from "@/app/router/route.ts";
 
-const ROOT_PATHS = new Set(MENUS.map((m) => m.path));
+const ROOT_PATHS = new Set([
+    ...MENUS.map((m) => m.path),
+    ROUTE_PATHS.HUB,
+]);
 const MAX_ITEMS = 8;
 
 export const breadcrumbKey = (item: BreadcrumbItem) =>

@@ -41,7 +41,7 @@ export default function DetailPage() {
     }, [grammarId, navigate]);
 
     const onBack = () => {
-        navigate(ROUTE_PATHS.DISCOVER, { replace: true });
+        navigate(-1);
     };
 
     if (!grammarId) return null;
@@ -54,7 +54,7 @@ export default function DetailPage() {
                 <div className="mb-4">
                     <Button variant="ghost" className="gap-2" onClick={onBack}>
                         <ArrowLeft className="h-4 w-4" />
-                        Back to Discover
+                        Back
                     </Button>
                 </div>
 

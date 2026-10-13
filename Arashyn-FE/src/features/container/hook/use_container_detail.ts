@@ -15,5 +15,7 @@ export function useContainerDetail({ type, id }: UseContainerDetailParams) {
                 ? deckPublicService.getDetail(id)
                 : folderPublicService.getDetail(id),
         enabled: !!id,
+        staleTime: 5 * 60 * 1000,
+        gcTime: 30 * 60 * 1000,
     });
 }

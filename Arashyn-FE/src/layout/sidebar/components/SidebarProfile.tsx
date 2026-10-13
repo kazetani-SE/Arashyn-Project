@@ -16,6 +16,10 @@ export default function SidebarProfile({ collapsed }: SidebarProfileProps) {
         navigate(ROUTE_PATHS.LOGIN);
     };
 
+    const onHub = () => {
+        navigate(ROUTE_PATHS.HUB);
+    }
+
     return (
         <div className="border-t border-sidebar-border p-4">
             {isLoggedIn && user ? (
@@ -24,6 +28,7 @@ export default function SidebarProfile({ collapsed }: SidebarProfileProps) {
                     className={`flex h-auto items-center rounded-lg hover:bg-indigo-500/10 ${
                         collapsed ? "mx-auto justify-center p-2" : "w-full justify-start gap-3 p-2"
                     }`}
+                    onClick={onHub}
                 >
                     <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
                         {user.avatar ? (

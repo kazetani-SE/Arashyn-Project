@@ -16,6 +16,7 @@ import DetailPage from "@/features/detail/DetailPage.tsx";
 import ItemListPage from "@/features/popular/ItemListPage.tsx";
 import CreatePage from "@/features/create/CreatePage.tsx";
 import ContainerDetailPage from "@/features/container/ContainerDetailPage.tsx";
+import HubPage from "@/features/hub/HubPage.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -88,6 +89,22 @@ export const router = createBrowserRouter([
                 path: ROUTE_PATHS.CREATE,
                 element: <CreatePage/>,
             },
+            {
+                path: ROUTE_PATHS.HUB,
+                element: <HubPage/>,
+            },
+            {
+                path: ROUTE_PATHS.USER_DECK_DETAIL,
+                element: <HubPage/>,
+            },
+            {
+                path: ROUTE_PATHS.USER_FOLDER_DETAIL,
+                element: <HubPage/>,
+            },
+            {
+                path: ROUTE_PATHS.USER_GRAMMAR_DETAIL,
+                element: <HubPage/>,
+            }
         ]
     },
 ]);

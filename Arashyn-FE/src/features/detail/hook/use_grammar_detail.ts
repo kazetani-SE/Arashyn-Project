@@ -8,6 +8,8 @@ export function useGrammarDetail(grammarId: string | undefined) {
         queryKey: ["grammar-detail", grammarId],
         queryFn: () => grammarPublicService.getDetail(grammarId as string),
         enabled: !!grammarId,
+        staleTime: 5 * 60 * 1000,
+        gcTime: 30 * 60 * 1000,
         retry: (failureCount, error) => {
             const normalized = normalizeError(error);
             if (normalized.code === "NOT_FOUND") return false;

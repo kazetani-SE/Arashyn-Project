@@ -68,7 +68,7 @@ export default function ContainerDetailPage({ type }: ContainerDetailPageProps) 
             <FeatureBackground />
 
             <div className="container mx-auto max-w-7xl space-y-12 py-2 px-6">
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between mb-[2vh] mt-[1vh]">
                     <Button
                         variant="ghost"
                         onClick={goBack}

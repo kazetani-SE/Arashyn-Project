@@ -3,7 +3,7 @@ import {
     Configuration,
     DeckPublicControllerApi, FolderPublicControllerApi,
     GrammarProtectedControllerApi,
-    GrammarPublicControllerApi, UserDeckControllerApi, UserFolderControllerApi
+    GrammarPublicControllerApi, UserDeckControllerApi, UserFolderControllerApi, UserGrammarControllerApi
 } from "./generated";
 
 const config = new Configuration();
@@ -13,5 +13,6 @@ export const grammarProtectedApi = new GrammarProtectedControllerApi(config, und
 export const deckPublicApi = new DeckPublicControllerApi(config, undefined, apiClient);
 export const folderPublicApi = new FolderPublicControllerApi(config, undefined, apiClient);
 
+export const userGrammarApi = new UserGrammarControllerApi(config, undefined, apiClient);
 export const userDeckApi = new UserDeckControllerApi(config, undefined, apiClient);
 export const userFolderApi = new UserFolderControllerApi(config, undefined, apiClient);

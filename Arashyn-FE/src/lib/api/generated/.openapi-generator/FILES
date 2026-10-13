@@ -122,6 +122,7 @@ docs/SystemFilterPublicControllerApi.md
 docs/SystemFilterResponse.md
 docs/TemplateExportRequest.md
 docs/UpdateProficiencyRequest.md
+docs/UserDeckCloneGrammarRequest.md
 docs/UserDeckCloneRequest.md
 docs/UserDeckControllerApi.md
 docs/UserDeckCreateRequest.md
@@ -143,7 +144,6 @@ docs/UserFolderListResponse.md
 docs/UserFolderSummariseResponse.md
 docs/UserFolderUpdateRequest.md
 docs/UserGrammarControllerApi.md
-docs/UserGrammarCreateMultipleRequest.md
 docs/UserGrammarCreateRequest.md
 docs/UserGrammarDetailResponse.md
 docs/UserGrammarDuplicateCheckMultipleRequest.md
@@ -228,6 +228,7 @@ models/system-filter-create-request.ts
 models/system-filter-response.ts
 models/template-export-request.ts
 models/update-proficiency-request.ts
+models/user-deck-clone-grammar-request.ts
 models/user-deck-clone-request.ts
 models/user-deck-create-request.ts
 models/user-deck-detail-response.ts
@@ -246,7 +247,6 @@ models/user-folder-id-response.ts
 models/user-folder-list-response.ts
 models/user-folder-summarise-response.ts
 models/user-folder-update-request.ts
-models/user-grammar-create-multiple-request.ts
 models/user-grammar-create-request.ts
 models/user-grammar-detail-response.ts
 models/user-grammar-duplicate-check-multiple-request.ts

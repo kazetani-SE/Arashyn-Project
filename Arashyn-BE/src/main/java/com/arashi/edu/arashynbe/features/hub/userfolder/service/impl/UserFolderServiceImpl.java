@@ -34,7 +34,6 @@ import com.arashi.edu.arashynbe.features.system.folder.service.FolderService;
 import com.arashi.edu.arashynbe.repository.hub.UserDeckRepo;
 import com.arashi.edu.arashynbe.repository.hub.UserFolderRepo;
 import com.arashi.edu.arashynbe.repository.hub.UserGrammarRepo;
-import com.arashi.edu.arashynbe.repository.system.DeckRepo;
 import com.arashi.edu.arashynbe.repository.system.FolderRepo;
 import com.arashi.edu.arashynbe.repository.system.support.DeckGrammarRepo;
 import com.arashi.edu.arashynbe.repository.system.support.FolderDeckRepo;
@@ -62,7 +61,6 @@ public class UserFolderServiceImpl implements UserFolderService {
   private final UserFolderRepo userFolderRepo;
   private final UserDeckRepo userDeckRepo;
   private final UserGrammarRepo userGrammarRepo;
-  private final DeckRepo deckRepo;
   private final FolderDeckRepo folderDeckRepo;
   private final DeckGrammarRepo deckGrammarRepo;
 

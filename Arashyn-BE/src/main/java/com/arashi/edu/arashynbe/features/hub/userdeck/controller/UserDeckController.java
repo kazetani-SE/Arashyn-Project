@@ -9,6 +9,7 @@ import com.arashi.edu.arashynbe.features.hub.userdeck.dto.response.UserDeckDupli
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.response.UserDeckIdResponse;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.response.UserDeckListResponse;
 import com.arashi.edu.arashynbe.features.hub.userdeck.service.UserDeckService;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarDuplicateCheckMultipleResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,11 @@ public class UserDeckController {
   @PostMapping("/check_duplicate")
   public ResponseEntity<UserDeckDuplicateCheckResponse> checkDuplicate(@Valid @RequestBody UserDeckDuplicateCheckRequest request) {
     return ResponseEntity.ok(userDeckService.checkDuplicate(request));
+  }
+
+  @GetMapping("/{deckId}/check_duplicate_grammars")
+  public UserGrammarDuplicateCheckMultipleResponse checkGrammarDuplicates(@PathVariable UUID deckId) {
+    return userDeckService.checkGrammarDuplicates(deckId);
   }
 
   @PostMapping
@@ -61,5 +67,10 @@ public class UserDeckController {
   @GetMapping()
   public ResponseEntity<UserDeckListResponse> list(){
     return ResponseEntity.ok(userDeckService.findAll());
+  }
+
+  @GetMapping("/root")
+  public ResponseEntity<UserDeckListResponse> root(){
+    return ResponseEntity.ok(userDeckService.findRoot());
   }
 }

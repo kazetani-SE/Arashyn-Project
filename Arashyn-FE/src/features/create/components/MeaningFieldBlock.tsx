@@ -2,7 +2,7 @@ import {
     emptyExample,
     type ExampleFormValue,
     type MeaningFormValue,
-} from "@/entities/grammar/grammar_form_types.ts";
+} from "@/entities/system/grammar/grammar_form_types.ts";
 import { Textarea } from "@/components/ui/textarea.tsx";
 import { Switch } from "@/components/ui/switch.tsx";
 import { Button } from "@/components/ui/button.tsx";

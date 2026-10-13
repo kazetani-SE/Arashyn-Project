@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { isAppError, normalizeError } from "@/lib/api/error_handler.ts";
 import type { AppError } from "@/lib/api/types.ts";
-import {grammarPublicService} from "@/entities/grammar/grammar_public_service.ts";
+import {grammarPublicService} from "@/entities/system/grammar/grammar_public_service.ts";
 
 export function useGrammarDetail(grammarId: string | undefined) {
     const query = useQuery({

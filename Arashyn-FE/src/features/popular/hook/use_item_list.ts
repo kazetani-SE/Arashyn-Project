@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import {type BrowsableType} from "@/features/popular/constants/all_type.ts";
-import {grammarPublicService} from "@/entities/grammar/grammar_public_service.ts"
-import {deckPublicService} from "@/entities/deck/deck_public_service.ts";
-import {folderPublicService} from "@/entities/folder/folder_public_service.ts";
+import {grammarPublicService} from "@/entities/system/grammar/grammar_public_service.ts"
+import {deckPublicService} from "@/entities/system/deck/deck_public_service.ts";
+import {folderPublicService} from "@/entities/system/folder/folder_public_service.ts";
 
 const DEFAULT_PAGE = 0;
 const DEFAULT_SIZE = 6;

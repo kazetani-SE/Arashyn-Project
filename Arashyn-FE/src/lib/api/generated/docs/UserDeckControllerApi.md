@@ -5,11 +5,13 @@ All URIs are relative to *http://localhost:8080*
 |Method | HTTP request | Description|
 |------------- | ------------- | -------------|
 |[**checkDuplicate2**](#checkduplicate2) | **POST** /user_deck/check_duplicate | |
+|[**checkGrammarDuplicates**](#checkgrammarduplicates) | **GET** /user_deck/{deckId}/check_duplicate_grammars | |
 |[**clone1**](#clone1) | **POST** /user_deck/clone | |
 |[**create2**](#create2) | **POST** /user_deck | |
 |[**delete2**](#delete2) | **DELETE** /user_deck/{id} | |
 |[**detail2**](#detail2) | **GET** /user_deck/{id} | |
 |[**list2**](#list2) | **GET** /user_deck | |
+|[**root1**](#root1) | **GET** /user_deck/root | |
 |[**update2**](#update2) | **PUT** /user_deck | |
 
 # **checkDuplicate2**
@@ -53,6 +55,56 @@ const { status, data } = await apiInstance.checkDuplicate2(
 ### HTTP request headers
 
  - **Content-Type**: application/json
+ - **Accept**: */*
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **checkGrammarDuplicates**
+> UserGrammarDuplicateCheckMultipleResponse checkGrammarDuplicates()
+
+
+### Example
+
+```typescript
+import {
+    UserDeckControllerApi,
+    Configuration
+} from 'arashyn-api';
+
+const configuration = new Configuration();
+const apiInstance = new UserDeckControllerApi(configuration);
+
+let deckId: string; // (default to undefined)
+
+const { status, data } = await apiInstance.checkGrammarDuplicates(
+    deckId
+);
+```
+
+### Parameters
+
+|Name | Type | Description  | Notes|
+|------------- | ------------- | ------------- | -------------|
+| **deckId** | [**string**] |  | defaults to undefined|
+
+
+### Return type
+
+**UserGrammarDuplicateCheckMultipleResponse**
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
  - **Accept**: */*
 
 
@@ -281,6 +333,49 @@ const configuration = new Configuration();
 const apiInstance = new UserDeckControllerApi(configuration);
 
 const { status, data } = await apiInstance.list2();
+```
+
+### Parameters
+This endpoint does not have any parameters.
+
+
+### Return type
+
+**UserDeckListResponse**
+
+### Authorization
+
+[BearerAuth](../README.md#BearerAuth)
+
+### HTTP request headers
+
+ - **Content-Type**: Not defined
+ - **Accept**: */*
+
+
+### HTTP response details
+| Status code | Description | Response headers |
+|-------------|-------------|------------------|
+|**200** | OK |  -  |
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+# **root1**
+> UserDeckListResponse root1()
+
+
+### Example
+
+```typescript
+import {
+    UserDeckControllerApi,
+    Configuration
+} from 'arashyn-api';
+
+const configuration = new Configuration();
+const apiInstance = new UserDeckControllerApi(configuration);
+
+const { status, data } = await apiInstance.root1();
 ```
 
 ### Parameters

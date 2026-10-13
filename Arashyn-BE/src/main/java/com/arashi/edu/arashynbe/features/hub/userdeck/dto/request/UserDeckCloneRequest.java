@@ -1,8 +1,8 @@
 package com.arashi.edu.arashynbe.features.hub.userdeck.dto.request;
 
-import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateMultipleRequest;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
 import java.util.UUID;
 
 public record UserDeckCloneRequest(
@@ -16,6 +16,16 @@ public record UserDeckCloneRequest(
 
         UUID sourceUserDeckId,
 
-        UserGrammarCreateMultipleRequest userGrammars
+        List<UserDeckCloneGrammarRequest> userGrammars
 
-) {}
+) {
+
+        public record UserDeckCloneGrammarRequest(
+
+                UUID grammarId,
+
+                UUID sourceUserGrammarId
+
+        ){}
+
+}

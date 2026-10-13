@@ -1,7 +1,7 @@
 import * as React from "react"
 import type {GrammarDetailResponse, GrammarSummaryResponse} from "@/lib/api/generated"
-import { transformGrammar, type GrammarView } from "@/entities/grammar/grammar_transform.ts"
-import {type GrammarSummaryView, transformGrammarSummary} from "@/entities/grammar/grammar_summarise_transform.ts";
+import { transformGrammar, type GrammarView } from "@/entities/system/grammar/grammar_transform.ts"
+import {type GrammarSummaryView, transformGrammarSummary} from "@/entities/system/grammar/grammar_summarise_transform.ts";
 
 export type { GrammarView }
 

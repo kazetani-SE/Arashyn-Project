@@ -37,6 +37,8 @@ import type { UserDeckIdResponse } from '../models';
 import type { UserDeckListResponse } from '../models';
 // @ts-ignore
 import type { UserDeckUpdateRequest } from '../models';
+// @ts-ignore
+import type { UserGrammarDuplicateCheckMultipleResponse } from '../models';
 /**
  * UserDeckControllerApi - axios parameter creator
  */
@@ -74,6 +76,43 @@ export const UserDeckControllerApiAxiosParamCreator = function (configuration?: 
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(userDeckDuplicateCheckRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @param {string} deckId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkGrammarDuplicates: async (deckId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'deckId' is not null or undefined
+            assertParamExists('checkGrammarDuplicates', 'deckId', deckId)
+            const localVarPath = `/user_deck/{deckId}/check_duplicate_grammars`
+                .replace('{deckId}', encodeURIComponent(String(deckId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            localVarHeaderParameter['Accept'] = '*/*';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -264,6 +303,39 @@ export const UserDeckControllerApiAxiosParamCreator = function (configuration?: 
         },
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        root1: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/user_deck/root`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication BearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            localVarHeaderParameter['Accept'] = '*/*';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @param {UserDeckUpdateRequest} userDeckUpdateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -319,6 +391,18 @@ export const UserDeckControllerApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.checkDuplicate2(userDeckDuplicateCheckRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['UserDeckControllerApi.checkDuplicate2']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @param {string} deckId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async checkGrammarDuplicates(deckId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserGrammarDuplicateCheckMultipleResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.checkGrammarDuplicates(deckId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserDeckControllerApi.checkGrammarDuplicates']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -382,6 +466,17 @@ export const UserDeckControllerApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async root1(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserDeckListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.root1(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['UserDeckControllerApi.root1']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @param {UserDeckUpdateRequest} userDeckUpdateRequest 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -409,6 +504,15 @@ export const UserDeckControllerApiFactory = function (configuration?: Configurat
          */
         checkDuplicate2(requestParameters: UserDeckControllerApiCheckDuplicate2Request, options?: RawAxiosRequestConfig): AxiosPromise<UserDeckDuplicateCheckResponse> {
             return localVarFp.checkDuplicate2(requestParameters.userDeckDuplicateCheckRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @param {UserDeckControllerApiCheckGrammarDuplicatesRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        checkGrammarDuplicates(requestParameters: UserDeckControllerApiCheckGrammarDuplicatesRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserGrammarDuplicateCheckMultipleResponse> {
+            return localVarFp.checkGrammarDuplicates(requestParameters.deckId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -456,6 +560,14 @@ export const UserDeckControllerApiFactory = function (configuration?: Configurat
         },
         /**
          * 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        root1(options?: RawAxiosRequestConfig): AxiosPromise<UserDeckListResponse> {
+            return localVarFp.root1(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @param {UserDeckControllerApiUpdate2Request} requestParameters Request parameters.
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
@@ -477,6 +589,14 @@ export interface UserDeckControllerApiInterface {
      * @throws {RequiredError}
      */
     checkDuplicate2(requestParameters: UserDeckControllerApiCheckDuplicate2Request, options?: RawAxiosRequestConfig): AxiosPromise<UserDeckDuplicateCheckResponse>;
+
+    /**
+     * 
+     * @param {UserDeckControllerApiCheckGrammarDuplicatesRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    checkGrammarDuplicates(requestParameters: UserDeckControllerApiCheckGrammarDuplicatesRequest, options?: RawAxiosRequestConfig): AxiosPromise<UserGrammarDuplicateCheckMultipleResponse>;
 
     /**
      * 
@@ -519,6 +639,13 @@ export interface UserDeckControllerApiInterface {
 
     /**
      * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    root1(options?: RawAxiosRequestConfig): AxiosPromise<UserDeckListResponse>;
+
+    /**
+     * 
      * @param {UserDeckControllerApiUpdate2Request} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -532,6 +659,13 @@ export interface UserDeckControllerApiInterface {
  */
 export interface UserDeckControllerApiCheckDuplicate2Request {
     readonly userDeckDuplicateCheckRequest: UserDeckDuplicateCheckRequest
+}
+
+/**
+ * Request parameters for checkGrammarDuplicates operation in UserDeckControllerApi.
+ */
+export interface UserDeckControllerApiCheckGrammarDuplicatesRequest {
+    readonly deckId: string
 }
 
 /**
@@ -585,6 +719,16 @@ export class UserDeckControllerApi extends BaseAPI implements UserDeckController
 
     /**
      * 
+     * @param {UserDeckControllerApiCheckGrammarDuplicatesRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public checkGrammarDuplicates(requestParameters: UserDeckControllerApiCheckGrammarDuplicatesRequest, options?: RawAxiosRequestConfig) {
+        return UserDeckControllerApiFp(this.configuration).checkGrammarDuplicates(requestParameters.deckId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
      * @param {UserDeckControllerApiClone1Request} requestParameters Request parameters.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
@@ -630,6 +774,15 @@ export class UserDeckControllerApi extends BaseAPI implements UserDeckController
      */
     public list2(options?: RawAxiosRequestConfig) {
         return UserDeckControllerApiFp(this.configuration).list2(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     */
+    public root1(options?: RawAxiosRequestConfig) {
+        return UserDeckControllerApiFp(this.configuration).root1(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

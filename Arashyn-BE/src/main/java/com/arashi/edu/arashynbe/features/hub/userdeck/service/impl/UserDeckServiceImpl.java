@@ -15,6 +15,9 @@ import com.arashi.edu.arashynbe.features.hub.userdeck.dto.response.UserDeckListR
 import com.arashi.edu.arashynbe.features.hub.userdeck.service.UserDeckService;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateMultipleRequest;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarCreateRequest;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarDuplicateCheckMultipleRequest;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.request.UserGrammarDuplicateCheckRequest;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarDuplicateCheckMultipleResponse;
 import com.arashi.edu.arashynbe.features.hub.usergrammar.service.UserGrammarService;
 import com.arashi.edu.arashynbe.features.system.deck.dto.request.DeckCreateRequest;
 import com.arashi.edu.arashynbe.features.system.deck.service.DeckService;
@@ -81,6 +84,7 @@ public class UserDeckServiceImpl implements UserDeckService {
             .user(user)
             .name(request.name().trim())
             .deckId(systemDeck.getId())
+            .language(systemDeck.getLanguage())
             .proficiency((short) Proficiency.minValue())
             .lastOpenAt(OffsetDateTime.now());
 
@@ -110,18 +114,14 @@ public class UserDeckServiceImpl implements UserDeckService {
                             ? request.name().trim()
                             : deck.getName()
             )
+            .language(deck.getLanguage())
             .proficiency((short) Proficiency.minValue())
             .lastOpenAt(OffsetDateTime.now());
 
     if (request.sourceUserDeckId() != null) {
-
       UserDeck source = userDeckRepo
-              .findByIdAndUserId(
-                      request.sourceUserDeckId(),
-                      user.getId()
-              )
+              .findByIdAndUserId(request.sourceUserDeckId(), user.getId())
               .orElseThrow(() -> new ApiException(ErrorCode.USER_DECK_NOT_FOUND));
-
       builder
               .proficiency(source.getProficiency())
               .lastOpenAt(source.getLastOpenAt());
@@ -130,14 +130,9 @@ public class UserDeckServiceImpl implements UserDeckService {
     UserDeck userDeck = builder.build();
 
     if (request.userFolderId() != null) {
-
       UserFolder folder = userFolderRepo
-              .findByIdAndUserId(
-                      request.userFolderId(),
-                      user.getId()
-              )
+              .findByIdAndUserId(request.userFolderId(), user.getId())
               .orElseThrow(() -> new ApiException(ErrorCode.USER_DECK_NOT_FOUND));
-
       userDeck.getUserFolders().add(folder);
     }
 
@@ -168,6 +163,20 @@ public class UserDeckServiceImpl implements UserDeckService {
                     false,
                     null
             ));
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public UserGrammarDuplicateCheckMultipleResponse checkGrammarDuplicates(UUID deckId) {
+    var deck = deckService.findDeckById(deckId);
+
+    List<UserGrammarDuplicateCheckRequest> requests = deck.grammars().stream()
+            .map(grammar -> new UserGrammarDuplicateCheckRequest(grammar.id()))
+            .toList();
+
+    return userGrammarService.duplicateCheckMultiple(
+            new UserGrammarDuplicateCheckMultipleRequest(requests)
+    );
   }
 
   @Transactional
@@ -245,6 +254,26 @@ public class UserDeckServiceImpl implements UserDeckService {
   }
 
   @Override
+  @Transactional(readOnly = true)
+  public UserDeckListResponse findRoot() {
+    Account user = currentAccountProvider.get();
+
+    List<UserDeck> rootDecks = userDeckRepo.findAllRootByUserId(user.getId());
+
+    List<UserDeckListResponse.UserDeckSummariseResponse> result = rootDecks.stream()
+            .map(userDeck -> new UserDeckListResponse.UserDeckSummariseResponse(
+                    userDeck.getId(),
+                    userDeck.getName(),
+                    userDeck.getDescription(),
+                    Language.valueOf(userDeck.getLanguage()),
+                    userDeck.getLastOpenAt()
+            ))
+            .toList();
+
+    return new UserDeckListResponse(result);
+  }
+
+  @Override
   @Transactional
   public UserDeckDetailResponse detailById(UUID id) {
     Account user = currentAccountProvider.get();
@@ -279,17 +308,18 @@ public class UserDeckServiceImpl implements UserDeckService {
     userGrammarService.deleteRedundant();
   }
 
-  private void cloneGrammarsFromDeck(UUID userDeckId, UserGrammarCreateMultipleRequest userGrammarsRequest) {
-    if (userGrammarsRequest == null
-            || userGrammarsRequest.userGrammarCreateRequestsList() == null
-            || userGrammarsRequest.userGrammarCreateRequestsList().isEmpty()) {
+  private void cloneGrammarsFromDeck(
+          UUID userDeckId,
+          List<UserDeckCloneRequest.UserDeckCloneGrammarRequest> userGrammars
+  ) {
+    if (userGrammars == null || userGrammars.isEmpty()) {
       return;
     }
 
-    List<UserGrammarCreateRequest> requests = userGrammarsRequest.userGrammarCreateRequestsList().stream()
+    List<UserGrammarCreateRequest> requests = userGrammars.stream()
             .map(req -> new UserGrammarCreateRequest(
                     req.grammarId(),
-                    req.name(),
+                    null,
                     userDeckId,
                     req.sourceUserGrammarId()
             ))

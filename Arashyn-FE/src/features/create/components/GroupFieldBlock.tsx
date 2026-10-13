@@ -8,7 +8,7 @@ import {
     type ComponentFormValue,
     type GroupFormValue,
     type MeaningFormValue,
-} from "@/entities/grammar/grammar_form_types";
+} from "@/entities/system/grammar/grammar_form_types";
 import type { Language } from "@/shared/enum/language";
 
 import { FormPicker } from "./FormPicker";

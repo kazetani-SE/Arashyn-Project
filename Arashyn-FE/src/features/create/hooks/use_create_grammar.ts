@@ -6,10 +6,10 @@ import {
     type NoteFormValue,
     emptyGrammarFormValues,
     emptyGroup,
-} from "@/entities/grammar/grammar_form_types.ts"
+} from "@/entities/system/grammar/grammar_form_types.ts"
 import {ROUTES} from "@/app/router/route.ts"
 import {Language} from "@/shared/enum/language.ts";
-import {grammarProtectedService} from "@/entities/grammar/gammar_protected_service.ts";
+import {grammarProtectedService} from "@/entities/system/grammar/gammar_protected_service.ts";
 
 export function useCreateGrammar(language: Language) {
     const [values, setValues] = React.useState<GrammarFormValues>(emptyGrammarFormValues())

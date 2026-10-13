@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useAuthStore } from "@/shared/store/auth_store.ts";
-import {authService} from "@/entities/auth/auth_service.ts";
+import {authService} from "@/entities/system/auth/auth_service.ts";
 
 export function useAuth() {
     const accessToken = useAuthStore((s) => s.accessToken);

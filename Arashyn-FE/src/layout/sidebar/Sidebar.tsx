@@ -6,10 +6,9 @@ import SidebarLogo from "@/layout/sidebar/components/SidebarLogo.tsx";
 import SidebarNavigation from "@/layout/sidebar/components/SidebarNavigation.tsx";
 import SidebarFolders from "@/layout/sidebar/components/SidebarFolders.tsx";
 import SidebarProfile from "@/layout/sidebar/components/SidebarProfile.tsx";
-import {useLocation} from "react-router-dom";
+import {useBreadcrumbStore} from "@/shared/store/breadcrumb_store.ts";
 
 export default function Sidebar() {
-    const location = useLocation();
     const [collapsed, setCollapsed] = useState(false);
 
     const [expanded, setExpanded] = useState<Record<string, boolean>>(
@@ -19,11 +18,11 @@ export default function Sidebar() {
             )
     );
 
-    const activeMenu = MENUS.find((item) =>
-        location.pathname.startsWith(item.path)
-    )?.label;
+    const firstCrumbHref = useBreadcrumbStore((s) => s.items[0]?.href);
 
-    console.log(activeMenu);
+    const activeMenu = MENUS.find(
+        (item) => item.path === firstCrumbHref?.split("?")[0]
+    )?.label;
 
     return (
         <aside

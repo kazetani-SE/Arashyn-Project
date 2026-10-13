@@ -7,7 +7,7 @@ import {
     MOCK_OTP,
     OTP_TTL_MS,
 } from "@/mocks/constant/auth_data.ts";
-import type {LoginResponse, RegisterResponse} from "@/entities/auth/auth_types.ts";
+import type {LoginResponse, RegisterResponse} from "@/entities/system/auth/auth_types.ts";
 
 const BASE_URL = import.meta.env.VITE_ARASHYN_API_BASE_URL ?? "http://localhost:8080";
 

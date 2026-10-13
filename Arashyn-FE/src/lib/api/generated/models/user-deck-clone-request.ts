@@ -15,13 +15,13 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import type { UserGrammarCreateMultipleRequest } from './user-grammar-create-multiple-request';
+import type { UserDeckCloneGrammarRequest } from './user-deck-clone-grammar-request';
 
 export interface UserDeckCloneRequest {
     'deckId': string;
     'name'?: string;
     'userFolderId'?: string;
     'sourceUserDeckId'?: string;
-    'userGrammars'?: UserGrammarCreateMultipleRequest;
+    'userGrammars'?: Array<UserDeckCloneGrammarRequest>;
 }
 

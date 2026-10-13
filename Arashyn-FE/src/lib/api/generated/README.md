@@ -106,11 +106,13 @@ Class | Method | HTTP request | Description
 *SystemFilterProtectedControllerApi* | [**create4**](docs/SystemFilterProtectedControllerApi.md#create4) | **POST** /protected/system-filters | 
 *SystemFilterPublicControllerApi* | [**getAllSystemFilters**](docs/SystemFilterPublicControllerApi.md#getallsystemfilters) | **GET** /public/system-filters | 
 *UserDeckControllerApi* | [**checkDuplicate2**](docs/UserDeckControllerApi.md#checkduplicate2) | **POST** /user_deck/check_duplicate | 
+*UserDeckControllerApi* | [**checkGrammarDuplicates**](docs/UserDeckControllerApi.md#checkgrammarduplicates) | **GET** /user_deck/{deckId}/check_duplicate_grammars | 
 *UserDeckControllerApi* | [**clone1**](docs/UserDeckControllerApi.md#clone1) | **POST** /user_deck/clone | 
 *UserDeckControllerApi* | [**create2**](docs/UserDeckControllerApi.md#create2) | **POST** /user_deck | 
 *UserDeckControllerApi* | [**delete2**](docs/UserDeckControllerApi.md#delete2) | **DELETE** /user_deck/{id} | 
 *UserDeckControllerApi* | [**detail2**](docs/UserDeckControllerApi.md#detail2) | **GET** /user_deck/{id} | 
 *UserDeckControllerApi* | [**list2**](docs/UserDeckControllerApi.md#list2) | **GET** /user_deck | 
+*UserDeckControllerApi* | [**root1**](docs/UserDeckControllerApi.md#root1) | **GET** /user_deck/root | 
 *UserDeckControllerApi* | [**update2**](docs/UserDeckControllerApi.md#update2) | **PUT** /user_deck | 
 *UserFolderControllerApi* | [**checkDuplicate1**](docs/UserFolderControllerApi.md#checkduplicate1) | **POST** /user_folder/check_duplicate | 
 *UserFolderControllerApi* | [**clone**](docs/UserFolderControllerApi.md#clone) | **POST** /user_folder/clone | 
@@ -201,6 +203,7 @@ Class | Method | HTTP request | Description
  - [SystemFilterResponse](docs/SystemFilterResponse.md)
  - [TemplateExportRequest](docs/TemplateExportRequest.md)
  - [UpdateProficiencyRequest](docs/UpdateProficiencyRequest.md)
+ - [UserDeckCloneGrammarRequest](docs/UserDeckCloneGrammarRequest.md)
  - [UserDeckCloneRequest](docs/UserDeckCloneRequest.md)
  - [UserDeckCreateRequest](docs/UserDeckCreateRequest.md)
  - [UserDeckDetailResponse](docs/UserDeckDetailResponse.md)
@@ -219,7 +222,6 @@ Class | Method | HTTP request | Description
  - [UserFolderListResponse](docs/UserFolderListResponse.md)
  - [UserFolderSummariseResponse](docs/UserFolderSummariseResponse.md)
  - [UserFolderUpdateRequest](docs/UserFolderUpdateRequest.md)
- - [UserGrammarCreateMultipleRequest](docs/UserGrammarCreateMultipleRequest.md)
  - [UserGrammarCreateRequest](docs/UserGrammarCreateRequest.md)
  - [UserGrammarDetailResponse](docs/UserGrammarDetailResponse.md)
  - [UserGrammarDuplicateCheckMultipleRequest](docs/UserGrammarDuplicateCheckMultipleRequest.md)

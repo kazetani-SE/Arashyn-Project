@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **name** | **string** |  | [optional] [default to undefined]
 **userFolderId** | **string** |  | [optional] [default to undefined]
 **sourceUserDeckId** | **string** |  | [optional] [default to undefined]
-**userGrammars** | [**UserGrammarCreateMultipleRequest**](UserGrammarCreateMultipleRequest.md) |  | [optional] [default to undefined]
+**userGrammars** | [**Array&lt;UserDeckCloneGrammarRequest&gt;**](UserDeckCloneGrammarRequest.md) |  | [optional] [default to undefined]
 
 ## Example
 

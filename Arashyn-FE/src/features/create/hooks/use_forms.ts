@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import { formService } from "@/entities/form/form_service";
-import type { Form } from "@/entities/form/form_types";
+import { formService } from "@/entities/system/form/form_service";
+import type { Form } from "@/entities/system/form/form_types";
 import type { Language } from "@/shared/enum/language";
 
 interface UseFormsResult {

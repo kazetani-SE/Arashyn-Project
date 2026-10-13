@@ -8,6 +8,7 @@ import com.arashi.edu.arashynbe.features.hub.userdeck.dto.response.UserDeckDetai
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.response.UserDeckDuplicateCheckResponse;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.response.UserDeckIdResponse;
 import com.arashi.edu.arashynbe.features.hub.userdeck.dto.response.UserDeckListResponse;
+import com.arashi.edu.arashynbe.features.hub.usergrammar.dto.response.UserGrammarDuplicateCheckMultipleResponse;
 
 import java.util.UUID;
 
@@ -19,9 +20,13 @@ public interface UserDeckService {
 
   UserDeckDuplicateCheckResponse checkDuplicate(UserDeckDuplicateCheckRequest request);
 
+  UserGrammarDuplicateCheckMultipleResponse checkGrammarDuplicates(UUID deckId);
+
   UserDeckIdResponse update(UserDeckUpdateRequest request);
 
   UserDeckListResponse findAll();
+
+  UserDeckListResponse findRoot();
 
   UserDeckDetailResponse detailById(UUID id);
 

@@ -1,4 +1,4 @@
-import type {Meaning} from "@/entities/meaning/meaning_types.ts";
+import type {Meaning} from "@/entities/system/meaning/meaning_types.ts";
 
 export type Component = {
     id: string;

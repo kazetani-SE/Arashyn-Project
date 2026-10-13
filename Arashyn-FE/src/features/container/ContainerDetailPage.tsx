@@ -13,6 +13,7 @@ import ContainerHeaderPart from "@/features/container/part/ContainerHeaderPart.t
 import {useContainerDetail} from "@/features/container/hook/use_container_detail.ts";
 import {useSetBreadcrumb} from "@/layout/topbar/hooks/useSetBreadcrumb.ts";
 import {useBreadcrumbStore} from "@/shared/store/breadcrumb_store.ts";
+import {CloneButton} from "@/features/container/components/CloneButton.tsx";
 
 type ContainerDetailPageProps = {
     type: "deck" | "folder";
@@ -58,19 +59,29 @@ export default function ContainerDetailPage({ type }: ContainerDetailPageProps) 
     const folderDecks = Array.from(folder?.decks ?? []);
     const folderChildren = Array.from(folder?.childFolders ?? []);
 
+    const grammarNames = Object.fromEntries(
+        deckGrammars.filter((g) => g.id).map((g) => [g.id!, g.title ?? ""])
+    );
+
     return (
         <div>
             <FeatureBackground />
 
             <div className="container mx-auto max-w-7xl space-y-12 py-2 px-6">
-                <Button
-                    variant="ghost"
-                    onClick={goBack}
-                    className="-ml-3 mb-2 gap-1.5 text-muted-foreground hover:text-[#a5adf0]"
-                >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
-                </Button>
+                <div className="flex items-center justify-between">
+                    <Button
+                        variant="ghost"
+                        onClick={goBack}
+                        className="-ml-3 mb-2 gap-1.5 text-muted-foreground hover:text-[#a5adf0]"
+                    >
+                        <ArrowLeft className="h-4 w-4" />
+                        Back
+                    </Button>
+
+                    {!isLoading && !isError && detail && (
+                        <CloneButton type={type} id={id} grammarNames={grammarNames} />
+                    )}
+                </div>
 
                 {isLoading && (
                     <div className="space-y-4">

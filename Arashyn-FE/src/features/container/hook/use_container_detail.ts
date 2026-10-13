@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { deckPublicService } from "@/entities/deck/deck_public_service.ts";
-import { folderPublicService } from "@/entities/folder/folder_public_service.ts";
+import { deckPublicService } from "@/entities/system/deck/deck_public_service.ts";
+import { folderPublicService } from "@/entities/system/folder/folder_public_service.ts";
 
 type UseContainerDetailParams = {
     type: "deck" | "folder";

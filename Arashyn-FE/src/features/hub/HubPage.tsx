@@ -3,7 +3,7 @@ import { FeatureBackground } from "@/components/background/FeatureBackground.tsx
 import { ROUTE_PATHS, ROUTES } from "@/app/router/route.ts";
 import { useSetBreadcrumb } from "@/layout/topbar/hooks/useSetBreadcrumb.ts";
 import { HubRootPart } from "@/features/hub/part/HubRootPart.tsx";
-import { HubDetailPart } from "@/features/hub/part/HubDetailPart.tsx";
+import { HubContainerDetailPart } from "@/features/hub/part/HubContainerDetailPart.tsx";
 import { HubGrammarDetailPart } from "@/features/hub/part/HubGrammarDetailPart.tsx";
 
 export default function HubPage() {
@@ -42,7 +42,7 @@ export default function HubPage() {
                 {isGrammarDetail && id ? (
                     <HubGrammarDetailPart id={id} />
                 ) : isDetail && type && id ? (
-                    <HubDetailPart type={type as "deck" | "folder"} id={id} />
+                    <HubContainerDetailPart type={type as "deck" | "folder"} id={id} />
                 ) : (
                     <HubRootPart />
                 )}

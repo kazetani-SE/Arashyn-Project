@@ -17,6 +17,7 @@ import ItemListPage from "@/features/popular/ItemListPage.tsx";
 import CreatePage from "@/features/create/CreatePage.tsx";
 import ContainerDetailPage from "@/features/container/ContainerDetailPage.tsx";
 import HubPage from "@/features/hub/HubPage.tsx";
+import {LearningPage} from "@/features/learning/LearningPage.tsx";
 
 export const router = createBrowserRouter([
     {
@@ -104,7 +105,10 @@ export const router = createBrowserRouter([
             {
                 path: ROUTE_PATHS.USER_GRAMMAR_DETAIL,
                 element: <HubPage/>,
-            }
+            },{
+                path: ROUTE_PATHS.LEARNING,
+                element: <LearningPage/>
+            },
         ]
     },
 ]);

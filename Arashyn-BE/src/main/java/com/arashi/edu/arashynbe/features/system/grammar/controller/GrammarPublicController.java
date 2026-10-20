@@ -7,7 +7,9 @@ import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarDeta
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarListResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.dto.response.GrammarSimilarResponse;
 import com.arashi.edu.arashynbe.features.system.grammar.service.GrammarService;
+import com.arashi.edu.arashynbe.shared.enums.GrammarSortBy;
 import com.arashi.edu.arashynbe.shared.enums.Language;
+import com.arashi.edu.arashynbe.shared.enums.SortDirection;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +28,7 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public class GrammarPublicController {
 
-  private final String PAGE_SIZE = "20";
+  private static final String PAGE_SIZE = "20";
 
   private final GrammarService grammarService;
 
@@ -35,34 +37,24 @@ public class GrammarPublicController {
           @RequestBody GrammarListRequest request,
           @RequestParam(defaultValue = "0") Integer page
   ) {
-
-    return ResponseEntity.ok(
-            grammarService.getPublicGrammars(request, page)
-    );
+    return ResponseEntity.ok(grammarService.getPublicGrammars(request, page));
   }
 
   @GetMapping("/item_list/grammar")
   public ResponseEntity<GrammarListResponse> getItems(
           @RequestParam(defaultValue = "0") int page,
-          @RequestParam(defaultValue = "VI") String language,
+          @RequestParam(defaultValue = "VI") Language language,
           @RequestParam(defaultValue = PAGE_SIZE) int size,
-          @RequestParam(defaultValue = "created_at") String sort,
-          @RequestParam(defaultValue = "desc") String direction
+          @RequestParam(defaultValue = "CREATED_AT") GrammarSortBy sort,
+          @RequestParam(defaultValue = "DESC") SortDirection direction
   ) {
     Pageable pageable = PageRequest.of(
             page,
             size,
-            Sort.by(
-                    Sort.Direction.fromString(direction),
-                    sort
-            )
+            Sort.by(direction.toSpringDirection(), sort.getField())
     );
 
-    var lang = Language.fromCode(language);
-
-    return ResponseEntity.ok(
-            grammarService.getGrammars(lang, pageable)
-      );
+    return ResponseEntity.ok(grammarService.getGrammars(language, pageable));
   }
 
   @GetMapping("/search")
@@ -73,55 +65,44 @@ public class GrammarPublicController {
           @RequestParam(defaultValue = "true") boolean isKeyword,
           @RequestParam(defaultValue = "0") int page,
           @RequestParam(defaultValue = PAGE_SIZE) int size,
-          @RequestParam(defaultValue = "VI") String language
+          @RequestParam(defaultValue = "VI") Language language
   ) {
-    List<String> filterIds = (filters == null || filters.isBlank())
-            ? List.of()
-            : Arrays.stream(filters.split(","))
-            .map(String::trim)
-            .filter(Predicate.not(String::isBlank))
-            .toList();
-
-    List<String> formIds = (forms == null || forms.isBlank())
-            ? List.of()
-            : Arrays.stream(forms.split(","))
-            .map(String::trim)
-            .filter(Predicate.not(String::isBlank))
-            .toList();
-
-    var lang = Language.fromCode(language);
-
-    return grammarService.search(query, filterIds, formIds, isKeyword, lang, PageRequest.of(page, size));
+    return grammarService.search(
+            query,
+            splitCsv(filters),
+            splitCsv(forms),
+            isKeyword,
+            language,
+            PageRequest.of(page, size)
+    );
   }
 
   @GetMapping("/{grammarId}")
-  public ResponseEntity<GrammarDetailResponse> getDetail(
-          @PathVariable UUID grammarId
-  ) {
-    return ResponseEntity.ok(
-            grammarService.getDetail(grammarId)
-    );
+  public ResponseEntity<GrammarDetailResponse> getDetail(@PathVariable UUID grammarId) {
+    return ResponseEntity.ok(grammarService.getDetail(grammarId));
   }
 
   @PostMapping("/check-exist")
   public ResponseEntity<ExistingGrammarResponse> checkGrammarExist(
           @RequestBody @Valid GrammarCreateRequest request
-  ){
-
-    return ResponseEntity.ok(
-            grammarService.findExistingGrammar(request)
-    );
-
+  ) {
+    return ResponseEntity.ok(grammarService.findExistingGrammar(request));
   }
 
   @PostMapping("/similar")
   public ResponseEntity<GrammarSimilarResponse> checkSimilarGrammar(
           @RequestBody @Valid GrammarCreateRequest request
-  ){
+  ) {
+    return ResponseEntity.ok(grammarService.findSimilarGrammar(request));
+  }
 
-    return ResponseEntity.ok(
-            grammarService.findSimilarGrammar(request)
-    );
-
+  private static List<String> splitCsv(String value) {
+    if (value == null || value.isBlank()) {
+      return List.of();
+    }
+    return Arrays.stream(value.split(","))
+            .map(String::trim)
+            .filter(Predicate.not(String::isBlank))
+            .toList();
   }
 }

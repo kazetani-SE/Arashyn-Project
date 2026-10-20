@@ -18,6 +18,6 @@ export function useUserContainerDetail({ type, id }: UseUserContainerDetailParam
         },
         enabled: !!id,
         staleTime: 5 * 60 * 1000,
-        gcTime: 30 * 60 * 1000,     
+        gcTime: 30 * 60 * 1000,
     });
 }

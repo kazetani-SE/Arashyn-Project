@@ -21,6 +21,8 @@ export const ROUTE_PATHS = {
     USER_GRAMMAR_DETAIL: "/hub/grammar/:id",
     USER_DECK_DETAIL: "/hub/deck/:id",
     USER_FOLDER_DETAIL: "/hub/folder/:id",
+
+    LEARNING: "/learning/:deckId/:type",
 } as const;
 
 export const ROUTES = {
@@ -61,4 +63,6 @@ export const ROUTES = {
     userGrammarDetail: (id: string) => `/hub/grammar/${id}`,
     userDeckDetail: (id: string) => `/hub/deck/${id}`,
     userFolderDetail: (id: string) => `/hub/folder/${id}`,
+
+    learning: (deckId: string, type: string) => `/learning/${deckId}/${type}`,
 } as const;

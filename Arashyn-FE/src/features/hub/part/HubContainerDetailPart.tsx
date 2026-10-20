@@ -11,15 +11,26 @@ import { useUserContainerDetail } from "@/features/hub/hook/use_user_container_d
 import type { UserDeckDetailResponse } from "@/lib/api/generated";
 import type { UserFolderDetailResponse } from "@/lib/api/generated";
 import type { Children } from "@/lib/api/generated";
+import {createUserDeckActions, createUserFolderActions} from "@/features/hub/constants/user_actions.ts";
+import {userDeckService} from "@/entities/hub/userdeck/user_deck_service.ts";
+import {useState} from "react";
+import {userFolderService} from "@/entities/hub/userfolder/user_folder_service.ts";
+import {ConfirmDeleteDialog} from "@/features/hub/components/ConfirmDeleteDialog.tsx";
+import {LearningTypeDialog} from "@/features/hub/components/LearningTypeDialog.tsx";
+import type {LearningType} from "@/features/learning/constants/learning_types.ts";
 
 type HubDetailPartProps = {
     type: "deck" | "folder";
     id: string;
 };
 
-export function HubDetailPart({ type, id }: HubDetailPartProps) {
+export function HubContainerDetailPart({ type, id }: HubDetailPartProps) {
     const navigate = useNavigate();
     const { data, isLoading, isError } = useUserContainerDetail({ type, id });
+
+    const [openDelete, setOpenDelete] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [openLearning, setOpenLearning] = useState(false);
 
     const goBack = () => {
         if (window.history.state?.idx > 0) {
@@ -27,6 +38,11 @@ export function HubDetailPart({ type, id }: HubDetailPartProps) {
         } else {
             navigate(ROUTE_PATHS.HUB);
         }
+    };
+
+    const handleSelectLearningType = (learningType: LearningType) => {
+        setOpenLearning(false);
+        navigate(ROUTES.learning(id, learningType));
     };
 
     const goDeck = (itemId: string) => navigate(ROUTES.userDeckDetail(itemId));
@@ -55,6 +71,57 @@ export function HubDetailPart({ type, id }: HubDetailPartProps) {
         );
     }
 
+    // ===== Actions =====
+    const deckActions = createUserDeckActions({
+        id,
+        onMove: (itemId) => {
+            // TODO
+            console.log("move deck", itemId);
+        },
+        onCopy: async (itemId) => {
+            try {
+                // TODO
+                console.log("clone deck", itemId);
+            } catch (e) {
+                console.error(e);
+            }
+        },
+        onDelete: () => setOpenDelete(true),
+        onLearning: () => setOpenLearning(true),
+    });
+
+    const isDeck = type === "deck";
+
+    const folderActions = createUserFolderActions({
+        id,
+        onMove: (itemId) => {
+            // TODO
+            console.log("move folder", itemId);
+        },
+        onCopy: async (itemId) => {
+            try {
+                // TODO
+                console.log("clone deck", itemId);
+            } catch (e) {
+                console.error(e);
+            }
+        },
+        onDelete: () => setOpenDelete(true),
+    });
+
+    const handleDelete = async () => {
+        setIsDeleting(true);
+        try {
+            if (isDeck) userDeckService.delete(id)
+            else userFolderService.delete(id);
+            goBack();
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    const actions = isDeck ? deckActions : folderActions;
+
     if (isError || !detail) {
         return (
             <p className="py-8 text-center text-muted-foreground">
@@ -74,6 +141,20 @@ export function HubDetailPart({ type, id }: HubDetailPartProps) {
                     <ArrowLeft className="h-4 w-4" />
                     Back
                 </Button>
+
+                {/* Action buttons */}
+                <div className="flex items-center gap-2">
+                    {actions.map((action) => (
+                        <Button
+                            key={action.key}
+                            variant="outline"
+                            size="sm"
+                            onClick={action.onClick}
+                        >
+                            {action.label}
+                        </Button>
+                    ))}
+                </div>
             </div>
 
             <div className="space-y-2">
@@ -86,7 +167,6 @@ export function HubDetailPart({ type, id }: HubDetailPartProps) {
                           </span>
                     )}
 
-                    {/* Link về bản gốc system */}
                     {type === "deck" && deck?.deckId && (
                         <button
                             onClick={() => navigate(ROUTES.deckDetail(deck.deckId!))}
@@ -144,6 +224,23 @@ export function HubDetailPart({ type, id }: HubDetailPartProps) {
                         />
                     </ContainerSectionPart>
                 </>
+            )}
+
+            <ConfirmDeleteDialog
+                open={openDelete}
+                onOpenChange={setOpenDelete}
+                title="Delete this grammar?"
+                description="This grammar will be permanently removed from your collection."
+                isLoading={isDeleting}
+                onConfirm={handleDelete}
+            />
+
+            {type === "deck" && (
+                <LearningTypeDialog
+                    open={openLearning}
+                    onOpenChange={setOpenLearning}
+                    onSelect={handleSelectLearningType}
+                />
             )}
         </>
     );

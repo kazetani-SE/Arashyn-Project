@@ -1,7 +1,8 @@
 import { apiClient } from "./http_client.ts";
 import {
+    ArrangeControllerApi,
     Configuration,
-    DeckPublicControllerApi, FolderPublicControllerApi,
+    DeckPublicControllerApi, FillBlankControllerApi, FolderPublicControllerApi,
     GrammarProtectedControllerApi,
     GrammarPublicControllerApi, UserDeckControllerApi, UserFolderControllerApi, UserGrammarControllerApi
 } from "./generated";
@@ -16,3 +17,6 @@ export const folderPublicApi = new FolderPublicControllerApi(config, undefined, 
 export const userGrammarApi = new UserGrammarControllerApi(config, undefined, apiClient);
 export const userDeckApi = new UserDeckControllerApi(config, undefined, apiClient);
 export const userFolderApi = new UserFolderControllerApi(config, undefined, apiClient);
+
+export const fillBlankApi = new FillBlankControllerApi(config, undefined, apiClient);
+export const arrangeApi = new ArrangeControllerApi(config, undefined, apiClient);

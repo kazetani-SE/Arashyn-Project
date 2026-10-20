@@ -4,6 +4,10 @@ import { Skeleton } from "@/components/ui/skeleton.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { ROUTE_PATHS, ROUTES } from "@/app/router/route.ts";
 import { useUserGrammarDetail } from "@/features/hub/hook/use_user_grammar_detail.ts";
+import {createUserGrammarActions} from "@/features/hub/constants/user_actions.ts";
+import {userGrammarService} from "@/entities/hub/usergrammar/user_grammar_service.ts";
+import {useState} from "react";
+import {ConfirmDeleteDialog} from "@/features/hub/components/ConfirmDeleteDialog.tsx";
 
 type Props = {
     id: string;
@@ -13,11 +17,42 @@ export function HubGrammarDetailPart({ id }: Props) {
     const navigate = useNavigate();
     const { data, isLoading, isError } = useUserGrammarDetail(id);
 
+    const [openDelete, setOpenDelete] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
     const goBack = () => {
         if (window.history.state?.idx > 0) {
             navigate(-1);
         } else {
             navigate(ROUTE_PATHS.HUB);
+        }
+    };
+
+    // ===== Actions =====
+    const actions = createUserGrammarActions({
+        id,
+        onMove: (grammarId) => {
+            // TODO
+            console.log("move grammar", grammarId);
+        },
+        onCopy: async (grammarId) => {
+            // TODO
+            console.log("copy grammar", grammarId);
+        },
+        onDelete: () => setOpenDelete(true),
+        onReset: async (grammarId) => {
+            // TODO
+            console.log("reset grammar", grammarId);
+        },
+    });
+
+    const handleDelete = async () => {
+        setIsDeleting(true);
+        try {
+            await userGrammarService.delete(id);
+            goBack();
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -50,6 +85,19 @@ export function HubGrammarDetailPart({ id }: Props) {
                     <ArrowLeft className="h-4 w-4" />
                     Back
                 </Button>
+
+                <div className="flex items-center gap-2">
+                    {actions.map((action) => (
+                        <Button
+                            key={action.key}
+                            variant="outline"
+                            size="sm"
+                            onClick={action.onClick}
+                        >
+                            {action.label}
+                        </Button>
+                    ))}
+                </div>
             </div>
 
             {/* Header */}
@@ -164,6 +212,15 @@ export function HubGrammarDetailPart({ id }: Props) {
                     </ul>
                 </div>
             )}
+
+            <ConfirmDeleteDialog
+                open={openDelete}
+                onOpenChange={setOpenDelete}
+                title="Delete this grammar?"
+                description="This grammar will be permanently removed from your collection."
+                isLoading={isDeleting}
+                onConfirm={handleDelete}
+            />
         </>
     );
 }

@@ -48,8 +48,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     try {
       UUID userId = jwtService.extractUserId(token);
 
-      Role role = accountRepository.findRoleById(userId)
+      var account = accountRepository.findById(userId)
               .orElseThrow();
+
+      if (account.isBanned()) {
+        SecurityContextHolder.clearContext();
+        log.warn("User {} is banned; rejecting request", userId);
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType("application/json");
+        response.getWriter().write("{\"status\":403,\"code\":\"ACCOUNT_BANNED\",\"message\":\"This account has been banned.\"}");
+        return;
+      }
+
+      Role role = account.getRole();
 
       var securityUser = new SecurityUser(userId, role);
 

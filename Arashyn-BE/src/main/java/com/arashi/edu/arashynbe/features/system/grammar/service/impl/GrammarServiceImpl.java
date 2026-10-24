@@ -65,6 +65,12 @@ public class GrammarServiceImpl implements GrammarService {
 
   @Override
   @Transactional(readOnly = true)
+  public GrammarDetailResponse getPublicDetail(UUID grammarId) {
+    return grammarReadService.getPublicDetail(grammarId);
+  }
+
+  @Override
+  @Transactional(readOnly = true)
   public GrammarListResponse getPublicGrammars(
           GrammarListRequest request,
           Integer page

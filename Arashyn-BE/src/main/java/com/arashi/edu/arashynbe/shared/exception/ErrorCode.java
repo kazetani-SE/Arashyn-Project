@@ -68,6 +68,12 @@ public enum ErrorCode {
           "Session expired, please login again."
   ),
 
+  ACCOUNT_BANNED(
+          HttpStatus.FORBIDDEN,
+          "ACCOUNT_BANNED",
+          "This account has been banned."
+  ),
+
   // ---------- Registration ----------
   EMAIL_NOT_VERIFIED(
           HttpStatus.BAD_REQUEST,

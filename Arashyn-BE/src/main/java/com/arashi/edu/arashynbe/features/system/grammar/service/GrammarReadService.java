@@ -8,5 +8,7 @@ public interface GrammarReadService {
 
   GrammarDetailResponse getDetail(UUID grammarId);
 
+  GrammarDetailResponse getPublicDetail(UUID grammarId);
+
   GrammarEditResponse getEditDetail(UUID grammarId);
 }

@@ -26,6 +26,8 @@ public interface GrammarService {
 
   GrammarDetailResponse getDetail(UUID grammarId);
 
+  GrammarDetailResponse getPublicDetail(UUID grammarId);
+
   GrammarListResponse getPublicGrammars(
           GrammarListRequest request,
           Integer page

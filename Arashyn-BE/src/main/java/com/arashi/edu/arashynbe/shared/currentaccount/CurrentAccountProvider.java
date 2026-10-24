@@ -19,8 +19,14 @@ public class CurrentAccountProvider {
   public Account get() {
     UUID userId = CurrentUser.getId();
 
-    return accountRepo.findById(userId)
+    Account account = accountRepo.findById(userId)
             .orElseThrow(() ->
                     new ApiException(ErrorCode.USER_NOT_FOUND));
+
+    if (account.isBanned()) {
+      throw new ApiException(ErrorCode.ACCOUNT_BANNED);
+    }
+
+    return account;
   }
 }

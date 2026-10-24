@@ -50,20 +50,41 @@ public class GrammarReadServiceImpl implements GrammarReadService {
 
   @Override
   public GrammarDetailResponse getDetail(UUID grammarId) {
+    return buildDetail(grammarId, false);
+  }
+
+  @Override
+  public GrammarDetailResponse getPublicDetail(UUID grammarId) {
+    return buildDetail(grammarId, true);
+  }
+
+  private GrammarDetailResponse buildDetail(UUID grammarId, boolean isPublicAccess) {
 
     Grammar grammar = requireGrammar(grammarId);
+
+    if (isPublicAccess) {
+      if (grammar.getOwner() == null) {
+        throw new ApiException(ErrorCode.GRAMMAR_NOT_FOUND);
+      }
+      if (grammar.getOwner().isBanned()) {
+        throw new ApiException(ErrorCode.ACCOUNT_BANNED);
+      }
+    }
+
+    UUID currentUserId = CurrentUser.getId();
 
     var components =
             getComponents(grammarId);
 
     var meanings =
-            getMeanings(grammarId);
+            getMeanings(grammarId, currentUserId);
 
     var examples =
             getExamples(
                     meanings.stream()
                             .map(GrammarMeaningResponse::id)
-                            .toList()
+                            .toList(),
+                    currentUserId
             );
 
     meanings = attachExamples(
@@ -71,18 +92,22 @@ public class GrammarReadServiceImpl implements GrammarReadService {
             examples
     );
 
+    boolean hasActiveOwner = grammar.getOwner() != null && !grammar.getOwner().isBanned();
+    UUID ownerId = hasActiveOwner ? grammar.getOwner().getId() : null;
+    String ownerUsername = hasActiveOwner ? grammar.getOwner().getUsername() : "empty";
+
     return new GrammarDetailResponse(
             grammar.getId(),
             grammar.getTitle(),
             Language.valueOf(grammar.getLanguage()),
             grammar.getIsPublic(),
-            grammar.getOwner() != null ? grammar.getOwner().getId() : null,
-            grammar.getOwner() != null ? grammar.getOwner().getUsername() : "empty",
+            ownerId,
+            ownerUsername,
             buildGroups(
                     components,
                     meanings
             ),
-            getNotes(grammarId),
+            getNotes(grammarId, currentUserId),
             getFilters(grammarId)
     );
   }
@@ -166,9 +191,11 @@ public class GrammarReadServiceImpl implements GrammarReadService {
             .toList();
   }
 
-  private List<GrammarMeaningResponse> getMeanings(UUID grammarId) {
+  private List<GrammarMeaningResponse> getMeanings(UUID grammarId, UUID currentUserId) {
     return meaningRepo.findByGrammarIdOrderByGroupKeyAsc(grammarId)
             .stream()
+            .filter(meaning -> Boolean.TRUE.equals(meaning.getIsPublic())
+                    || (currentUserId != null && meaning.getOwner() != null && currentUserId.equals(meaning.getOwner().getId())))
             .map(meaning -> new GrammarMeaningResponse(
                     meaning.getId(),
                     meaning.getContent(),
@@ -178,9 +205,14 @@ public class GrammarReadServiceImpl implements GrammarReadService {
             .toList();
   }
 
-  private Map<UUID, List<GrammarExampleResponse>> getExamples(List<UUID> meaningIds) {
+  private Map<UUID, List<GrammarExampleResponse>> getExamples(List<UUID> meaningIds, UUID currentUserId) {
+    if (meaningIds == null || meaningIds.isEmpty()) {
+      return Map.of();
+    }
     return exampleRepo.findAllByMeaningIdIn(meaningIds)
             .stream()
+            .filter(example -> Boolean.TRUE.equals(example.getIsPublic())
+                    || (currentUserId != null && example.getOwner() != null && currentUserId.equals(example.getOwner().getId())))
             .collect(Collectors.groupingBy(
                     example -> example.getMeaning().getId(),
                     Collectors.mapping(
@@ -195,9 +227,11 @@ public class GrammarReadServiceImpl implements GrammarReadService {
             ));
   }
 
-  private List<GrammarNoteResponse> getNotes(UUID grammarId) {
+  private List<GrammarNoteResponse> getNotes(UUID grammarId, UUID currentUserId) {
     return noteRepo.findAllByGrammarIdOrderByGroupKeyAsc(grammarId)
             .stream()
+            .filter(note -> Boolean.TRUE.equals(note.getIsPublic())
+                    || (currentUserId != null && note.getOwner() != null && currentUserId.equals(note.getOwner().getId())))
             .map(note -> new GrammarNoteResponse(
                     note.getId(),
                     note.getContent()
